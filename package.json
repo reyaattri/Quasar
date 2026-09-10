@@ -1,0 +1,45 @@
+{
+  "name": "quasar",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "web": "expo start --web",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/test.cjs",
+    "export:web": "expo export --platform web",
+    "seed:sql": "node scripts/seed.cjs",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~57.0.15",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@supabase/supabase-js": "latest",
+    "expo": "~57.0.21",
+    "expo-constants": "~57.0.17",
+    "expo-dev-client": "~57.0.18",
+    "expo-status-bar": "~57.0.1",
+    "expo-system-ui": "~57.0.3",
+    "posthog-react-native": "latest",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-purchases": "latest",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-svg": "15.15.4",
+    "react-native-url-polyfill": "latest",
+    "react-native-web": "~0.21.0",
+    "ts-fsrs": "latest"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@playwright/test": "latest",
+    "@types/node": "^24.0.0",
+    "@types/react": "~19.2.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.2"
+  }
+}

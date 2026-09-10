@@ -1,0 +1,8 @@
+node_modules
+android
+ios
+dist
+dist-android
+.test-build
+package-lock.json
+supabase/seed.sql

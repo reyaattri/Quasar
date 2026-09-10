@@ -1,0 +1,16 @@
+node_modules/
+.expo/
+dist/
+.env
+.env.*
+!.env.example
+android/
+ios/
+*.jks
+*.keystore
+*.log
+test-results/
+playwright-report/
+
+.test-build/
+dist-android/
