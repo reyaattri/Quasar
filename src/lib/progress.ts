@@ -1,5 +1,6 @@
 import { createEmptyCard, fsrs, Rating, type Card } from "ts-fsrs";
 import type { ArtStyle } from "../data/content";
+import type { PalaceSave } from "../features/MemoryPalace";
 export type Profile = {
   name: string;
   subjects: string[];
@@ -31,6 +32,13 @@ export type Progress = {
   lesson: number;
   lastScene: string;
   analytics: boolean;
+  palace?: PalaceSave;
+  medicalRecalled?: number[];
+  satSession?: {
+    index: number;
+    phase: "learn" | "context" | "done";
+    batches: number[];
+  };
 };
 export const initialProgress = (): Progress => ({
   version: 1,

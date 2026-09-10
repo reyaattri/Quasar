@@ -1,7 +1,8 @@
 import React from "react";
 import {
   View,
-  Text,
+  Text as NativeText,
+  type TextProps,
   Pressable,
   StyleSheet,
   Platform,
@@ -21,12 +22,10 @@ export const C = {
   white: "#FFFEF9",
   red: "#AD4D3F",
 };
-export const serif =
-  Platform.OS === "ios"
-    ? "Georgia"
-    : Platform.OS === "android"
-      ? "serif"
-      : "Georgia";
+export const serif = "QuasarGrotesk";
+export function Text({ style, ...props }: TextProps) {
+  return <NativeText {...props} style={[{ fontFamily: serif }, style]} />;
+}
 const paths: Record<string, string> = {
   home: "M3 11 12 3l9 8M5 10v11h5v-7h4v7h5V10",
   book: "M3 4h7l2 2 2-2h7v16h-7l-2 2-2-2H3zM12 6v16",
@@ -196,23 +195,46 @@ export function Field({
 }
 export const s = StyleSheet.create({
   title: {
-    fontFamily: serif,
+    fontWeight: "700",
+    fontFamily: "QuasarGrotesk",
     fontSize: 36,
     lineHeight: 41,
     color: C.ink,
     letterSpacing: -1,
   },
   h2: {
-    fontFamily: serif,
+    fontWeight: "600",
+    fontFamily: "QuasarGrotesk",
     fontSize: 26,
     lineHeight: 32,
     color: C.ink,
     letterSpacing: -0.5,
   },
-  h3: { fontFamily: serif, fontSize: 22, lineHeight: 28, color: C.ink },
-  body: { fontSize: 15, lineHeight: 23, color: C.muted },
-  small: { fontSize: 12, lineHeight: 18, color: C.muted },
-  label: { fontSize: 13, fontWeight: "600", color: C.ink },
+  h3: {
+    fontWeight: "600",
+    fontFamily: "QuasarGrotesk",
+    fontSize: 22,
+    lineHeight: 28,
+    color: C.ink,
+  },
+  body: {
+    fontFamily: "QuasarGrotesk",
+    fontSize: 15,
+    lineHeight: 23,
+    color: C.muted,
+  },
+  small: {
+    fontFamily: "QuasarGrotesk",
+    fontSize: 12,
+    lineHeight: 18,
+    color: C.muted,
+  },
+  label: {
+    fontFamily: "QuasarGrotesk",
+    fontSize: 13,
+    fontWeight: "600",
+    color: C.ink,
+  },
   row: { flexDirection: "row", alignItems: "center", gap: 10 },
   between: {
     flexDirection: "row",
@@ -232,7 +254,7 @@ export const s = StyleSheet.create({
     backgroundColor: C.green,
     paddingHorizontal: 22,
     paddingVertical: 15,
-    borderRadius: 14,
+    borderRadius: 28,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -240,7 +262,12 @@ export const s = StyleSheet.create({
     minHeight: 46,
   },
   secondary: { backgroundColor: C.white, borderWidth: 1, borderColor: C.line },
-  buttonText: { color: C.white, fontSize: 14, fontWeight: "600" },
+  buttonText: {
+    color: C.white,
+    fontFamily: "QuasarGrotesk",
+    fontSize: 14,
+    fontWeight: "600",
+  },
   tag: {
     borderRadius: 8,
     paddingHorizontal: 9,
@@ -248,6 +275,7 @@ export const s = StyleSheet.create({
     alignSelf: "flex-start",
   },
   tagText: {
+    fontFamily: "QuasarGrotesk",
     fontSize: 10,
     fontWeight: "700",
     letterSpacing: 1,
@@ -260,13 +288,19 @@ export const s = StyleSheet.create({
     borderRadius: 12,
     padding: 14,
     color: C.ink,
+    fontFamily: "QuasarGrotesk",
     fontSize: 15,
     backgroundColor: C.white,
     minHeight: 49,
   },
   divider: { height: 1, backgroundColor: C.line },
   section: { gap: 16 },
-  link: { fontSize: 13, fontWeight: "600", color: C.green },
+  link: {
+    fontFamily: "QuasarGrotesk",
+    fontSize: 13,
+    fontWeight: "600",
+    color: C.green,
+  },
   progress: {
     height: 6,
     borderRadius: 4,

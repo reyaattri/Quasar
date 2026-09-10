@@ -23,7 +23,14 @@ The learning experience works without API keys. Data stays on the device until y
 - Storybook and Doodle styles; the user’s later request superseded the brief’s locked cyberpunk style.
 - Mnemonic details with focused cue imagery, three-option recall, current mastery, and per-scene written application reflections.
 - 16 flashcards (12 scene facts + 4 additional SAT words), genuine ts-fsrs scheduling, persistence, due reviews, streaks and accuracy.
-- A working 15-digit Pi exercise. Math, Chemistry, more CS and the other memory tricks remain coming soon.
+- Ten original ink-cartoon SAT vocabulary cards with sound/meaning hooks in two five-word batches, each followed by an original digital-SAT-style context question. These are not official 2026 exam questions.
+- Three illustrated 2D memory worlds: Japanese dojo, Egyptian ruins and neon rooftops. A walking avatar, following camera, touch/WASD controls, guided walks, hidden recall and saved progress.
+- Personal shopping-palace builder for up to eight items, with individual action cues and ordered recall.
+- A three-concept medical foundation lesson: skin barrier, phagocytosis and antibody specificity, with original symbolic art and an NIH source link.
+- User-supplied pixel START/BACK/NEXT button artwork with press animations.
+- Pi uses the major system to encode 12 decimal digits in six objects; shopping-list, SAT and computing routes use the same worlds for other learning material.
+- Original optional music, reduced-motion support, animated character artwork and openly licensed Space Grotesk typography. Memory lessons also appear on the home screen.
+- Named guide lore has been removed. Math, Chemistry and further CS content remain future curriculum.
 - Supabase email/password auth integration, private account backups, RLS-protected schema, curriculum seed and private image storage.
 - RevenueCat native SDK offerings, purchases, restore, entitlement checks and subscription management. Missing configuration disables payment rather than simulating success.
 - Optional PostHog events, disabled by default; no profile fields or written answers in analytics.

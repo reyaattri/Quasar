@@ -17,8 +17,6 @@ let sql =
   "-- Generated curriculum. Run npm run seed:sql after content changes.\n";
 sql +=
   "insert into subjects(id,name,is_available) values ('sat','SAT vocabulary',true),('cs','Computer science',true),('math','Math',false),('chem','Chemistry',false),('cs-more','More CS',false) on conflict(id) do nothing;\n";
-sql +=
-  "insert into characters(id,name,description) values ('vex','Vex','Investigator and vocabulary guide'),('echo','Echo','Courier and computing guide'),('nyx','Nyx','Medic for future science lessons') on conflict(id) do nothing;\n";
 const insert = (table, cols, values) => {
   sql +=
     "insert into " +

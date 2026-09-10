@@ -9,6 +9,27 @@ import {
   applicationHints,
 } from "../src/lib/progress";
 import { allFacts, scenes, lessons } from "../src/data/content";
+import { checkRoute, journeys } from "../src/data/palaces";
+import { parseShoppingList, shoppingJourney } from "../src/lib/shoppingPalace";
+test("custom shopping routes preserve quantities and reject oversized or empty lists", () => {
+  const items = parseShoppingList("2 loaves of bread, milk\n  carrots  ");
+  assert.deepEqual(items, ["2 loaves of bread", "milk", "carrots"]);
+  assert.deepEqual(
+    shoppingJourney(items).items.map((i) => i.answer),
+    items,
+  );
+  assert.throws(() => parseShoppingList(" , \n"));
+  assert.throws(() => parseShoppingList(Array(9).fill("a").join("\n")));
+  assert.equal(shoppingJourney(Array(8).fill("rice")).items.length, 8);
+});
+test("palace pi mapping reconstructs the digits and rejects reordered or missing stops", () => {
+  const items = journeys[0].items;
+  const answers = items.map((item) => item.answer);
+  assert.equal(answers.join(""), "141592653589");
+  assert.equal(checkRoute(answers, items), true);
+  assert.equal(checkRoute([...answers].reverse(), items), false);
+  assert.equal(checkRoute(answers.slice(1), items), false);
+});
 test("curriculum contains exactly two scenes, six cues each and unique facts", () => {
   assert.equal(scenes.length, 2);
   for (const s of scenes) {

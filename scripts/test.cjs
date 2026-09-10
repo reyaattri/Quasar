@@ -5,6 +5,8 @@ const { spawnSync } = require("node:child_process");
 const out = path.resolve(".test-build");
 for (const rel of [
   "src/data/content.ts",
+  "src/data/palaces.ts",
+  "src/lib/shoppingPalace.ts",
   "src/lib/progress.ts",
   "tests/progress.test.ts",
 ]) {
@@ -23,7 +25,11 @@ for (const rel of [
 }
 const r = spawnSync(
   process.execPath,
-  ["--test", path.join(out, "tests/progress.test.js"), "tests/database.test.cjs"],
+  [
+    "--test",
+    path.join(out, "tests/progress.test.js"),
+    "tests/database.test.cjs",
+  ],
   { stdio: "inherit" },
 );
 process.exitCode = r.status ?? 1;

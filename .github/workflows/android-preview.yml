@@ -1,0 +1,47 @@
+name: Android preview APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'App.tsx'
+      - 'src/**'
+      - 'assets/**'
+      - 'app.json'
+      - 'package-lock.json'
+      - '.github/workflows/android-preview.yml'
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - run: npm ci
+      - run: npx expo prebuild --platform android --no-install
+        env:
+          EXPO_NO_TELEMETRY: '1'
+      - name: Build standalone preview APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleRelease --no-daemon --max-workers=2
+        env:
+          NODE_ENV: production
+          EXPO_NO_TELEMETRY: '1'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quasar-android-preview
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 14

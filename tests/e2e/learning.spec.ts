@@ -84,7 +84,7 @@ test("small viewport has no horizontal overflow", async ({ page }) => {
   ).toBeTruthy();
 });
 
-test("computing scene supports missed recall, both styles, and application; pi checks digits", async ({
+test("computing scene supports missed recall, both styles, and application", async ({
   page,
 }) => {
   await page.goto("/");
@@ -95,7 +95,7 @@ test("computing scene supports missed recall, both styles, and application; pi c
   await page.getByRole("button", { name: "Let’s make it stick" }).click();
   await page.getByRole("button", { name: "Explore", exact: true }).click();
   await page
-    .getByRole("button", { name: /Computer science Echo’s sorting workshop/ })
+    .getByRole("button", { name: /Computer science The sorting workshop/ })
     .click();
   await expect(
     page.getByRole("button", { name: "Try the application question" }),
@@ -146,13 +146,4 @@ test("computing scene supports missed recall, both styles, and application; pi c
     .getByRole("button", { name: "I’ve checked my explanation" })
     .click();
   await page.getByRole("button", { name: "Today", exact: true }).click();
-  await page
-    .getByRole("button", { name: /A little slice of infinity/ })
-    .click();
-  await page.getByRole("button", { name: "Hide & try recalling" }).click();
-  await page.getByLabel("Digits after 3.").fill("141592653589793");
-  await page.getByRole("button", { name: "Check digits" }).click();
-  await expect(
-    page.getByText("All 15 digits! A little slice of infinity is yours."),
-  ).toBeVisible();
 });

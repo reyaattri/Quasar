@@ -1,3 +1,59 @@
-const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const {PGlite}=require('@electric-sql/pglite');
-test('database schema seeds and row-level security isolates accounts',async()=>{const db=new PGlite();await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create schema storage;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);create table storage.objects(id uuid,bucket_id text,name text);alter table storage.objects enable row level security;create function storage.foldername(name text) returns text[] language sql immutable as $$ select string_to_array(name,'/') $$;grant usage on schema public,auth to anon,authenticated,service_role;`);await db.exec(fs.readFileSync('supabase/migrations/202609100001_initial.sql','utf8'));await db.exec(fs.readFileSync('supabase/seed.sql','utf8'));assert.equal((await db.query('select count(*)::int as n from facts')).rows[0].n,16);
-const alice='11111111-1111-4111-8111-111111111111',bob='22222222-2222-4222-8222-222222222222';await db.exec(`insert into auth.users values ('${alice}'),('${bob}');set role authenticated;set request.jwt.claim.sub='${alice}';`);await db.query('insert into learning_states(user_id,state) values($1,$2)',[alice,{version:1}]);await assert.rejects(()=>db.query('insert into learning_states(user_id,state) values($1,$2)',[bob,{version:1}]));await db.exec(`set request.jwt.claim.sub='${bob}';`);assert.equal((await db.query('select * from learning_states')).rows.length,0);await db.exec('set role anon');assert.equal((await db.query('select * from scenes')).rows.length,2);await assert.rejects(()=>db.exec("insert into facts values ('bad','bad','bad',0)"));await assert.rejects(()=>db.query('select consume_generation_quota($1)',[alice]));await db.exec('reset role');for(let i=0;i<10;i++)assert.equal((await db.query('select consume_generation_quota($1) as ok',[alice])).rows[0].ok,true);assert.equal((await db.query('select consume_generation_quota($1) as ok',[alice])).rows[0].ok,false);await db.close();});
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const { PGlite } = require("@electric-sql/pglite");
+test("database schema seeds and row-level security isolates accounts", async () => {
+  const db = new PGlite();
+  await db.exec(
+    `create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create schema storage;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);create table storage.objects(id uuid,bucket_id text,name text);alter table storage.objects enable row level security;create function storage.foldername(name text) returns text[] language sql immutable as $$ select string_to_array(name,'/') $$;grant usage on schema public,auth to anon,authenticated,service_role;`,
+  );
+  await db.exec(
+    fs.readFileSync("supabase/migrations/202609100001_initial.sql", "utf8"),
+  );
+  await db.exec(fs.readFileSync("supabase/seed.sql", "utf8"));
+  assert.equal(
+    (await db.query("select count(*)::int as n from facts")).rows[0].n,
+    16,
+  );
+  const alice = "11111111-1111-4111-8111-111111111111",
+    bob = "22222222-2222-4222-8222-222222222222";
+  await db.exec(
+    `insert into auth.users values ('${alice}'),('${bob}');set role authenticated;set request.jwt.claim.sub='${alice}';`,
+  );
+  await db.query("insert into learning_states(user_id,state) values($1,$2)", [
+    alice,
+    { version: 1 },
+  ]);
+  await assert.rejects(() =>
+    db.query("insert into learning_states(user_id,state) values($1,$2)", [
+      bob,
+      { version: 1 },
+    ]),
+  );
+  await db.exec(`set request.jwt.claim.sub='${bob}';`);
+  assert.equal(
+    (await db.query("select * from learning_states")).rows.length,
+    0,
+  );
+  await db.exec("set role anon");
+  assert.equal((await db.query("select * from scenes")).rows.length, 2);
+  await assert.rejects(() =>
+    db.exec("insert into facts values ('bad','bad','bad',0)"),
+  );
+  await assert.rejects(() =>
+    db.query("select consume_generation_quota($1)", [alice]),
+  );
+  await db.exec("reset role");
+  for (let i = 0; i < 10; i++)
+    assert.equal(
+      (await db.query("select consume_generation_quota($1) as ok", [alice]))
+        .rows[0].ok,
+      true,
+    );
+  assert.equal(
+    (await db.query("select consume_generation_quota($1) as ok", [alice]))
+      .rows[0].ok,
+    false,
+  );
+  await db.close();
+});

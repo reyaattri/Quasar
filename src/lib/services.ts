@@ -33,13 +33,11 @@ export async function syncProgress(p: Progress, userId: string) {
     throw new Error(
       "Cloud sync is not configured yet. Your progress is saved on this device.",
     );
-  const { error } = await supabase
-    .from("learning_states")
-    .upsert({
-      user_id: userId,
-      state: p,
-      updated_at: new Date().toISOString(),
-    });
+  const { error } = await supabase.from("learning_states").upsert({
+    user_id: userId,
+    state: p,
+    updated_at: new Date().toISOString(),
+  });
   if (error) throw error;
   const { error: profileError } = await supabase
     .from("personalization_profiles")

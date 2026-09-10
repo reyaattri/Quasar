@@ -1,3 +1,9 @@
+# Current direction
+
+The later user requests supersede the original cyberpunk-only brief. Quasar now has a peaceful dojo, Egyptian ruins and neon city; named guides are removed. The existing approved computing art is retained unchanged. SAT uses original ink cartoons with varied characters and sound/meaning hooks.
+
+Misfits Market was inspected on September 10: DOM font families are custom-named Grotesk/GroteskBold. Redistribution rights were not provided. Space Grotesk is bundled under the SIL Open Font License as a visual alternative, not represented as the exact Misfits font. Kinda informed the bolder type, compact labels and playful direct copy.
+
 # Quasar design decisions
 
 User messages take precedence over the original brief. The product is named Quasar. It remains an Expo mobile app, with an optional browser preview of the same React Native source.

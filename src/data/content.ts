@@ -19,7 +19,6 @@ export type SceneData = {
   subject: string;
   title: string;
   subtitle: string;
-  character: string;
   duration: string;
   color: string;
   facts: Fact[];
@@ -36,7 +35,7 @@ const satRows = [
     "Lucid",
     "Clear and easy to understand",
     "The clear lantern",
-    "Vex lifts a perfectly clear lantern. Its light makes a tangled explanation suddenly easy to follow. Clear light, clear meaning: lucid.",
+    "Lift a perfectly clear lantern. Its light makes a tangled explanation suddenly easy to follow. Clear light, clear meaning: lucid.",
     "Which explanation is lucid?",
     [
       "One that contradicts itself",
@@ -51,7 +50,7 @@ const satRows = [
     "Meticulous",
     "Extremely careful about details",
     "The watch inspector",
-    "Vex inspects every tiny gear in a pocket watch. No speck escapes the magnifying glass. That extraordinary attention to detail is meticulous.",
+    "Inspect every tiny gear in a pocket watch. No speck escapes the magnifying glass. That extraordinary attention to detail is meticulous.",
     "A meticulous editor would…",
     [
       "check every citation and punctuation mark",
@@ -66,7 +65,7 @@ const satRows = [
     "Ephemeral",
     "Lasting for a very short time",
     "The fading butterfly",
-    "A butterfly appears, flutters once, and dissolves into dots. Vex has only a moment to see it. Its brief existence is ephemeral.",
+    "A butterfly appears, flutters once, and dissolves into dots. You have only a moment to see it. Its brief existence is ephemeral.",
     "Which thing is most ephemeral?",
     ["A mountain range", "A century-old archive", "A soap bubble"],
     2,
@@ -77,7 +76,7 @@ const satRows = [
     "Resilient",
     "Able to recover after difficulty",
     "The spring-back sapling",
-    "A pot breaks, but the bent sapling springs upright again. Vex ties a bandage around its trunk. The recovering tree is resilient.",
+    "A pot breaks, but the bent sapling springs upright again. You tie a bandage around its trunk. The recovering tree is resilient.",
     "After a setback, a resilient team…",
     [
       "never experiences stress",
@@ -92,7 +91,7 @@ const satRows = [
     "Avarice",
     "Extreme greed for wealth",
     "The grasping hand",
-    "A giant hand clutches a treasure chest so tightly it cannot share a single coin. Vex names this excessive hunger for riches avarice.",
+    "A giant hand clutches a treasure chest so tightly it cannot share a single coin. We call this excessive hunger for riches avarice.",
     "Which action best shows avarice?",
     [
       "Saving for a useful tool",
@@ -107,7 +106,7 @@ const satRows = [
     "Ambiguous",
     "Open to more than one interpretation",
     "The two-way sign",
-    "The sign points both left and right with no explanation. Vex can read its message two ways. A message with multiple plausible meanings is ambiguous.",
+    "The sign points both left and right with no explanation. You can read its message two ways. A message with multiple plausible meanings is ambiguous.",
     "“I saw her duck” is ambiguous because…",
     [
       "duck could mean a bird or an action",
@@ -124,7 +123,7 @@ const csRows = [
     "Algorithm",
     "An ordered set of steps for solving a problem",
     "The instruction stairs",
-    "Echo follows the arrow steps in order to reach the door. Skipping a step changes the route. An algorithm is a defined sequence of instructions.",
+    "Follow the arrow steps in order to reach the door. Skipping a step changes the route. An algorithm is a defined sequence of instructions.",
     "Which is an algorithm?",
     [
       "A random pile of notes",
@@ -139,7 +138,7 @@ const csRows = [
     "Queue",
     "First in, first out (FIFO)",
     "The parcel conveyor",
-    "Echo puts a parcel at the back of a line. The parcel that entered first leaves first. Picture a fair queue at a counter.",
+    "Put a parcel at the back of a line. The parcel that entered first leaves first. Picture a fair queue at a counter.",
     "A, B, then C enter an empty queue. Which leaves first?",
     ["C", "B", "A"],
     2,
@@ -150,7 +149,7 @@ const csRows = [
     "Stack",
     "Last in, first out (LIFO)",
     "The plate tower",
-    "Echo adds a plate to the top, then removes that same top plate first. The last plate in is the first plate out.",
+    "Add a plate to the top, then remove that same top plate first. The last plate in is the first plate out.",
     "A, B, then C are pushed onto an empty stack. What pops first?",
     ["C", "A", "B"],
     0,
@@ -161,7 +160,7 @@ const csRows = [
     "Recursion",
     "Solving a problem using smaller instances of itself, with a stopping case",
     "The nesting doors",
-    "Echo walks through a doorway containing a smaller version of itself. The final closed door is the base case: the journey must stop.",
+    "Walk through a doorway containing a smaller version of itself. The final closed door is the base case: the journey must stop.",
     "What keeps a recursive function from calling itself forever?",
     ["A larger screen", "A reachable base case", "A longer name"],
     1,
@@ -172,7 +171,7 @@ const csRows = [
     "Binary search",
     "Finding a target in sorted data by repeatedly halving the search interval",
     "The splitting ramp",
-    "Echo checks the middle of a sorted row. One half cannot contain the target, so it goes down the other ramp. Half, then half again.",
+    "Check the middle of a sorted row. One half cannot contain the target, so it goes down the other ramp. Half, then half again.",
     "What does ordinary binary search require?",
     [
       "Randomly arranged data",
@@ -187,7 +186,7 @@ const csRows = [
     "Hash map",
     "A structure mapping keys to values through a hash function",
     "The key sorter",
-    "Echo inserts a key into a sorter that directs it toward a drawer. Keys lead to values. Sometimes two keys reach one drawer: collisions need handling.",
+    "Insert a key into a sorter that directs it toward a drawer. Keys lead to values. Sometimes two keys reach one drawer: collisions need handling.",
     "What does a hash map associate?",
     [
       "Keys with values",
@@ -221,7 +220,6 @@ export const scenes: SceneData[] = [
     subject: "SAT vocabulary",
     title: "The curious little market",
     subtitle: "Six curious objects. Six words that stick.",
-    character: "Vex",
     duration: "8 min",
     color: "#EEDBAC",
     facts: makeFacts(satRows, "market"),
@@ -237,9 +235,8 @@ export const scenes: SceneData[] = [
   {
     id: "workshop",
     subject: "Computer science",
-    title: "Echo’s sorting workshop",
+    title: "The sorting workshop",
     subtitle: "A little order. A lot of understanding.",
-    character: "Echo",
     duration: "9 min",
     color: "#DCE7D7",
     facts: makeFacts(csRows, "workshop"),
@@ -265,7 +262,7 @@ export const extraFacts: Fact[] = [
     definition: "Truthful and straightforward",
     cue: "An open notebook",
     story:
-      "Vex opens a notebook with nothing hidden between its pages. A candid answer is open and honest.",
+      "Open a notebook with nothing hidden between its pages. A candid answer is open and honest.",
     technique: "Visual association",
     question: "A candid response is…",
     choices: ["evasive", "honest", "careless"],
@@ -281,7 +278,7 @@ export const extraFacts: Fact[] = [
     definition: "Focused on practical results",
     cue: "The working watch",
     story:
-      "Vex chooses the watch that actually works over the fanciest display. A pragmatic choice solves the real problem.",
+      "Choose the watch that actually works over the fanciest display. A pragmatic choice solves the real problem.",
     technique: "Visual association",
     question: "A pragmatic solution emphasizes…",
     choices: ["practical results", "appearances only", "impossible ideals"],
@@ -297,7 +294,7 @@ export const extraFacts: Fact[] = [
     definition: "Persistent; holding firmly",
     cue: "The firm grasp",
     story:
-      "Vex holds onto a clue even when the investigation gets difficult. Picture the firm grip: tenacious means persistent.",
+      "Hold onto a clue even when the investigation gets difficult. Picture the firm grip: tenacious means persistent.",
     technique: "Visual association",
     question: "A tenacious researcher…",
     choices: [
@@ -317,7 +314,7 @@ export const extraFacts: Fact[] = [
     definition: "Difficult to find, catch, or achieve",
     cue: "The disappearing butterfly",
     story:
-      "The butterfly slips away whenever Vex reaches for it. Something elusive is hard to catch or pin down.",
+      "The butterfly slips away whenever you reach for it. Something elusive is hard to catch or pin down.",
     technique: "Visual association",
     question: "An elusive answer is…",
     choices: ["hard to find", "obvious", "always incorrect"],

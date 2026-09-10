@@ -1,8 +1,14 @@
+import { MedicineLesson } from "./src/features/MedicineLesson";
+import { Walker } from "./src/components/PalaceGame";
+import { EncounterMotion } from "./src/components/EncounterMotion";
+import { Text } from "./src/components/ui";
 import { art } from "./src/data/art";
+import { useFonts } from "expo-font";
+import { MemoryPalace, WorldPicture } from "./src/features/MemoryPalace";
+import { SatCourse } from "./src/features/SatCourse";
 import React, { useEffect, useRef, useState } from "react";
 import {
   View,
-  Text,
   ScrollView,
   Pressable,
   Image,
@@ -14,6 +20,7 @@ import {
   Linking,
   AppState,
   Platform,
+  BackHandler,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -74,6 +81,8 @@ type Page =
   | "scene"
   | "course"
   | "flex"
+  | "sat"
+  | "medicine"
   | "paywall";
 const tabs = [
   ["home", "home", "Today"],
@@ -82,6 +91,11 @@ const tabs = [
   ["progress", "chart", "Progress"],
 ] as const;
 export default function App() {
+  const [fontsLoaded, fontError] = useFonts({
+    QuasarGrotesk: require("./assets/fonts/SpaceGrotesk.ttf"),
+  });
+  if (!fontsLoaded && !fontError)
+    return <ActivityIndicator accessibilityLabel="Loading Quasar" />;
   return (
     <SafeAreaProvider>
       <Quasar />
@@ -117,8 +131,6 @@ function Quasar() {
   const [pro, setPro] = useState(false);
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
   const [confirmReset, setConfirmReset] = useState(false);
-  const [pi, setPi] = useState("");
-  const [piShown, setPiShown] = useState(true);
   const [personalStory, setPersonalStory] = useState("");
   const [personalImage, setPersonalImage] = useState<string | undefined>();
   const [, setClock] = useState(0);
@@ -228,6 +240,20 @@ function Quasar() {
         .then(setPackages)
         .catch((e) => setNotice(message(e)));
   };
+  useEffect(() => {
+    const listener = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (fact) {
+        setFact(null);
+        return true;
+      }
+      if (page !== "home") {
+        nav("home");
+        return true;
+      }
+      return false;
+    });
+    return () => listener.remove();
+  }, [page, fact]);
   const openScene = (id: string) => {
     setSceneId(id);
     setP((v) => ({ ...v, lastScene: id }));
@@ -469,9 +495,7 @@ function Quasar() {
             <Text style={[s.body, { color: C.ink }]}>
               {n
                 ? n + " of 6 concepts recalled. Pick up where you left off."
-                : "Meet " +
-                  cont.character +
-                  ". Turn six ideas into a story worth remembering."}
+                : "Turn six ideas into pictures you can remember and use."}
             </Text>
             <Button icon="arrow" onPress={() => openScene(cont.id)}>
               {n ? "Continue learning" : "Start exploring"}
@@ -505,6 +529,90 @@ function Quasar() {
           ))}
         </View>
         <View style={s.section}>
+          <Tag color={C.yellow}>A FRESH WAY TO LEARN</Tag>
+          <Text style={s.h2}>Small sessions. Big imagination.</Text>
+          <Card style={{ backgroundColor: C.peach }}>
+            <EncounterMotion variant={1}>
+              <View
+                style={{
+                  alignSelf: "center",
+                  width: 90,
+                  height: 110,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: C.yellow,
+                  borderRadius: 50,
+                }}
+              >
+                <View style={{ transform: [{ scale: 1.5 }] }}>
+                  <Walker />
+                </View>
+              </View>
+            </EncounterMotion>
+            <Text style={s.h3}>Big words. Ridiculous situations.</Text>
+            <Text style={s.body}>
+              Sound hooks and unexpected cartoons, then a vocabulary-in-context
+              challenge. Make the meaning stick.
+            </Text>
+            <Button onPress={() => nav("sat")}>
+              Start a five-word session
+            </Button>
+          </Card>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Explore memory worlds"
+            onPress={() => nav("flex")}
+          >
+            <Card style={{ backgroundColor: C.sage }}>
+              <WorldPicture world={p.palace?.world ?? 0} />
+              <Text style={s.h3}>Your next memory lives here.</Text>
+              <Text style={s.body}>
+                Walk through a dojo, ancient ruins or neon rooftops. Learn pi
+                with objects that are hard to forget.
+              </Text>
+              <Text style={s.link}>Explore memory worlds →</Text>
+            </Card>
+          </Pressable>
+          <Card
+            style={{
+              backgroundColor: "#ECE4F4",
+              borderRadius: 8,
+              borderColor: C.ink,
+              borderWidth: 2,
+            }}
+          >
+            <Tag>THE DEFENSE HARBOR</Tag>
+            <Text style={s.h3}>Meet the body’s defense crew.</Text>
+            <Text style={s.body}>
+              Learn three immunity concepts through an illustrated medical
+              memory scene.
+            </Text>
+            <Button onPress={() => nav("medicine")}>
+              Explore medical foundations
+            </Button>
+          </Card>
+          <Text style={s.h2}>Your memory toolkit</Text>
+          {lessons.map((item, index) => (
+            <Pressable
+              key={index}
+              accessibilityRole="button"
+              onPress={() => {
+                setLesson(index);
+                nav("course");
+              }}
+              style={a.tip}
+            >
+              <Icon
+                name={["pin", "key", "link", "book", "smile", "map"][index]}
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={s.h3}>{item.title}</Text>
+                <Text style={s.small}>
+                  Lesson {index + 1} · Learn & practise →
+                </Text>
+              </View>
+            </Pressable>
+          ))}
           <View style={s.between}>
             <Text style={s.h2}>Your subjects</Text>
             <Pressable
@@ -560,9 +668,10 @@ function Quasar() {
           >
             <Text style={a.piSymbol}>π</Text>
             <View style={{ flex: 1, gap: 5 }}>
-              <Text style={s.h3}>A little slice of infinity</Text>
+              <Text style={s.h3}>A palace for pi</Text>
               <Text style={s.body}>
-                Your first 15 digits of pi. Party trick included.
+                Walk a world. Remember 12 decimal digits with six unforgettable
+                objects.
               </Text>
             </View>
             <Icon name="arrow" />
@@ -608,7 +717,7 @@ function Quasar() {
         </Button>
       </Card>
       <Text style={s.h2}>Still growing</Text>
-      {["Math", "Chemistry with Nyx", "More computer science"].map((x) => (
+      {["Math", "Chemistry", "More computer science"].map((x) => (
         <Card key={x} style={{ opacity: 0.65 }}>
           <View style={s.between}>
             <Text style={s.h3}>{x}</Text>
@@ -896,78 +1005,6 @@ function Quasar() {
       </View>
     );
   };
-  const flex = () => (
-    <View style={{ gap: 23 }}>
-      {heading(
-        "FUN & FLEX",
-        "A little slice of infinity.",
-        "A small memory trick, just because you can.",
-      )}
-      <Card style={{ backgroundColor: "#F6E9C6", alignItems: "center" }}>
-        <Text style={[a.piSymbol, { fontSize: 85 }]}>π</Text>
-        <Text style={s.h3}>15 digits after the decimal</Text>
-        {piShown ? (
-          <>
-            <Text
-              style={{
-                fontFamily: serif,
-                fontSize: 27,
-                color: C.ink,
-                letterSpacing: 2,
-              }}
-            >
-              3.14159 26535 89793
-            </Text>
-            <Text style={s.body}>
-              Break it into three five-digit chunks. Walk each chunk through a
-              familiar room.
-            </Text>
-            <Button
-              onPress={() => {
-                setPiShown(false);
-                setPi("");
-              }}
-            >
-              Hide & try recalling
-            </Button>
-          </>
-        ) : (
-          <View style={{ width: "100%", gap: 15 }}>
-            <Field
-              label="Digits after 3."
-              value={pi}
-              onChangeText={setPi}
-              placeholder="14159…"
-            />
-            <Button
-              onPress={() =>
-                setNotice(
-                  pi.replace(/D/g, "") === "141592653589793"
-                    ? "All 15 digits! A little slice of infinity is yours."
-                    : "Not quite. Take another look and try one chunk at a time.",
-                )
-              }
-            >
-              Check digits
-            </Button>
-            <Button secondary onPress={() => setPiShown(true)}>
-              Show me again
-            </Button>
-          </View>
-        )}
-      </Card>
-      {[
-        "Name that weekday",
-        "Remember every face",
-        "A whole deck of cards",
-      ].map((x) => (
-        <Card key={x} style={{ opacity: 0.6 }}>
-          <Text style={s.h3}>{x}</Text>
-          <Tag>Coming soon</Tag>
-        </Card>
-      ))}
-    </View>
-  );
   const settings = () => (
     <View style={{ gap: 23 }}>
       {heading("MAKE YOURSELF AT HOME", "Settings")}
@@ -1445,7 +1482,28 @@ function Quasar() {
               ) : page === "course" ? (
                 courseBody()
               ) : page === "flex" ? (
-                flex()
+                <MemoryPalace
+                  saved={p.palace}
+                  onSave={(palace) => setP((old) => ({ ...old, palace }))}
+                />
+              ) : page === "medicine" ? (
+                <MedicineLesson
+                  recalled={p.medicalRecalled ?? []}
+                  onRecall={(index, correct) =>
+                    setP((old) => ({
+                      ...old,
+                      medicalRecalled: correct
+                        ? Array.from(
+                            new Set([...(old.medicalRecalled ?? []), index]),
+                          )
+                        : (old.medicalRecalled ?? []).filter(
+                            (i) => i !== index,
+                          ),
+                    }))
+                  }
+                />
+              ) : page === "sat" ? (
+                <SatCourse progress={p} onChange={setP} />
               ) : page === "paywall" ? (
                 paywall()
               ) : (

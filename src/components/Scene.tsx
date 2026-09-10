@@ -1,6 +1,7 @@
+import { Text } from "./ui";
 import { art } from "../data/art";
 import React, { useState } from "react";
-import { View, Image, Pressable, Text, StyleSheet } from "react-native";
+import { View, Image, Pressable, StyleSheet } from "react-native";
 import { type SceneData, type ArtStyle, type Fact } from "../data/content";
 import { C, Icon, s } from "./ui";
 export function Scene({
