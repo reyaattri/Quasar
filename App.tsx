@@ -482,9 +482,6 @@ function Quasar() {
               "Choose a lesson or review what you’ve learned.",
             )}
           </View>
-          <View style={a.sun}>
-            <Icon name="sun" size={35} />
-          </View>
         </View>
         <View style={[a.hero, wide && { flexDirection: "row" }]}>
           <View style={{ flex: 1, gap: 15, padding: 24 }}>

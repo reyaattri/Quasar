@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Image, Linking, View } from "react-native";
 import { Button, C, Card, s, Tag, Text } from "../components/ui";
 import { EncounterMotion } from "../components/EncounterMotion";
+import { MedicalStudio } from "../components/MedicalStudio";
 const lessons = [
   {
     title: "The harbor wall",
@@ -143,6 +144,7 @@ export function MedicineLesson({
         )}
       </Card>
       <Text style={s.label}>{recalled.length} of 3 concepts recalled</Text>
+      <MedicalStudio concept={index} />
       <Text style={s.small}>
         A foundation lesson, not a complete medical course. These scenes are
         memory metaphors.
