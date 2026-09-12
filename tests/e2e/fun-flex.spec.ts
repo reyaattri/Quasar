@@ -91,7 +91,7 @@ test("Linked pairs and fictional phrase hide cues before recall", async ({
 }) => {
   await explore(page);
   for (const [title, values] of [
-    ["A palace for pairs", pairs.map((p) => p[1])],
+    ["Name twins", pairs.map((p) => p[1])],
     ["A story with a secret", phrase],
   ] as const) {
     await page.getByRole("button", { name: "Play " + title }).click();

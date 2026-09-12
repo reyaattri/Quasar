@@ -5,6 +5,7 @@ import { Image, Linking, Pressable, View } from "react-native";
 import { allFacts } from "../data/content";
 import { recordReview, type Progress } from "../lib/progress";
 import { Button, Card, C, s, Tag } from "../components/ui";
+import { SuccessBurst } from "../components/SuccessBurst";
 const cards = allFacts.filter((f) => f.sceneId === "market");
 const jokes = vocabularyCues.map((cue) => cue.story);
 const contexts = [
@@ -129,9 +130,10 @@ export function SatCourse({
           ))}
           {contextChoice !== null && (
             <>
+              {contextChoice === question.answer && <SuccessBurst />}
               <Text accessibilityLiveRegion="polite" style={s.h3}>
                 {contextChoice === question.answer
-                  ? "Exactly."
+                  ? "Context cracked!"
                   : "Let’s look at the context."}
               </Text>
               <Text style={s.body}>{question.explanation}</Text>
@@ -200,7 +202,13 @@ export function SatCourse({
               <Image
                 resizeMode="stretch"
                 accessibilityLabel={jokes[index]}
-                source={require("../../assets/sat-cartoons-user-selected.png")}
+                source={
+                  index === 5
+                    ? require("../../assets/sat-cartoons-user-selected.png")
+                    : index === 1
+                      ? require("../../assets/sat-ink-cartoons.png")
+                      : require("../../assets/sat-latest-selected.png")
+                }
                 style={{
                   position: "absolute",
                   width: width * 5,

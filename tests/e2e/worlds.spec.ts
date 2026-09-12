@@ -24,9 +24,13 @@ test("custom shopping palace handles eight items, local recall and reload", asyn
     .getByLabel("Your shopping items")
     .fill("milk\nbread\nrice\napples\nlemons\neggs\noats\nsoap");
   await page.getByRole("button", { name: "Build my shopping palace" }).click();
-  await expect(page.getByText("STOP 1 / 8", { exact: true })).toBeVisible();
-  await page.getByRole("button", {name:"Inspect memory", exact:true}).click();
-  await page.getByRole("button", {name:/Open memory on/}).click();
+  await expect(
+    page.getByRole("button", { name: "Inspect memory", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Inspect memory", exact: true })
+    .click();
+  await page.getByRole("button", { name: /Open memory on/ }).click();
   await page
     .getByRole("button", { name: "Hide cue & recall", exact: true })
     .click();
@@ -67,9 +71,8 @@ test("medical symbols have recall questions and save genuine results", async ({
     .toBe(true);
   await page.screenshot({ path: "docs/medical-mobile.png" });
   for (const choice of [
-    "A physical barrier to entry",
-    "Engulfing a microbe",
-    "Antibodies recognize particular targets",
+    "Tag microbes, recruit inflammation, form a membrane pore",
+    "The antibody's antigen specificity",
   ]) {
     await page.getByRole("button", { name: "Hide scene & recall" }).click();
     await page.getByRole("button", { name: choice, exact: true }).click();
@@ -78,14 +81,22 @@ test("medical symbols have recall questions and save genuine results", async ({
     ).toBeVisible();
     await page
       .getByRole("button", {
-        name: choice.startsWith("Antibodies")
-          ? "Revisit the harbor"
+        name: choice.startsWith("The antibody")
+          ? "Solve the patient case"
           : "Next scene",
         exact: true,
       })
       .click();
   }
-  await expect(page.getByText("3 of 3 concepts recalled")).toBeVisible();
+  await expect(
+    page.getByText("Why do the infections keep returning?"),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "X-linked agammaglobulinemia (XLA)" })
+    .click();
+  await expect(page.getByText("The pattern points to XLA.")).toBeVisible();
+  await page.getByRole("button", { name: "Return to the two stories" }).click();
+  await expect(page.getByText("2 of 2 concepts recalled")).toBeVisible();
 });
 test("SAT requires five recalls before each contextual question and resumes saved progress", async ({
   page,
@@ -98,13 +109,22 @@ test("SAT requires five recalls before each contextual question and resumes save
   });
   const facts = allFacts.filter((f) => f.sceneId === "market");
   for (let i = 0; i < 10; i++) {
+    await page.waitForFunction(() => Array.from(document.images).every(image => image.complete && image.naturalWidth > 0));
     if (i === 3) {
       await expect(page.getByText(/RESILIENT soldier/)).toBeVisible();
-      await page.screenshot({ path: "docs/sat-resilient-mobile.png", fullPage: true });
+      await page.screenshot({
+        path: "docs/sat-resilient-mobile.png",
+        fullPage: true,
+      });
     }
     if (i === 5) {
-      await expect(page.getByText(/porcupine’s shadow is AMBIGUOUS/)).toBeVisible();
-      await page.screenshot({ path: "docs/sat-ambiguous-mobile.png", fullPage: true });
+      await expect(
+        page.getByText(/porcupine’s shadow is AMBIGUOUS/),
+      ).toBeVisible();
+      await page.screenshot({
+        path: "docs/sat-ambiguous-mobile.png",
+        fullPage: true,
+      });
     }
     await expect(
       page.getByText("Now use the meaning.", { exact: true }),
@@ -144,6 +164,9 @@ test("SAT requires five recalls before each contextual question and resumes save
           exact: true,
         })
         .click();
+      await expect(
+        page.getByText("Context cracked!", { exact: true }),
+      ).toBeVisible();
       await page
         .getByRole("button", {
           name: i === 4 ? "Learn the next five words" : "Finish session",
@@ -156,30 +179,89 @@ test("SAT requires five recalls before each contextual question and resumes save
     page.getByText("That’s a good day for your vocabulary."),
   ).toBeVisible();
 });
-test("illustrated worlds enter rooms, recall all stops and persist", async ({page})=>{
- test.setTimeout(120000);
- await onboard(page);await page.getByRole('button',{name:'Explore memory worlds',exact:true}).click();await page.getByRole('button',{name:'Choose Midnight rooftops',exact:true}).click();await page.getByRole('button',{name:'Enter world',exact:true}).click();
- await page.waitForFunction(()=>Array.from(document.images).every(i=>i.complete&&i.naturalWidth>0));
- await page.screenshot({path:'docs/palace-mobile.png'});
- await page.getByRole('button',{name:'Music on',exact:true}).click();await page.getByRole('button',{name:'Music off',exact:true}).click();
- await page.getByRole('button',{name:'Inspect memory',exact:true}).click();
- const answers=['14','15','92','65','35','89'];
- const places=['Entrance steps','Arcade','Greenhouse','Ramen diner','Antenna workshop','Moon observatory'];
- for(let i=0;i<6;i++){
-  await expect(page.getByText(places[i],{exact:true}).first()).toBeVisible();
-  await page.getByRole("button",{name:/Open memory on/}).click();
-  await expect(page.getByRole('button',{name:'Hide cue & recall',exact:true})).toBeVisible({timeout:15000});
-  if(i===1)await page.screenshot({path:'docs/palace-hover-card.png'});
-  await page.getByRole('button',{name:'Hide cue & recall',exact:true}).click();
-  if(i===0){await page.getByLabel('Which two digits live here?').fill('99');await page.getByRole('button',{name:'Check memory',exact:true}).click();await expect(page.getByText(/Not yet. Reconstruct/)).toBeVisible();}
-  await page.getByLabel('Which two digits live here?').fill(answers[i]);await page.getByRole('button',{name:'Check memory',exact:true}).click();await expect(page.getByText('That belongs here. Well remembered.')).toBeVisible();
-  await page.getByRole('button',{name:'Back to exploring',exact:true}).click();
-  if(i===1)await page.screenshot({path:'docs/palace-interior-mobile.png'});
-  await page.getByRole('button',{name:'Leave room',exact:true}).click();
-  if(i<5)await page.getByRole('button',{name:'Walk to next stop',exact:true}).click();
- }
- await page.getByRole('button',{name:'Recall the whole route',exact:true}).click();
- for(let i=0;i<6;i++)await page.getByLabel((i+1)+'. '+places[i]).fill(answers[i]);
- await page.getByRole('button',{name:'Check whole route',exact:true}).click();await expect(page.getByText(/You recalled 3.141592653589/)).toBeVisible();
- await page.reload();await page.getByRole('button',{name:'Explore memory worlds',exact:true}).click();await page.getByRole('button',{name:'Continue your walk',exact:true}).click();await expect(page.getByText('STOP 6 / 6',{exact:true})).toBeVisible();
+test("illustrated worlds enter rooms, recall all stops and persist", async ({
+  page,
+}) => {
+  test.setTimeout(120000);
+  await onboard(page);
+  await page
+    .getByRole("button", { name: "Explore memory worlds", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Choose Midnight rooftops", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Enter world", exact: true }).click();
+  await page.waitForFunction(() =>
+    Array.from(document.images).every((i) => i.complete && i.naturalWidth > 0),
+  );
+  await page.screenshot({ path: "docs/palace-mobile.png" });
+  await page.getByRole("button", { name: "Music on", exact: true }).click();
+  await page.getByRole("button", { name: "Music off", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Inspect memory", exact: true })
+    .click();
+  const answers = ["14", "15", "92", "65", "35", "89"];
+  const places = [
+    "Entrance steps",
+    "Ramen stall",
+    "Vending arcade",
+    "Neon greenhouse",
+    "Antenna workshop",
+    "Moon observatory",
+  ];
+  for (let i = 0; i < 6; i++) {
+    await expect(
+      page.getByText(places[i], { exact: true }).first(),
+    ).toBeVisible();
+    await page.getByRole("button", { name: /Open memory on/ }).click();
+    await expect(
+      page.getByRole("button", { name: "Hide cue & recall", exact: true }),
+    ).toBeVisible({ timeout: 15000 });
+    if (i === 1) await page.screenshot({ path: "docs/palace-hover-card.png" });
+    await page
+      .getByRole("button", { name: "Hide cue & recall", exact: true })
+      .click();
+    if (i === 0) {
+      await page.getByLabel("Which two digits live here?").fill("99");
+      await page
+        .getByRole("button", { name: "Check memory", exact: true })
+        .click();
+      await expect(page.getByText(/Not yet. Reconstruct/)).toBeVisible();
+    }
+    await page.getByLabel("Which two digits live here?").fill(answers[i]);
+    await page
+      .getByRole("button", { name: "Check memory", exact: true })
+      .click();
+    await expect(
+      page.getByText("That belongs here. Well remembered."),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Back to exploring", exact: true })
+      .click();
+    if (i === 1)
+      await page.screenshot({ path: "docs/palace-interior-mobile.png" });
+    await page.getByRole("button", { name: "Leave room", exact: true }).click();
+    if (i < 5)
+      await page
+        .getByRole("button", { name: "Walk to next stop", exact: true })
+        .click();
+  }
+  await page
+    .getByRole("button", { name: "Recall the whole route", exact: true })
+    .click();
+  for (let i = 0; i < 6; i++)
+    await page.getByLabel(i + 1 + ". " + places[i]).fill(answers[i]);
+  await page
+    .getByRole("button", { name: "Check whole route", exact: true })
+    .click();
+  await expect(page.getByText(/You recalled 3.141592653589/)).toBeVisible();
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Explore memory worlds", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Continue your walk", exact: true })
+    .click();
+  await expect(page.getByText("Midnight rooftops", { exact: true })).toBeVisible();
+  await expect(page.getByText("6/6 recalled", { exact: true })).toBeVisible();
 });

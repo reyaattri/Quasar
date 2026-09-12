@@ -1,5 +1,4 @@
 import { RoomInterior } from "./RoomInterior";
-import { AtlasArt } from "./StudyShelf";
 import React, { useEffect, useRef, useState } from "react";
 import {
   AccessibilityInfo,
@@ -87,7 +86,6 @@ export function PalaceGame({
   labels,
   roomIndex = 0,
   memoryLabel,
-  memoryIndex,
   concealed = false,
 }: {
   world: number;
@@ -103,18 +101,18 @@ export function PalaceGame({
   labels?: string[];
   roomIndex?: number;
   memoryLabel?: string;
-  memoryIndex?: number;
   concealed?: boolean;
 }) {
   const [width, setWidth] = useState(320);
   const [height, setHeight] = useState(700);
-  const pausedRef = useRef(paused); pausedRef.current = paused;
-  const [pos, setPos] = useState<Point>(room ? {x:50,y:86} : points[stop]);
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
+  const [pos, setPos] = useState<Point>(room ? { x: 50, y: 86 } : points[stop]);
   const [frame, setFrame] = useState(0);
   const [walking, setWalking] = useState(false);
   const [targetIndex, setTargetIndex] = useState<number | null>(null);
   const state = useRef({
-    pos: room ? {x:50,y:86} : points[stop],
+    pos: room ? { x: 50, y: 86 } : points[stop],
     direction: { x: 0, y: 0 },
     target: null as number | null,
     near: stop,
@@ -123,9 +121,15 @@ export function PalaceGame({
   });
   const callbacks = useRef({ onArrive, onTravel, points });
   callbacks.current = { onArrive, onTravel, points };
-  useEffect(() => { if (paused) { state.current.target = null; state.current.direction = { x: 0, y: 0 }; setTargetIndex(null); } }, [paused]);
   useEffect(() => {
-    state.current.pos = room ? {x:50,y:86} : points[stop];
+    if (paused) {
+      state.current.target = null;
+      state.current.direction = { x: 0, y: 0 };
+      setTargetIndex(null);
+    }
+  }, [paused]);
+  useEffect(() => {
+    state.current.pos = room ? { x: 50, y: 86 } : points[stop];
     state.current.target = null;
     state.current.near = room ? -1 : stop;
     setPos(state.current.pos);
@@ -155,7 +159,12 @@ export function PalaceGame({
         dt = Math.min((now - previous) / 1000, 0.05);
       previous = now;
       const current = state.current;
-      if (pausedRef.current) { current.direction = {x:0,y:0}; current.target=null; setWalking(false); return; }
+      if (pausedRef.current) {
+        current.direction = { x: 0, y: 0 };
+        current.target = null;
+        setWalking(false);
+        return;
+      }
       let dx = current.direction.x,
         dy = current.direction.y;
       if (current.target !== null) {
@@ -243,8 +252,10 @@ export function PalaceGame({
       }
     };
   }, []);
-  const mapH = height, mapW = width;
-  const cameraX = 0, cameraY = 0;
+  const mapH = height,
+    mapW = width;
+  const cameraX = 0,
+    cameraY = 0;
   const walkTo = (index: number) => {
     state.current.target = index;
     state.current.direction = { x: 0, y: 0 };
@@ -257,9 +268,16 @@ export function PalaceGame({
     state.current.direction = { x, y };
   };
   return (
-    <View aria-hidden={concealed} pointerEvents={concealed?"none":"auto"} style={{ flex: 1, opacity:concealed?0:1 }}>
+    <View
+      aria-hidden={concealed}
+      pointerEvents={concealed ? "none" : "auto"}
+      style={{ flex: 1, opacity: concealed ? 0 : 1 }}
+    >
       <View
-        onLayout={(e) => { setWidth(e.nativeEvent.layout.width); setHeight(e.nativeEvent.layout.height); }}
+        onLayout={(e) => {
+          setWidth(e.nativeEvent.layout.width);
+          setHeight(e.nativeEvent.layout.height);
+        }}
         style={{
           flex: 1,
           overflow: "hidden",
@@ -276,17 +294,65 @@ export function PalaceGame({
           }}
         >
           <View style={{ width: mapW, height: mapH, overflow: "hidden" }}>
-            {room ? <RoomInterior world={world} stop={roomIndex} width={mapW} height={mapH}/> : <Image resizeMode="stretch" accessible={false} source={require("../../assets/palace-worlds.png")} style={{position:"absolute",width:mapW*3,height:mapH,left:-world*mapW}}/>}
+            {room ? (
+              <RoomInterior
+                world={world}
+                stop={roomIndex}
+                width={mapW}
+                height={mapH}
+              />
+            ) : (
+              <Image
+                resizeMode="stretch"
+                accessible={false}
+                source={require("../../assets/palace-worlds.png")}
+                style={{
+                  position: "absolute",
+                  width: mapW * 3,
+                  height: mapH,
+                  left: -world * mapW,
+                }}
+              />
+            )}
           </View>
-          {points.map((point,i)=><View key={`motion-${i}`} pointerEvents="none" style={{position:"absolute",left:point.x/100*mapW-14,top:point.y/100*mapH-48}}>
-            <EncounterMotion variant={i}><Svg width={28} height={25} viewBox="0 0 28 25">{room && roomIndex===2 ? <Path d="M14 23Q3 18 5 7Q17 6 14 23M14 23Q14 5 26 3Q29 18 14 23" fill={world===2?"#8DE3DE":"#578B57"}/> : <Path d="M14 2L17 10L25 13L17 16L14 24L11 16L3 13L11 10Z" fill="#F8DC90"/>}</Svg></EncounterMotion>
-          </View>)}
+          {points.map((point, i) => (
+            <View
+              key={`motion-${i}`}
+              pointerEvents="none"
+              style={{
+                position: "absolute",
+                left: (point.x / 100) * mapW - 14,
+                top: (point.y / 100) * mapH - 48,
+              }}
+            >
+              <EncounterMotion variant={i}>
+                <Svg width={28} height={25} viewBox="0 0 28 25">
+                  {room && roomIndex === 2 ? (
+                    <Path
+                      d="M14 23Q3 18 5 7Q17 6 14 23M14 23Q14 5 26 3Q29 18 14 23"
+                      fill={world === 2 ? "#8DE3DE" : "#578B57"}
+                    />
+                  ) : (
+                    <Path
+                      d="M14 2L17 10L25 13L17 16L14 24L11 16L3 13L11 10Z"
+                      fill="#F8DC90"
+                    />
+                  )}
+                </Svg>
+              </EncounterMotion>
+            </View>
+          ))}
           {points.map((point, i) => (
             <Pressable
               key={i}
               accessibilityRole="button"
-              accessibilityLabel={labels ? `Walk to ${labels[i]}` : `Walk to stop ${i + 1}`}
-              onPress={() => { if (state.current.near === i && !walking) onInspect(); else walkTo(i); }}
+              accessibilityLabel={
+                labels ? `Walk to ${labels[i]}` : `Walk to stop ${i + 1}`
+              }
+              onPress={() => {
+                if (state.current.near === i && !walking) onInspect();
+                else walkTo(i);
+              }}
               style={{
                 position: "absolute",
                 left: (point.x / 100) * mapW - 22,
@@ -311,10 +377,49 @@ export function PalaceGame({
               </Text>
             </Pressable>
           ))}
-          {room && memoryLabel && <Pressable accessibilityRole="button" accessibilityLabel={"Open memory on "+labels?.[recalled[0] ?? 0]} onPress={onInspect} style={{position:"absolute",left:Math.max(6,(points[recalled[0]??0].x/100)*mapW-52),top:(points[recalled[0]??0].y/100)*mapH-110,width:104,padding:5,borderRadius:14,borderWidth:2,borderColor:C.yellow,backgroundColor:C.paper}}>
-            <EncounterMotion variant={roomIndex}>{memoryIndex!==undefined && <AtlasArt source={require("../../assets/world-cues-v2.png")} columns={6} rows={3} index={memoryIndex} height={66}/>}</EncounterMotion>
-            <Text style={{fontSize:12,textAlign:"center",color:C.ink}}>{memoryLabel}</Text>
-          </Pressable>}
+          {room && memoryLabel && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={
+                "Open memory on " + labels?.[recalled[0] ?? 0]
+              }
+              onPress={onInspect}
+              style={{
+                position: "absolute",
+                left: Math.max(
+                  6,
+                  (points[recalled[0] ?? 0].x / 100) * mapW - 48,
+                ),
+                top: (points[recalled[0] ?? 0].y / 100) * mapH - 73,
+                width: 96,
+                padding: 8,
+                borderRadius: 18,
+                borderWidth: 3,
+                borderColor: C.yellow,
+                backgroundColor: C.paper,
+              }}
+            >
+              <EncounterMotion variant={roomIndex}>
+                <Text style={{ fontSize: 17, textAlign: "center" }}>✦</Text>
+              </EncounterMotion>
+              <Text
+                style={{
+                  fontSize: 11,
+                  fontWeight: "800",
+                  textAlign: "center",
+                  color: C.ink,
+                }}
+              >
+                OPEN MEMORY
+              </Text>
+              <Text
+                numberOfLines={1}
+                style={{ fontSize: 11, textAlign: "center", color: C.ink }}
+              >
+                {memoryLabel}
+              </Text>
+            </Pressable>
+          )}
           <View
             accessible={false}
             style={{
@@ -325,25 +430,6 @@ export function PalaceGame({
           >
             <Walker moving={walking && !state.current.reduced} frame={frame} />
           </View>
-        </View>
-        <View
-          style={{
-            position: "absolute",
-            left: 10,
-            right: 10,
-            top: 10,
-            backgroundColor: "#FFFCEDD9",
-            padding: 10,
-            borderRadius: 12,
-          }}
-        >
-          <Text accessibilityLiveRegion="polite" style={s.label}>
-            {targetIndex !== null
-              ? `Walking to stop ${targetIndex + 1}…`
-              : walking
-                ? "Exploring…"
-                : `${room ? "OBJECT" : "STOP"} ${stop + 1} / ${points.length}`}
-          </Text>
         </View>
         <View
           style={{
@@ -397,8 +483,37 @@ export function PalaceGame({
           ))}
         </View>
         <View style={{ position: "absolute", right: 8, bottom: 12, gap: 2 }}>
-          {!walking && Math.hypot(pos.x-points[stop].x,pos.y-points[stop].y)<4 && <Pressable accessibilityRole="button" accessibilityLabel={room ? "Inspect object" : "Inspect memory"} onPress={onInspect} style={{padding:12,backgroundColor:C.paper,borderRadius:20}}><Text style={s.label}>{room ? "Inspect plant" : "Inspect memory"}</Text></Pressable>}
-          {!room && !walking && stop === 2 && <Pressable accessibilityRole="button" accessibilityLabel="Enter room" onPress={onEnterRoom} style={{padding:12,backgroundColor:C.yellow,borderRadius:20}}><Text style={s.label}>Enter conservatory</Text></Pressable>}
+          {!walking &&
+            Math.hypot(pos.x - points[stop].x, pos.y - points[stop].y) < 4 && (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={room ? "Inspect object" : "Inspect memory"}
+                onPress={onInspect}
+                style={{
+                  padding: 12,
+                  backgroundColor: C.paper,
+                  borderRadius: 20,
+                }}
+              >
+                <Text style={s.label}>
+                  {room ? "Inspect plant" : "Inspect memory"}
+                </Text>
+              </Pressable>
+            )}
+          {!room && !walking && stop === 2 && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Enter room"
+              onPress={onEnterRoom}
+              style={{
+                padding: 12,
+                backgroundColor: C.yellow,
+                borderRadius: 20,
+              }}
+            >
+              <Text style={s.label}>Enter conservatory</Text>
+            </Pressable>
+          )}
           <PixelButton
             kind="back"
             label="Walk to previous stop"
@@ -415,7 +530,6 @@ export function PalaceGame({
           />
         </View>
       </View>
-
     </View>
   );
 }

@@ -13,7 +13,7 @@ export const vocabularyCues = [
     hook: "A tick with a checklist",
     caption: "This METICULOUS inspector checks every single thread.",
     story:
-      "A fussy tailor checks an enormous sock through a giant magnifying glass. His tiny tick assistant refuses to approve one crooked stitch. Meticulous means extremely careful about details.",
+      "A tiny tick measures an enormous sock, thread by thread, checking each detail on its list. Meticulous means extremely careful about details.",
   },
   {
     pronunciation: "ih-FEM-er-ul · adjective",
@@ -27,9 +27,9 @@ export const vocabularyCues = [
     pronunciation: "rih-ZIL-yunt · adjective",
     type: "Sound hook",
     hook: "RE-SEAL IT",
-    caption: "Flattened, patched, standing again: a RESILIENT soldier.",
+    caption: "Pumped up and ready again: a RESILIENT soldier.",
     story:
-      "A ridiculous feather flattens an inflatable soldier. His friend re-seals the tear, pumps him up, and he stands again. Resilient means able to recover after a setback.",
+      "An inflatable soldier keeps a pump beside him. Even after a feather lets his air out, he pumps himself up and stands ready again. Resilient means able to recover after a setback.",
   },
   {
     pronunciation: "AV-er-iss · noun",

@@ -23,9 +23,9 @@ The learning experience works without API keys. Data stays on the device until y
 - Mnemonic details with focused cue imagery, three-option recall, current mastery, and per-scene written application reflections.
 - Ten SAT flashcards, genuine ts-fsrs scheduling, persistence, due reviews, streaks and accuracy.
 - Ten original ink-cartoon SAT vocabulary cards with sound/meaning hooks in two five-word batches, each followed by an original digital-SAT-style context question. These are not official 2026 exam questions.
-- Three illustrated memory worlds: Japanese dojo, Egyptian ruins and neon rooftops. Each full-world map has six enterable rooms with its own fixed landmarks, supplied mnemonic cue, walking controls, hidden recall and saved progress.
+- Three illustrated memory worlds: Japanese dojo, Egyptian ruins and neon rooftops. Each full-world map has six literal, enterable locations; room labels, environment art and anchors agree. A tapped anchor opens a separate world-specific comic object cue, followed by hidden and ordered recall.
 - Personal shopping-palace builder for up to eight items, with individual action cues and ordered recall.
-- A three-concept medical foundation lesson plus a rotatable 3D studio, a sourced nine-label heart model and compatible-device room-placement entry.
+- Two advanced illustrated medical stories (complement and B-cell maturation), a physician-authored source case, a rotatable 3D studio, a sourced 23-structure cardiovascular model, an animated circulation route, an interactive PPG physiology lab, and compatible-device room placement.
 - User-supplied pixel START/BACK/NEXT button artwork with press animations.
 - Pi uses the major system to encode 12 decimal digits as six consonant-sound objects. The guided pair path teaches room → landmark → action → object → digits before ordered recall.
 - Fun & Flex includes interactive card-order, names-and-faces, linked-pair and fictional-passphrase practice. Card practice supports 6, 12 or all 52 cards.

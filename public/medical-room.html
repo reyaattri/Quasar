@@ -1,41 +1,592 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quasar · Medical studio</title>
-<script type="module" src="/medical/model-viewer.min.js"></script>
-<style> [hidden]{display:none!important}
-@font-face{font-family:Quasar;src:url('/medical/SpaceGrotesk.ttf')}*{box-sizing:border-box}body{margin:0;background:#e6ebd9;color:#293b30;font-family:Quasar,system-ui,sans-serif}main{max-width:800px;margin:auto;padding:20px}h1{font-size:28px;margin:8px 0}p{line-height:1.5}model-viewer{width:100%;height:52vh;min-height:270px;background:radial-gradient(ellipse at center,#fffcf3,#dce5d1);border-radius:32px;--poster-color:transparent}button,a{font:inherit;color:inherit}button{padding:12px 18px;border:1px solid #294d3b;border-radius:24px;background:#fffdf4;cursor:pointer;min-height:44px}button:focus-visible,a:focus-visible{outline:3px solid #7a52ac;outline-offset:3px}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.active,#ar{background:#294d3b;color:white}#ar{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);white-space:nowrap}.small{font-size:13px}#status{min-height:22px}details{padding:14px;border-top:1px solid #a9b69b}summary{cursor:pointer;padding:6px} @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
-</style></head><body><main>
-<div class="small">QUASAR / MEDICAL STUDIO</div><h1 id="title">Explore the biology.</h1>
-<div class="controls" aria-label="Choose a model"><button data-model="0">Barrier</button><button data-model="1">Phagocyte</button><button data-model="2">Antibody</button><button data-model="3">Heart anatomy</button></div>
-<model-viewer id="model" camera-controls touch-action="pan-y" shadow-intensity="1" ar ar-modes="webxr scene-viewer quick-look" camera-orbit="25deg 75deg auto" alt="Schematic immunity teaching model">
-<button slot="ar-button" id="ar">Place in my room</button>
-</model-viewer>
-<div class="controls"><button id="room-launch">View in your room</button><button id="labels-toggle" hidden>Hide structure label</button></div><div id="anatomy-labels" class="controls" hidden></div><p id="anatomy-credit" class="small" hidden>Heart geometry: Z-Anatomy / BodyParts3D © DBCLS, CC BY-SA 4.0. GLB export: Liyucheng1997. Quasar selected nine heart and great-vessel structures without reshaping their meshes. <a href="/medical/ANATOMY-CREDITS.txt">Source and licence</a>. Labels mark centres of the named source meshes; this is an educational reference, not patient imaging.</p><p id="status" role="status">Loading the 3D model…</p><p id="meaning"></p>
-<div class="controls"><button id="reset">Reset view</button><button id="recall">Hide model & recall</button></div>
-<section id="quiz" hidden><p id="question"></p><details><summary>Reveal the explanation</summary><p id="answer"></p></details><button id="return">Return to model</button></section>
-<p class="small">The immunity models are simplified teaching aids. The heart uses sourced anatomy geometry; colours are illustrative. Drag to rotate; pinch or scroll to zoom.</p>
-<p class="small" id="support">Room placement appears on compatible phones. Camera access starts only when you choose “Place in my room”.</p>
-<a href="/">Back to Quasar</a>
-</main><script>
-customElements.whenDefined('model-viewer').then(()=>{customElements.get('model-viewer').dracoDecoderLocation='/medical/draco/';});
-const data=[
-{file:'barrier',title:'A barrier made of cells',meaning:'Imagine a tightly packed wall. Intact skin helps block microbes from entering the body. This model shows packing, not the full structure of skin.',question:'What protective role does intact skin play?'},
-{file:'phagocyte',title:'A cell that engulfs',meaning:'Phago means eat; cyte means cell. Picture the cell wrapping around an intruder. Phagocytes can engulf microbes and break them down inside the cell. The green object is a schematic microbe.',question:'What happens to a microbe during phagocytosis?'},
-{file:'antibody',title:'Two tips, a particular target',meaning:'The two tips of this simplified Y represent binding sites. Antibodies bind particular antigen targets. The Y is a schematic shape, not a molecular surface model.',question:'What do the tips of the antibody bind?'},
-{file:'heart',title:'Heart · chambers and great vessels',meaning:'Explore the four chambers and the great vessels. Structure names come from the source anatomy meshes. Select a structure below to focus its label.',question:'Can you name the four chambers of the heart?'}];
-const model=document.querySelector('#model'), status=document.querySelector('#status');let current=0;
-let heartLabels=[],labelShown=true;
-async function updateLabels(i){document.querySelector('#anatomy-labels').hidden=i!==3;document.querySelector('#anatomy-credit').hidden=i!==3;document.querySelector('#labels-toggle').hidden=i!==3;model.querySelectorAll('[slot^=hotspot]').forEach(n=>n.remove());if(i!==3)return;if(!heartLabels.length){const r=await fetch('/medical/heart-labels.json');heartLabels=await r.json();}if(current!==3)return;const list=document.querySelector('#anatomy-labels');list.replaceChildren();heartLabels.forEach((l,n)=>{const b=document.createElement('button');b.textContent=l.name;b.onclick=()=>{model.querySelectorAll('[slot^=hotspot]').forEach(x=>x.remove());const tag=document.createElement('button');tag.slot='hotspot-selected';tag.textContent=l.name;tag.setAttribute('data-position',l.position.map(v=>v+'m').join(' '));tag.style.background='#fff9db';tag.hidden=!labelShown;model.append(tag);list.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));};list.append(b);if(n===0)b.click();});}
-function select(i){current=i;updateLabels(i).catch(()=>status.textContent='Structure labels could not load. Please reload.');const d=data[i];document.querySelector('#title').textContent=d.title;model.setAttribute('src','/medical/'+d.file+'.glb');model.setAttribute('alt',d.title+' — simplified educational model');document.querySelector('#meaning').textContent=d.meaning;document.querySelector('#question').textContent=d.question;document.querySelector('#answer').textContent=i===3?'Right atrium, right ventricle, left atrium and left ventricle.':d.meaning;document.querySelectorAll('[data-model]').forEach((b,j)=>{b.classList.toggle('active',j===i);b.setAttribute('aria-pressed',String(j===i));});document.querySelector('#quiz').hidden=true;document.querySelector('details').open=false;model.hidden=false;document.querySelector('#meaning').hidden=false;status.textContent='Loading the 3D model…';history.replaceState(null,'','?concept='+i);}
-document.querySelectorAll('[data-model]').forEach(b=>b.onclick=()=>select(Number(b.dataset.model)));
-model.addEventListener('load',()=>status.textContent='Model ready. Drag to explore.');model.addEventListener('error',()=>status.textContent='The model could not load. Please reload to try again.');
-model.addEventListener('ar-status',e=>{if(e.detail.status==='failed')status.textContent='Room placement could not start. You can still explore the 3D model here.';});
-document.querySelector('#room-launch').onclick=async()=>{if(model.canActivateAR){try{await model.activateAR();}catch{status.textContent='Room placement did not start. Check your phone supports AR and try again.';}}else{status.textContent='Room placement needs a compatible phone and a secure HTTPS address. You can rotate the model here without a camera.';}};
-document.querySelector('#labels-toggle').onclick=()=>{labelShown=!labelShown;model.querySelectorAll('[slot^=hotspot]').forEach(n=>n.hidden=!labelShown);document.querySelector('#labels-toggle').textContent=labelShown?'Hide structure label':'Show structure label';};
-document.querySelector('#reset').onclick=()=>{model.cameraOrbit='25deg 75deg auto';model.cameraTarget='auto auto auto';model.fieldOfView='auto';};
-document.querySelector('#recall').onclick=()=>{document.querySelector('#anatomy-labels').hidden=true;document.querySelector('#labels-toggle').hidden=true;model.hidden=true;document.querySelector('#meaning').hidden=true;document.querySelector('#quiz').hidden=false;status.textContent='Recall the biology before revealing the explanation.';};
-document.querySelector('#return').onclick=()=>{document.querySelector('#anatomy-labels').hidden=current!==3;document.querySelector('#labels-toggle').hidden=current!==3;model.hidden=false;document.querySelector('#meaning').hidden=false;document.querySelector('#quiz').hidden=true;status.textContent='Model ready. Drag to explore.';};
-const initial=Number(new URLSearchParams(location.search).get('concept'));select(Number.isInteger(initial)&&initial>=0&&initial<4?initial:0);
-if(!window.isSecureContext)document.querySelector('#support').textContent='3D viewing works here. Camera AR needs a secure HTTPS address on a compatible phone.';
-setTimeout(()=>{if(!customElements.get('model-viewer'))status.textContent='The 3D viewer could not load. Please reload to try again.';},15000);
-</script></body></html>
-
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Quasar · Medical studio</title>
+    <script type="module" src="/medical/model-viewer.min.js"></script>
+    <style>
+      [hidden] {
+        display: none !important;
+      }
+      @font-face {
+        font-family: Quasar;
+        src: url("/medical/SpaceGrotesk.ttf");
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #e6ebd9;
+        color: #293b30;
+        font-family: Quasar, system-ui, sans-serif;
+      }
+      main {
+        max-width: 820px;
+        margin: auto;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 28px;
+        margin: 8px 0;
+      }
+      p {
+        line-height: 1.5;
+      }
+      model-viewer {
+        width: 100%;
+        height: 52vh;
+        min-height: 290px;
+        background: radial-gradient(ellipse at center, #fffcf3, #dce5d1);
+        border-radius: 32px;
+        --poster-color: transparent;
+      }
+      button,
+      a {
+        font: inherit;
+        color: inherit;
+      }
+      button {
+        padding: 12px 18px;
+        border: 1px solid #294d3b;
+        border-radius: 24px;
+        background: #fffdf4;
+        cursor: pointer;
+        min-height: 44px;
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 16px 0;
+      }
+      .active,
+      #ar {
+        background: #294d3b;
+        color: white;
+      }
+      #ar {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+      }
+      .small {
+        font-size: 13px;
+      }
+      #status {
+        min-height: 22px;
+      }
+      details {
+        padding: 14px;
+        border-top: 1px solid #a9b69b;
+      }
+      .flow-pulse {
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        border: 4px solid white;
+        border-radius: 50%;
+        background: #397ee8;
+        box-shadow: 0 0 0 6px #397ee866;
+        animation: pulse 0.75s infinite alternate;
+      }
+      .flow-pulse.oxygenated {
+        background: #e84d57;
+        box-shadow: 0 0 0 6px #e84d5766;
+      }
+      @keyframes pulse {
+        to {
+          transform: scale(1.45);
+        }
+      }
+      #flow-status {
+        padding: 12px 15px;
+        border-radius: 18px;
+        background: #fff8d9;
+        min-height: 48px;
+      }
+      #physiology {
+        padding: 18px;
+        margin: 16px 0;
+        border: 1px solid #294d3b;
+        border-radius: 26px;
+        background: #fffaf0;
+      }
+      #wave {
+        width: 100%;
+        height: 180px;
+        border-radius: 18px;
+        background: #171a2d;
+      }
+      .lab-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      label {
+        display: grid;
+        gap: 6px;
+        font-weight: 700;
+      }
+      input,
+      select {
+        width: 100%;
+        min-height: 42px;
+        font: inherit;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .flow-pulse {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="small">QUASAR / MEDICAL STUDIO</div>
+      <h1 id="title">Explore the biology.</h1>
+      <div class="controls" aria-label="Choose a model">
+        <button data-model="0">Barrier</button
+        ><button data-model="1">Phagocyte</button
+        ><button data-model="2">Antibody</button
+        ><button data-model="3">Detailed heart</button
+        ><button data-model="4">Physiology lab</button>
+      </div>
+      <model-viewer
+        id="model"
+        camera-controls
+        touch-action="pan-y"
+        shadow-intensity="1"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        camera-orbit="25deg 75deg auto"
+        alt="Educational medical model"
+        ><button slot="ar-button" id="ar">
+          Place in my room
+        </button></model-viewer
+      >
+      <div class="controls">
+        <button id="room-launch">View in your room</button
+        ><button id="labels-toggle" hidden>Hide structure label</button
+        ><button id="flow-toggle" hidden>Play blood-flow route</button>
+      </div>
+      <p id="flow-status" role="status" hidden></p>
+      <div id="anatomy-labels" class="controls" hidden></div>
+      <p id="anatomy-credit" class="small" hidden>
+        Heart geometry: Z-Anatomy / BodyParts3D © DBCLS, CC BY-SA 4.0. GLB
+        export: Liyucheng1997. Quasar selected 23 named chambers, great vessels,
+        pulmonary vessels, and coronary vessels without reshaping their meshes.
+        <a href="/medical/ANATOMY-CREDITS.txt">Source and licence</a>. Labels
+        mark named source-mesh centres; this is an educational reference, not
+        patient imaging.
+      </p>
+      <p id="status" role="status">Loading the 3D model…</p>
+      <p id="meaning"></p>
+      <section id="physiology" hidden>
+        <div class="small">INTERACTIVE PPG LAB · SIMULATED FOR LEARNING</div>
+        <h2>Change one variable. Watch the pulse respond.</h2>
+        <p>
+          Photoplethysmography (PPG) estimates changing blood volume from light
+          returning to a sensor. Site, wavelength, heart rate, age, contact, and
+          motion all affect a real signal.
+        </p>
+        <div class="controls" id="sites">
+          <button data-site="Wrist">Wrist</button
+          ><button data-site="Fingertip">Fingertip</button
+          ><button data-site="Ear">Ear</button
+          ><button data-site="Temple">Temple</button>
+        </div>
+        <div class="lab-grid">
+          <label
+            >Heart rate <output id="hr-out">72 bpm</output
+            ><input id="hr" type="range" min="40" max="180" value="72" /></label
+          ><label
+            >Age <output id="age-out">25 years</output
+            ><input id="age" type="range" min="10" max="90" value="25" /></label
+          ><label
+            >Light wavelength<select id="wavelength">
+              <option value="green">Green · 530 nm</option>
+              <option value="red">Red · 660 nm</option>
+              <option value="ir">Infrared · 940 nm</option>
+            </select></label
+          ><label
+            >Motion<select id="motion">
+              <option value="rest">Resting</option>
+              <option value="walk">Walking artifact</option>
+              <option value="run">Running artifact</option>
+            </select></label
+          >
+        </div>
+        <svg
+          id="wave"
+          viewBox="0 0 700 180"
+          role="img"
+          aria-label="Simulated PPG waveform"
+        >
+          <path
+            id="wave-path"
+            fill="none"
+            stroke="#62e7cf"
+            stroke-width="5"
+            stroke-linecap="round"
+          />
+        </svg>
+        <p id="lab-readout"></p>
+        <p class="small">
+          This is a qualitative teaching simulation, not a calibrated sensor or
+          clinical signal. It shows expected direction of change rather than
+          patient physiology.
+        </p>
+      </section>
+      <div class="controls">
+        <button id="reset">Reset view</button
+        ><button id="recall">Hide model & recall</button>
+      </div>
+      <section id="quiz" hidden>
+        <p id="question"></p>
+        <details>
+          <summary>Reveal the explanation</summary>
+          <p id="answer"></p>
+        </details>
+        <button id="return">Return to model</button>
+      </section>
+      <p class="small">
+        The immunity models are schematic. The heart uses sourced anatomy
+        geometry; colours are illustrative. The pulse tour teaches sequence and
+        is not a fluid-dynamics calculation.
+      </p>
+      <p class="small" id="research-links" hidden>
+        For research-grade flow modelling, see
+        <a href="https://simvascular.github.io/">SimVascular</a> and the
+        NIH-funded
+        <a href="https://www.vascularmodel.org/">Vascular Model Repository</a>.
+        They provide patient-specific geometry and numerical hemodynamic
+        simulation outside this mobile lesson.
+      </p>
+      <p class="small" id="support">
+        Room placement appears on compatible phones. Camera access starts only
+        when you choose “Place in my room”.
+      </p>
+      <a href="/">Back to Quasar</a>
+    </main>
+    <script>
+      customElements.whenDefined("model-viewer").then(() => {
+        customElements.get("model-viewer").dracoDecoderLocation =
+          "/medical/draco/";
+      });
+      const data = [
+        {
+          file: "barrier",
+          title: "A barrier made of cells",
+          meaning:
+            "Intact skin helps block microbes from entering. This is a packing metaphor, not a complete skin model.",
+          question: "What protective role does intact skin play?",
+        },
+        {
+          file: "phagocyte",
+          title: "A cell that engulfs",
+          meaning:
+            "Phagocytes can surround, internalize and break down microbes. The green object is a schematic microbe.",
+          question: "What happens during phagocytosis?",
+        },
+        {
+          file: "antibody",
+          title: "Two tips, a particular target",
+          meaning:
+            "Antibody binding sites recognize particular antigen features. This Y is schematic, not a molecular surface.",
+          question: "What do antibody binding sites recognize?",
+        },
+        {
+          file: "heart",
+          title: "Heart · 23 named structures",
+          meaning:
+            "Explore chambers, venae cavae, pulmonary vessels, aorta, and coronary vessels. Choose a structure or play the circulation route.",
+          question: "Can you trace blood from the vena cava to the aorta?",
+        },
+        {
+          file: "heart",
+          title: "Interactive pulse physiology lab",
+          meaning:
+            "Choose a sensing site, age, heart rate, wavelength, and motion state. Change one variable at a time and explain why the simulated waveform changes.",
+          question:
+            "Which variables changed the waveform, and which change was physiological versus measurement artifact?",
+        },
+      ];
+      const model = document.querySelector("#model"),
+        status = document.querySelector("#status");
+      let current = 0,
+        heartLabels = [],
+        labelShown = true,
+        flowTimer = null,
+        flowIndex = 0;
+      const flow = [
+        [
+          "Superior vena cava",
+          "Deoxygenated blood returns from the upper body.",
+        ],
+        ["Right atrium", "The right atrium receives systemic venous blood."],
+        [
+          "Right ventricle",
+          "The right ventricle sends blood toward the lungs.",
+        ],
+        [
+          "Pulmonary trunk",
+          "Blood leaves through the pulmonary trunk and pulmonary arteries.",
+        ],
+        ["Right pulmonary artery", "In the lungs, gas exchange adds oxygen."],
+        [
+          "Right superior pulmonary vein",
+          "Pulmonary veins return oxygenated blood.",
+        ],
+        ["Left atrium", "The left atrium receives pulmonary venous blood."],
+        [
+          "Left ventricle",
+          "The left ventricle generates pressure for systemic flow.",
+        ],
+        ["Ascending aorta", "Blood enters the aorta for the body."],
+        [
+          "Left coronary artery",
+          "Coronary arteries supply the heart muscle itself.",
+        ],
+      ];
+      function stopFlow() {
+        if (flowTimer) clearInterval(flowTimer);
+        flowTimer = null;
+        model
+          .querySelectorAll("[slot=hotspot-flow]")
+          .forEach((n) => n.remove());
+        document.querySelector("#flow-toggle").textContent =
+          "Play blood-flow route";
+      }
+      function showFlow() {
+        const [name, copy] = flow[flowIndex % flow.length],
+          item = heartLabels.find((x) => x.name === name);
+        model.querySelectorAll("[slot^=hotspot]").forEach((n) => n.remove());
+        if (item) {
+          const dot = document.createElement("button");
+          dot.slot = "hotspot-flow";
+          dot.className = "flow-pulse " + (flowIndex >= 5 ? "oxygenated" : "");
+          dot.setAttribute(
+            "data-position",
+            item.position.map((v) => v + "m").join(" "),
+          );
+          dot.setAttribute("aria-label", name);
+          model.append(dot);
+        }
+        document.querySelector("#flow-status").textContent =
+          `${flowIndex + 1} / ${flow.length} · ${name}: ${copy}`;
+        flowIndex = (flowIndex + 1) % flow.length;
+      }
+      async function updateLabels(i) {
+        const heart = i === 3;
+        [
+          "anatomy-labels",
+          "anatomy-credit",
+          "labels-toggle",
+          "flow-toggle",
+          "flow-status",
+          "research-links",
+        ].forEach((id) => (document.querySelector("#" + id).hidden = !heart));
+        stopFlow();
+        model.querySelectorAll("[slot^=hotspot]").forEach((n) => n.remove());
+        if (!heart) return;
+        if (!heartLabels.length)
+          heartLabels = await (
+            await fetch("/medical/heart-labels.json")
+          ).json();
+        if (current !== 3) return;
+        const list = document.querySelector("#anatomy-labels");
+        list.replaceChildren();
+        heartLabels.forEach((item, n) => {
+          const b = document.createElement("button");
+          b.textContent = item.name;
+          b.onclick = () => {
+            stopFlow();
+            model
+              .querySelectorAll("[slot^=hotspot]")
+              .forEach((x) => x.remove());
+            const tag = document.createElement("button");
+            tag.slot = "hotspot-selected";
+            tag.textContent = item.name;
+            tag.setAttribute(
+              "data-position",
+              item.position.map((v) => v + "m").join(" "),
+            );
+            tag.style.background = "#fff9db";
+            tag.hidden = !labelShown;
+            model.append(tag);
+            list
+              .querySelectorAll("button")
+              .forEach((x) => x.classList.toggle("active", x === b));
+          };
+          list.append(b);
+          if (n === 0) b.click();
+        });
+      }
+      function select(i) {
+        current = i;
+        const d = data[i];
+        updateLabels(i).catch(
+          () => (status.textContent = "Structure labels could not load."),
+        );
+        document.querySelector("#title").textContent = d.title;
+        model.src = "/medical/" + d.file + ".glb";
+        model.alt = d.title;
+        document.querySelector("#meaning").textContent = d.meaning;
+        document.querySelector("#question").textContent = d.question;
+        document.querySelector("#answer").textContent =
+          i === 3
+            ? "Superior/inferior vena cava → right atrium → right ventricle → pulmonary arteries → lungs → pulmonary veins → left atrium → left ventricle → aorta."
+            : d.meaning;
+        document.querySelector("#physiology").hidden = i !== 4;
+        document.querySelectorAll("[data-model]").forEach((b, j) => {
+          b.classList.toggle("active", j === i);
+          b.setAttribute("aria-pressed", String(j === i));
+        });
+        document.querySelector("#quiz").hidden = true;
+        model.hidden = false;
+        document.querySelector("#meaning").hidden = false;
+        status.textContent = "Loading the 3D model…";
+        history.replaceState(null, "", "?concept=" + i);
+      }
+      document
+        .querySelectorAll("[data-model]")
+        .forEach((b) => (b.onclick = () => select(Number(b.dataset.model))));
+      model.addEventListener(
+        "load",
+        () => (status.textContent = "Model ready. Drag to explore."),
+      );
+      model.addEventListener(
+        "error",
+        () => (status.textContent = "The model could not load. Please reload."),
+      );
+      document.querySelector("#flow-toggle").onclick = () => {
+        if (flowTimer) {
+          stopFlow();
+          return;
+        }
+        flowIndex = 0;
+        document.querySelector("#flow-toggle").textContent =
+          "Pause blood-flow route";
+        showFlow();
+        flowTimer = setInterval(showFlow, 1500);
+      };
+      document.querySelector("#room-launch").onclick = async () => {
+        if (model.canActivateAR) {
+          try {
+            await model.activateAR();
+          } catch {
+            status.textContent = "Room placement did not start.";
+          }
+        } else
+          status.textContent =
+            "Room placement needs a compatible phone and secure HTTPS address.";
+      };
+      document.querySelector("#labels-toggle").onclick = () => {
+        labelShown = !labelShown;
+        model
+          .querySelectorAll("[slot^=hotspot]")
+          .forEach((n) => (n.hidden = !labelShown));
+        document.querySelector("#labels-toggle").textContent = labelShown
+          ? "Hide structure label"
+          : "Show structure label";
+      };
+      document.querySelector("#reset").onclick = () => {
+        model.cameraOrbit = "25deg 75deg auto";
+        model.cameraTarget = "auto auto auto";
+        model.fieldOfView = "auto";
+      };
+      document.querySelector("#recall").onclick = () => {
+        stopFlow();
+        document.querySelector("#anatomy-labels").hidden = true;
+        document.querySelector("#labels-toggle").hidden = true;
+        model.hidden = true;
+        document.querySelector("#meaning").hidden = true;
+        document.querySelector("#quiz").hidden = false;
+        status.textContent = "Recall the biology before revealing it.";
+      };
+      document.querySelector("#return").onclick = () => {
+        updateLabels(current);
+        model.hidden = false;
+        document.querySelector("#meaning").hidden = false;
+        document.querySelector("#quiz").hidden = true;
+        status.textContent = "Model ready. Drag to explore.";
+      };
+      let labSite = "Wrist";
+      function drawWave() {
+        const hr = Number(document.querySelector("#hr").value);
+        const age = Number(document.querySelector("#age").value);
+        const wavelength = document.querySelector("#wavelength").value;
+        const motion = document.querySelector("#motion").value;
+        const siteGain = {
+          Wrist: 0.72,
+          Fingertip: 1.05,
+          Ear: 0.9,
+          Temple: 0.82,
+        }[labSite];
+        const ageGain = 1 - Math.max(0, age - 25) * 0.003;
+        const waveGain = { green: 1, red: 0.82, ir: 0.9 }[wavelength];
+        const artifact = { rest: 0, walk: 8, run: 18 }[motion];
+        const beats = (hr / 60) * 6;
+        const points = [];
+        for (let x = 0; x <= 700; x += 3) {
+          const phase = ((x / 700) * beats) % 1;
+          const pulse =
+            Math.exp(-Math.pow((phase - 0.18) / 0.055, 2)) -
+            0.3 * Math.exp(-Math.pow((phase - 0.34) / 0.04, 2)) +
+            0.2 * Math.exp(-Math.pow((phase - 0.42) / 0.06, 2));
+          const drift =
+            artifact * Math.sin(x / (motion === "run" ? 13 : 26)) +
+            artifact * 0.35 * Math.sin(x / 5);
+          const y = 100 - pulse * 58 * siteGain * ageGain * waveGain + drift;
+          points.push(`${x},${Math.max(12, Math.min(168, y))}`);
+        }
+        document
+          .querySelector("#wave-path")
+          .setAttribute("d", "M" + points.join(" L"));
+        document
+          .querySelector("#wave-path")
+          .setAttribute(
+            "stroke",
+            wavelength === "green"
+              ? "#62e7cf"
+              : wavelength === "red"
+                ? "#ff6b74"
+                : "#cf8cff",
+          );
+        document.querySelector("#hr-out").textContent = hr + " bpm";
+        document.querySelector("#age-out").textContent = age + " years";
+        document.querySelector("#lab-readout").textContent =
+          `${labSite} · ${wavelength === "ir" ? "infrared" : wavelength} light · ${motion}. Heart rate changes beat spacing; site and wavelength change relative amplitude; motion adds a non-physiological artifact.`;
+        document
+          .querySelectorAll("[data-site]")
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.site === labSite),
+          );
+      }
+      document.querySelectorAll("[data-site]").forEach(
+        (b) =>
+          (b.onclick = () => {
+            labSite = b.dataset.site;
+            drawWave();
+          }),
+      );
+      ["hr", "age", "wavelength", "motion"].forEach(
+        (id) => (document.querySelector("#" + id).oninput = drawWave),
+      );
+      drawWave();
+      const initial = Number(
+        new URLSearchParams(location.search).get("concept"),
+      );
+      select(
+        Number.isInteger(initial) && initial >= 0 && initial < 5 ? initial : 0,
+      );
+      if (!window.isSecureContext)
+        document.querySelector("#support").textContent =
+          "3D viewing works here. Camera AR needs secure HTTPS on a compatible phone.";
+    </script>
+  </body>
+</html>

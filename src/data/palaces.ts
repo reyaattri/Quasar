@@ -38,9 +38,9 @@ export const worlds = [
     ink: "#352D65",
     places: [
       "Entrance steps",
-      "Arcade",
-      "Greenhouse",
-      "Ramen diner",
+      "Ramen stall",
+      "Vending arcade",
+      "Neon greenhouse",
       "Antenna workshop",
       "Moon observatory",
     ],

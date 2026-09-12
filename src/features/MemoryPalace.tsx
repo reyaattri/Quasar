@@ -2,6 +2,7 @@ import { roomFor, objectPoints } from "../data/palaceRooms";
 import { contextualCue } from "../data/worldCues";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { EncounterMotion } from "../components/EncounterMotion";
+import { RoomMemoryPicture } from "../components/RoomInterior";
 import { PalaceGame } from "../components/PalaceGame";
 import { PixelButton } from "../components/PixelButton";
 import { parseShoppingList, shoppingJourney } from "../lib/shoppingPalace";
@@ -172,7 +173,7 @@ export function MemoryPalace({
   if (!value.hooks?.[cueKey])
     item.story =
       journey.id === "pi"
-        ? roomData.action
+        ? `${item.story} Fix this action to the ${roomData.objects[anchor].toLowerCase()} before moving on.`
         : `${item.story} Imagine ${item.object.toLowerCase()} bursting out of the ${roomData.objects[anchor].toLowerCase()}.`;
   const inspect = () => {
     setShowCue(true);
@@ -237,67 +238,6 @@ export function MemoryPalace({
           </Pressable>
         ))}
         <Text style={s.h2}>What will you remember?</Text>
-        <Card style={{ backgroundColor: C.yellow, borderRadius: 28 }}>
-          <Tag>PI · SIX ROOMS</Tag>
-          <Text style={s.h2}>Keep the 3. Walk the pairs.</Text>
-          <Text style={[s.title, { fontSize: 34, lineHeight: 40 }]}>
-            3 . 14 · 15 · 92 · 65 · 35 · 89
-          </Text>
-          <View style={{ gap: 8 }}>
-            {[
-              ["1", "ENTER", "Each numbered stop opens a different room."],
-              [
-                "2",
-                "LINK",
-                "A fixed object performs a ridiculous action on one landmark.",
-              ],
-              [
-                "3",
-                "DECODE",
-                "Its consonant sounds reveal one two-digit pair.",
-              ],
-              [
-                "4",
-                "RECALL",
-                "Hide every cue and walk 3.141592653589 in order.",
-              ],
-            ].map(([number, label, copy]) => (
-              <View
-                key={number}
-                style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
-              >
-                <View
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: 15,
-                    backgroundColor: C.green,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text style={[s.label, { color: C.white }]}>{number}</Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={s.label}>{label}</Text>
-                  <Text style={s.small}>{copy}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-          <Text style={s.small}>
-            Example: T/R sounds encode 1/4. Vowels only make “tyre”
-            pronounceable.
-          </Text>
-          <Button
-            secondary={value.journey !== 0}
-            onPress={() => {
-              onSave({ ...newPalace(), world: value.world, journey: 0 });
-            }}
-          >
-            Choose the pi route
-          </Button>
-        </Card>
         <Card style={{ backgroundColor: C.peach }}>
           <Tag>MAKE IT YOURS</Tag>
           <Text style={s.h2}>What’s on your shopping list?</Text>
@@ -337,19 +277,17 @@ export function MemoryPalace({
             Build my shopping palace
           </Button>
         </Card>
-        {journeys.map((j, i) =>
-          i === 0 ? null : (
-            <Button
-              key={j.id}
-              secondary={value.journey !== i}
-              onPress={() => {
-                onSave({ ...newPalace(), world: value.world, journey: i });
-              }}
-            >
-              {j.name}
-            </Button>
-          ),
-        )}
+        {journeys.map((j, i) => (
+          <Button
+            key={j.id}
+            secondary={value.journey !== i}
+            onPress={() => {
+              onSave({ ...newPalace(), world: value.world, journey: i });
+            }}
+          >
+            {j.name}
+          </Button>
+        ))}
         <Text style={s.small}>
           One active route is saved. Changing the learning activity starts a
           fresh route. Changing worlds starts a fresh route so the locations
@@ -432,9 +370,6 @@ export function MemoryPalace({
             roomIndex={value.stop % 6}
             labels={inRoom ? roomData.objects : undefined}
             memoryLabel={inRoom ? item.object : undefined}
-            memoryIndex={
-              journey.id === "pi" ? value.world * 6 + value.stop : undefined
-            }
             points={inRoom ? objectPoints : loci}
             stop={inRoom ? plant : value.stop}
             recalled={inRoom ? [anchor] : value.recalled}
@@ -696,28 +631,15 @@ export function MemoryPalace({
                       )}
                       {journey.id === "pi" ? (
                         <EncounterMotion variant={value.stop}>
-                          <View
-                            style={{
-                              width: 135,
-                              height: 180,
-                              overflow: "hidden",
-                              alignSelf: "center",
-                              borderRadius: 18,
-                            }}
-                          >
-                            <Image
-                              resizeMode="stretch"
-                              accessibilityLabel={item.story}
-                              source={require("../../assets/world-cues-v2.png")}
-                              style={{
-                                position: "absolute",
-                                width: 810,
-                                height: 540,
-                                left: -value.stop * 135,
-                                top: -value.world * 180,
-                              }}
-                            />
-                          </View>
+                          <RoomMemoryPicture
+                            world={value.world}
+                            stop={value.stop}
+                            anchor={anchor}
+                            journeyId={journey.id}
+                            itemIndex={value.stop}
+                            symbol={item.symbol}
+                            label={`${item.object} on ${roomData.objects[anchor]}`}
+                          />
                         </EncounterMotion>
                       ) : sceneFact ? (
                         <FactImage fact={sceneFact} style="storybook" />
