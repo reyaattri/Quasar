@@ -1,3 +1,5 @@
+import { RoomInterior } from "./RoomInterior";
+import { AtlasArt } from "./StudyShelf";
 import React, { useEffect, useRef, useState } from "react";
 import {
   AccessibilityInfo,
@@ -10,6 +12,7 @@ import {
 import Svg, { Circle, Ellipse, Path, Rect } from "react-native-svg";
 import { C, s, Text } from "./ui";
 import { PixelButton } from "./PixelButton";
+import { EncounterMotion } from "./EncounterMotion";
 type Point = { x: number; y: number };
 export function Walker({
   frame = 0,
@@ -77,6 +80,15 @@ export function PalaceGame({
   recalled,
   onArrive,
   onTravel,
+  onInspect,
+  onEnterRoom,
+  paused = false,
+  room = false,
+  labels,
+  roomIndex = 0,
+  memoryLabel,
+  memoryIndex,
+  concealed = false,
 }: {
   world: number;
   points: Point[];
@@ -84,14 +96,25 @@ export function PalaceGame({
   recalled: number[];
   onArrive: (stop: number) => void;
   onTravel: () => void;
+  onInspect: () => void;
+  onEnterRoom: () => void;
+  paused?: boolean;
+  room?: boolean;
+  labels?: string[];
+  roomIndex?: number;
+  memoryLabel?: string;
+  memoryIndex?: number;
+  concealed?: boolean;
 }) {
   const [width, setWidth] = useState(320);
-  const [pos, setPos] = useState<Point>(points[stop]);
+  const [height, setHeight] = useState(700);
+  const pausedRef = useRef(paused); pausedRef.current = paused;
+  const [pos, setPos] = useState<Point>(room ? {x:50,y:86} : points[stop]);
   const [frame, setFrame] = useState(0);
   const [walking, setWalking] = useState(false);
   const [targetIndex, setTargetIndex] = useState<number | null>(null);
   const state = useRef({
-    pos: points[stop],
+    pos: room ? {x:50,y:86} : points[stop],
     direction: { x: 0, y: 0 },
     target: null as number | null,
     near: stop,
@@ -100,11 +123,12 @@ export function PalaceGame({
   });
   const callbacks = useRef({ onArrive, onTravel, points });
   callbacks.current = { onArrive, onTravel, points };
+  useEffect(() => { if (paused) { state.current.target = null; state.current.direction = { x: 0, y: 0 }; setTargetIndex(null); } }, [paused]);
   useEffect(() => {
-    state.current.pos = points[stop];
+    state.current.pos = room ? {x:50,y:86} : points[stop];
     state.current.target = null;
-    state.current.near = stop;
-    setPos(points[stop]);
+    state.current.near = room ? -1 : stop;
+    setPos(state.current.pos);
     setTargetIndex(null);
   }, [world, points.length]);
   useEffect(() => {
@@ -131,6 +155,7 @@ export function PalaceGame({
         dt = Math.min((now - previous) / 1000, 0.05);
       previous = now;
       const current = state.current;
+      if (pausedRef.current) { current.direction = {x:0,y:0}; current.target=null; setWalking(false); return; }
       let dx = current.direction.x,
         dy = current.direction.y;
       if (current.target !== null) {
@@ -218,17 +243,8 @@ export function PalaceGame({
       }
     };
   }, []);
-  const height = 470,
-    mapW = width * 1.7,
-    mapH = mapW * 2;
-  const cameraX = Math.max(
-    0,
-    Math.min(mapW - width, (pos.x / 100) * mapW - width / 2),
-  );
-  const cameraY = Math.max(
-    0,
-    Math.min(mapH - height, (pos.y / 100) * mapH - height * 0.48),
-  );
+  const mapH = height, mapW = width;
+  const cameraX = 0, cameraY = 0;
   const walkTo = (index: number) => {
     state.current.target = index;
     state.current.direction = { x: 0, y: 0 };
@@ -241,14 +257,14 @@ export function PalaceGame({
     state.current.direction = { x, y };
   };
   return (
-    <View style={{ gap: 8 }}>
+    <View aria-hidden={concealed} pointerEvents={concealed?"none":"auto"} style={{ flex: 1, opacity:concealed?0:1 }}>
       <View
-        onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+        onLayout={(e) => { setWidth(e.nativeEvent.layout.width); setHeight(e.nativeEvent.layout.height); }}
         style={{
-          height,
+          flex: 1,
           overflow: "hidden",
-          borderRadius: 24,
-          backgroundColor: "#283C35",
+          borderRadius: 0,
+          backgroundColor: ["#DCE8CA", "#F4D59E", "#242039"][world],
         }}
       >
         <View
@@ -260,24 +276,17 @@ export function PalaceGame({
           }}
         >
           <View style={{ width: mapW, height: mapH, overflow: "hidden" }}>
-            <Image
-              resizeMode="stretch"
-              accessible={false}
-              source={require("../../assets/palace-worlds.png")}
-              style={{
-                position: "absolute",
-                width: mapW * 3,
-                height: mapH,
-                left: -world * mapW,
-              }}
-            />
+            {room ? <RoomInterior world={world} stop={roomIndex} width={mapW} height={mapH}/> : <Image resizeMode="stretch" accessible={false} source={require("../../assets/palace-worlds.png")} style={{position:"absolute",width:mapW*3,height:mapH,left:-world*mapW}}/>}
           </View>
+          {points.map((point,i)=><View key={`motion-${i}`} pointerEvents="none" style={{position:"absolute",left:point.x/100*mapW-14,top:point.y/100*mapH-48}}>
+            <EncounterMotion variant={i}><Svg width={28} height={25} viewBox="0 0 28 25">{room && roomIndex===2 ? <Path d="M14 23Q3 18 5 7Q17 6 14 23M14 23Q14 5 26 3Q29 18 14 23" fill={world===2?"#8DE3DE":"#578B57"}/> : <Path d="M14 2L17 10L25 13L17 16L14 24L11 16L3 13L11 10Z" fill="#F8DC90"/>}</Svg></EncounterMotion>
+          </View>)}
           {points.map((point, i) => (
             <Pressable
               key={i}
               accessibilityRole="button"
-              accessibilityLabel={`Walk to stop ${i + 1}`}
-              onPress={() => walkTo(i)}
+              accessibilityLabel={labels ? `Walk to ${labels[i]}` : `Walk to stop ${i + 1}`}
+              onPress={() => { if (state.current.near === i && !walking) onInspect(); else walkTo(i); }}
               style={{
                 position: "absolute",
                 left: (point.x / 100) * mapW - 22,
@@ -298,10 +307,14 @@ export function PalaceGame({
                   fontWeight: "700",
                 }}
               >
-                {i + 1}
+                {room ? (recalled.includes(i) ? "★" : "＋") : i + 1}
               </Text>
             </Pressable>
           ))}
+          {room && memoryLabel && <Pressable accessibilityRole="button" accessibilityLabel={"Open memory on "+labels?.[recalled[0] ?? 0]} onPress={onInspect} style={{position:"absolute",left:Math.max(6,(points[recalled[0]??0].x/100)*mapW-52),top:(points[recalled[0]??0].y/100)*mapH-110,width:104,padding:5,borderRadius:14,borderWidth:2,borderColor:C.yellow,backgroundColor:C.paper}}>
+            <EncounterMotion variant={roomIndex}>{memoryIndex!==undefined && <AtlasArt source={require("../../assets/world-cues-v2.png")} columns={6} rows={3} index={memoryIndex} height={66}/>}</EncounterMotion>
+            <Text style={{fontSize:12,textAlign:"center",color:C.ink}}>{memoryLabel}</Text>
+          </Pressable>}
           <View
             accessible={false}
             style={{
@@ -329,7 +342,7 @@ export function PalaceGame({
               ? `Walking to stop ${targetIndex + 1}…`
               : walking
                 ? "Exploring…"
-                : `STOP ${stop + 1} / ${points.length}`}
+                : `${room ? "OBJECT" : "STOP"} ${stop + 1} / ${points.length}`}
           </Text>
         </View>
         <View
@@ -384,6 +397,8 @@ export function PalaceGame({
           ))}
         </View>
         <View style={{ position: "absolute", right: 8, bottom: 12, gap: 2 }}>
+          {!walking && Math.hypot(pos.x-points[stop].x,pos.y-points[stop].y)<4 && <Pressable accessibilityRole="button" accessibilityLabel={room ? "Inspect object" : "Inspect memory"} onPress={onInspect} style={{padding:12,backgroundColor:C.paper,borderRadius:20}}><Text style={s.label}>{room ? "Inspect plant" : "Inspect memory"}</Text></Pressable>}
+          {!room && !walking && stop === 2 && <Pressable accessibilityRole="button" accessibilityLabel="Enter room" onPress={onEnterRoom} style={{padding:12,backgroundColor:C.yellow,borderRadius:20}}><Text style={s.label}>Enter conservatory</Text></Pressable>}
           <PixelButton
             kind="back"
             label="Walk to previous stop"
@@ -400,10 +415,7 @@ export function PalaceGame({
           />
         </View>
       </View>
-      <Text style={s.small}>
-        Hold the arrows or use WASD to explore. NEXT walks to the next memory;
-        the camera follows you. Numbered markers are destinations.
-      </Text>
+
     </View>
   );
 }

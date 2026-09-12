@@ -16,7 +16,7 @@ const q = (v) => "'" + v.replaceAll("'", "''") + "'";
 let sql =
   "-- Generated curriculum. Run npm run seed:sql after content changes.\n";
 sql +=
-  "insert into subjects(id,name,is_available) values ('sat','SAT vocabulary',true),('cs','Computer science',true),('math','Math',false),('chem','Chemistry',false),('cs-more','More CS',false) on conflict(id) do nothing;\n";
+  "insert into subjects(id,name,is_available) values ('sat','SAT vocabulary',true),('medical','Medical foundations',true),('math','Math',false),('chem','Chemistry',false) on conflict(id) do nothing;\n";
 const insert = (table, cols, values) => {
   sql +=
     "insert into " +
@@ -62,4 +62,4 @@ for (const [i, l] of lessons.entries())
     [i + 1, l.title, l.type, l.body + " " + l.example, i],
   );
 fs.writeFileSync("supabase/seed.sql", sql);
-console.log("Seed written: 16 facts, 2 scenes, 6 lessons.");
+console.log(`Seed written: ${allFacts.length} facts, ${scenes.length} scenes, ${lessons.length} lessons.`);

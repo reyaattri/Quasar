@@ -5,9 +5,9 @@ import { EncounterMotion } from "../components/EncounterMotion";
 import { MedicalStudio } from "../components/MedicalStudio";
 const lessons = [
   {
-    title: "The harbor wall",
+    title: "The germs are not on the list",
     concept: "Physical barriers",
-    cue: "The wall blocks the gate-crashers.",
+    cue: "Skin keeps the gate-crashers OUT.",
     explanation:
       "Intact skin forms a physical barrier that helps prevent microbes from entering the body. The wall is a memory symbol for that barrier.",
     question: "What does the closed wall represent?",
@@ -19,11 +19,11 @@ const lessons = [
     correct: 0,
   },
   {
-    title: "The cleanup crew",
+    title: "The cell with a lunch plan",
     concept: "Phagocytosis",
-    cue: "The giant cleaner scoops up the intruder.",
+    cue: "PHAGO = eat. CYTE = cell. Wrap, engulf, digest.",
     explanation:
-      "Phagocytes such as macrophages can engulf and break down microbes. Picture the cleaner enclosing the germ in a bag; real cells use cellular mechanisms, not tools.",
+      "Phagocytes such as macrophages can engulf and break down microbes. Picture the cell wrapping its membrane around the germ, enclosing it and digesting it. The chef helps you remember cell-eating; real cells do not have mouths or kitchen tools.",
     question: "Which action best matches phagocytosis?",
     choices: [
       "Producing a skin barrier",
@@ -33,11 +33,11 @@ const lessons = [
     correct: 1,
   },
   {
-    title: "The matching workshop",
+    title: "A very picky Y",
     concept: "Antibody specificity",
-    cue: "The Y-shaped tool fits a particular patch.",
+    cue: "Two matching tips. One particular target.",
     explanation:
-      "Antibodies bind to particular targets called antigens. Matching shapes help you remember specificity; the cartoon is a simplified metaphor, not a molecular model.",
+      "Antibodies bind to particular targets called antigens. Picture two tips with the same fitting shape: the matching target binds and the wrong shape does not. This recalls specificity; it is a simplified metaphor, not a molecular model.",
     question: "What does the matching tool help you recall?",
     choices: [
       "Antibodies bind all targets equally",
@@ -61,7 +61,7 @@ export function MedicineLesson({
   return (
     <View style={{ gap: 20 }}>
       <Tag color={C.peach}>MEDICAL FOUNDATIONS · IMMUNITY</Tag>
-      <Text style={s.title}>The defense harbor.</Text>
+      <Text style={s.title}>Inside the immunity club.</Text>
       <Text style={s.body}>
         Three linked symbols. Learn what each represents, then recall the
         biology with the scene hidden.
@@ -90,7 +90,7 @@ export function MedicineLesson({
                 <Image
                   resizeMode="stretch"
                   accessibilityLabel={lesson.cue}
-                  source={require("../../assets/medical-harbor.png")}
+                  source={require("../../assets/medical-hooks.png")}
                   style={{
                     position: "absolute",
                     width: 468,

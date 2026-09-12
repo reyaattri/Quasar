@@ -1,0 +1,65 @@
+[
+  {
+    "world": "dojo",
+    "seconds": 96,
+    "BPM": 80,
+    "bars": 32,
+    "events": 331,
+    "peakBeforeMaster": 0.1499246507883072,
+    "gain": 4.535611698440148,
+    "sections": [
+      "Introduction",
+      "Main theme",
+      "Sparse bridge",
+      "Reprise"
+    ],
+    "instruments": [
+      "plucked string",
+      "breathy flute",
+      "soft harmonic bed",
+      "wood percussion"
+    ]
+  },
+  {
+    "world": "egypt",
+    "seconds": 96,
+    "BPM": 80,
+    "bars": 32,
+    "events": 412,
+    "peakBeforeMaster": 0.20008116960525513,
+    "gain": 3.3986206765063804,
+    "sections": [
+      "Introduction",
+      "Main theme",
+      "Sparse bridge",
+      "Reprise"
+    ],
+    "instruments": [
+      "oud-like plucked string",
+      "reed-like flute",
+      "frame drum",
+      "harmonic bed"
+    ]
+  },
+  {
+    "world": "neon",
+    "seconds": 96,
+    "BPM": 80,
+    "bars": 32,
+    "events": 544,
+    "peakBeforeMaster": 0.308336466550827,
+    "gain": 2.205382994774337,
+    "sections": [
+      "Introduction",
+      "Main theme",
+      "Sparse bridge",
+      "Reprise"
+    ],
+    "instruments": [
+      "electric keys",
+      "synth bass",
+      "pads",
+      "soft drum kit"
+    ]
+  }
+]

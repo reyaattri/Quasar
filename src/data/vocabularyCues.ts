@@ -5,7 +5,7 @@ export const vocabularyCues = [
     hook: "LOOSE LID",
     caption: "A LOOSE LID lifts the fog. The recipe becomes LUCID.",
     story:
-      "The chef lifts a loose lid. Out comes a recipe so clear even the carrot understands it. Lucid means clear and easy to understand.",
+      "The chef lifts a loose lid. The fog clears, and he can finally read the recipe. Lucid means clear and easy to understand.",
   },
   {
     pronunciation: "muh-TIK-yuh-lus · adjective",
@@ -13,23 +13,23 @@ export const vocabularyCues = [
     hook: "A tick with a checklist",
     caption: "This METICULOUS inspector checks every single thread.",
     story:
-      "A tiny tick measures an enormous sock, thread by thread. It refuses to approve even one crooked stitch. Meticulous means extremely careful about details.",
+      "A fussy tailor checks an enormous sock through a giant magnifying glass. His tiny tick assistant refuses to approve one crooked stitch. Meticulous means extremely careful about details.",
   },
   {
     pronunciation: "ih-FEM-er-ul · adjective",
     type: "Picture hook",
     hook: "A bubble wedding",
-    caption: "The marriage vows are longer than this EPHEMERAL wedding.",
+    caption: "The photographer blinked. The EPHEMERAL wedding was over.",
     story:
-      "Two soap bubbles marry in front of a snail. Before the snail finishes the ceremony, pop! Ephemeral means lasting only a short time.",
+      "A wedding photographer lines up a perfect shot of two soap-bubble newlyweds. Before he presses the shutter, pop! Ephemeral means lasting only a short time.",
   },
   {
     pronunciation: "rih-ZIL-yunt · adjective",
     type: "Sound hook",
     hook: "RE-SEAL IT",
-    caption: "RE-SEAL IT, get back up: a RESILIENT knight.",
+    caption: "Flattened, patched, standing again: a RESILIENT soldier.",
     story:
-      "A feather flattens an inflatable knight. The knight patches the hole, pumps himself up and tries again. Resilient means able to recover after a setback.",
+      "A ridiculous feather flattens an inflatable soldier. His friend re-seals the tear, pumps him up, and he stands again. Resilient means able to recover after a setback.",
   },
   {
     pronunciation: "AV-er-iss · noun",
@@ -42,10 +42,10 @@ export const vocabularyCues = [
   {
     pronunciation: "am-BIG-yoo-us · adjective",
     type: "Picture hook",
-    hook: "One shadow, two stories",
-    caption: "Dragon or knight? The shadow is AMBIGUOUS.",
+    hook: "One porcupine, two shadows",
+    caption: "Knight or dragon? The porcupine’s shadow is AMBIGUOUS.",
     story:
-      "A tiny hedgehog casts a strange shadow. One person sees a dragon; another sees a knight. Ambiguous means open to more than one plausible interpretation.",
+      "A tiny porcupine casts one enormous shadow. One visitor sees a knight; another sees a dragon. Ambiguous means open to more than one plausible interpretation.",
   },
   {
     pronunciation: "KAN-did · adjective",
@@ -53,7 +53,7 @@ export const vocabularyCues = [
     hook: "The CAN DID it",
     caption: "The CAN DID it—and makes a CANDID confession.",
     story:
-      "An embarrassed tin can raises its hand. Yes, it ate the birthday cake. No excuses. Candid means frank and honest.",
+      "A child points at an embarrassed tin can. The can raises its hand and admits eating the birthday cake. No excuses. Candid means frank and honest.",
   },
   {
     pronunciation: "prag-MAT-ik · adjective",

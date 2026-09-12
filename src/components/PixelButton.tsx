@@ -1,5 +1,6 @@
-import React, { useRef } from "react";
-import { Animated, Image, Pressable, View } from "react-native";
+import Svg, { Defs, ClipPath, Path, Image as SpriteImage } from "react-native-svg";
+import React, { useId, useRef } from "react";
+import { Animated, Pressable, View } from "react-native";
 const frames = {
   start: [90, 50, 490, 134],
   back: [90, 422, 490, 132],
@@ -10,7 +11,7 @@ const frames = {
   options: [1224, 303, 490, 185],
   restart: [1224, 553, 490, 185],
 } as const;
-/** Renders the supplied button sheet unchanged, using measured sprite frames. */
+/** Clips the exterior white matte to the supplied sprite’s stepped silhouette. */
 export function PixelButton({
   kind,
   label,
@@ -24,6 +25,7 @@ export function PixelButton({
   disabled?: boolean;
   width?: number;
 }) {
+  const clip = useId().replace(/:/g, "");
   const depth = useRef(new Animated.Value(0)).current;
   const [x, y, w, h] = frames[kind],
     scale = width / w;
@@ -51,19 +53,10 @@ export function PixelButton({
     >
       <Animated.View style={{ transform: [{ translateY: depth }] }}>
         <View style={{ width, height: h * scale, overflow: "hidden" }}>
-          <Image
-            resizeMethod="resize"
-            resizeMode="stretch"
-            accessible={false}
-            source={require("../../assets/pixel-buttons-user.jpg")}
-            style={{
-              position: "absolute",
-              width: 2048 * scale,
-              height: 788 * scale,
-              left: -x * scale,
-              top: -y * scale,
-            }}
-          />
+          <Svg width={width} height={h * scale} viewBox={`0 0 ${w} ${h}`}>
+            <Defs><ClipPath id={clip}><Path d={`M42 2H${w-42}V10H${w-26}V18H${w-18}V26H${w-10}V42H${w-2}V${h-42}H${w-10}V${h-26}H${w-18}V${h-18}H${w-26}V${h-10}H${w-42}V${h-2}H42V${h-10}H26V${h-18}H18V${h-26}H10V${h-42}H2V42H10V26H18V18H26V10H42Z`} /></ClipPath></Defs>
+            <SpriteImage href={require("../../assets/pixel-buttons-user.jpg")} x={-x} y={-y} width={2048} height={788} preserveAspectRatio="none" clipPath={`url(#${clip})`} />
+          </Svg>
         </View>
       </Animated.View>
     </Pressable>

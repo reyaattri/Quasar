@@ -200,7 +200,7 @@ export function SatCourse({
               <Image
                 resizeMode="stretch"
                 accessibilityLabel={jokes[index]}
-                source={require("../../assets/sat-ink-cartoons.png")}
+                source={require("../../assets/sat-cartoons-user-selected.png")}
                 style={{
                   position: "absolute",
                   width: width * 5,

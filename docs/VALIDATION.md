@@ -1,27 +1,17 @@
-# September 10 learning-world update
+# Validation record — September 12, 2026
 
-TypeScript and ten logic/database checks pass. Seven browser tests pass at phone sizes, covering onboarding, both legacy scenes, recall, application, both SAT five-word batches, context gating, reload persistence, palace movement, wrong answers, full-route recall and music controls. Audio controls were exercised in a browser; native audio remains unverified.
+Passed locally:
 
-# Validation record — September 10, 2026
+- TypeScript typecheck.
+- Expo production web export. The output includes the active SAT, medical and memory-world assets and excludes the removed computer-science curriculum and artwork.
+- Eleven logic/database tests: all three worlds have six distinct rooms and stable anchors; pi reconstructs 12 decimal digits in order; custom shopping lists; curriculum consistency; FSRS behavior; date revival; streaks; immutable profile updates; Supabase schema, RLS and quota behavior.
+- Thirteen Chrome phone-viewport flows. Coverage includes onboarding, SAT’s two five-word batches and context gates, the selected Resilient and Ambiguous artwork, six enterable neon rooms, hidden and ordered pi recall, custom eight-item shopping routes, all four Fun & Flex activities, medical recall, the three schematic models, the sourced heart and unavailable-AR feedback, persistence and small-screen overflow.
+- Production screenshots were inspected for the world map, arcade room, floating pi cue, card trainer, face trainer, sourced heart, Resilient and Ambiguous cards.
 
-Passed:
+The six-room route test confirms the room names in order: Entrance steps, Arcade, Greenhouse, Ramen diner, Antenna workshop and Moon observatory. It opens the supplied cue inside every room, recalls every digit pair, returns to the world between rooms and reconstructs `3.141592653589`.
 
-- TypeScript strict typecheck.
-- Expo web production bundle export.
-- Ten automated logic/database tests, including pi ordering and custom-list validation: curriculum consistency; FSRS failure timing; lapses; date revival; calendar-day streaks; application vocabulary hints; immutable profile updates; schema, seed, RLS and quota enforcement in PGlite.
-- Seven Chrome end-to-end tests: onboarding, legacy scenes, FSRS review, SAT five-word batches and context gates, palace movement, wrong and right answers, full-route recall, music controls, reload persistence and phone overflow.
-- Native Android project generation with Expo prebuild.
+The browser tests exercise the React Native Web build. Android/iOS binaries, real phone AR placement, camera QR scanning, live Supabase, RevenueCat purchases and external generation services still require account configuration and device testing. The heart model is a sourced educational geometry with nine labels; Quasar has not clinically validated it.
 
-Screenshots: home-mobile.png, scene-mobile.png, computing-mobile.png, mnemonic-mobile.png.
+No current official 2026 SAT questions are reproduced. The app’s context questions are original SAT-style practice and say so in the interface.
 
-The browser tests exercise the React Native Web build of the same app. They do not substitute for testing an installed Android or iOS binary.
-
-No live Supabase project, RevenueCat store products or generation API credentials were supplied. Those integrations are implemented but live sign-in, purchases, restoration, subscription expiry and model calls remain unverified.
-
-Dependency audit: 10 moderate findings, no high or critical findings, all through Expo’s xcode/uuid build-tool dependency chain. npm’s proposed major downgrade to Expo 46 is incompatible with this SDK and was not applied. Recheck upstream fixes before release.
-
-The exact approved computing file is copied unchanged into assets/cs-storybook.png. Educational text accompanies symbolic artwork: the binary-search picture is a mnemonic, not a literal execution trace or numbered sorted array.
-
-Android debug compilation was attempted twice. It stops in the Gradle generated-class compiler with java.nio.file.AccessDeniedException while closing javax.inject-1.jar inside the writable Gradle cache. The installed SDK also returns access denied. No APK or emulator run is claimed.
-
-Latest validation adds custom eight-item lists, medical recall, continuous/guided movement, full-screen palace view and explicit image-loading checks. Final screenshots were visually inspected; atlas rendering uses explicit stretch sizing to avoid blank clipped panels on web. GitHub synchronization is pending authorization from automatic approval review; native workflows are prepared locally, not claimed as run.
+GitHub synchronization remains pending explicit approval for the public upload. Local Git commits and the source archive are maintained independently.

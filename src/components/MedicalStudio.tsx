@@ -27,9 +27,10 @@ function LessonQR({ value }: { value: string }) {
   </Svg>;
 }
 export function MedicalStudio({ concept }: { concept: number }) {
+  const [anatomy, setAnatomy] = useState(false);
   const [open, setOpen] = useState(false), [reveal, setReveal] = useState(false);
   const origin = publicOrigin();
-  const route = `/medical-room.html?concept=${concept}`;
+  const route = `/medical-room.html?concept=${anatomy ? 3 : concept}`;
   const url = origin + route;
   const [error, setError] = useState("");
   return <>
@@ -41,9 +42,11 @@ export function MedicalStudio({ concept }: { concept: number }) {
       <Text style={s.body}>Turn the model around. Explore its shape. Then hide it and explain what you remember.</Text>
       <Button disabled={Platform.OS !== "web" && !origin} onPress={() => {
         setError("");
-        if (Platform.OS === "web") setOpen(true);
+        if (Platform.OS === "web") { setAnatomy(false); setOpen(true); }
         else Linking.openURL(url).catch(() => setError("The studio could not open. Please try again."));
       }}>Explore in 3D</Button>
+      <Button secondary disabled={Platform.OS !== "web" && !origin} onPress={()=>{setAnatomy(true);if(Platform.OS==="web")setOpen(true);else Linking.openURL(origin+"/medical-room.html?concept=3").catch(()=>setError("The anatomy studio could not open."));}}>Labelled heart anatomy</Button>
+      <Button secondary disabled={Platform.OS !== "web" && !origin} onPress={()=>{if(Platform.OS==="web")setOpen(true);else Linking.openURL(url).catch(()=>setError("Room viewing could not open."));}}>View in your room</Button>
       <Text style={s.small}>{Platform.OS !== "web" && !origin ? "The 3D studio is not available in this native preview yet." : "On compatible phones, choose “Place in my room” inside the viewer."}</Text>
       {!!error && <Text accessibilityLiveRegion="polite" style={s.small}>{error}</Text>}
       {!!origin && <>

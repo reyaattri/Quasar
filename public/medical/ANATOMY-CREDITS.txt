@@ -1,0 +1,16 @@
+Z-Anatomy / BodyParts3D heart and great-vessel selection
+
+Geometry: Z-Anatomy contributors, based on BodyParts3D © The Database Center for Life Science (DBCLS).
+Licence: Creative Commons Attribution-ShareAlike 4.0 International
+https://creativecommons.org/licenses/by-sa/4.0/
+Original project: https://github.com/Z-Anatomy/Models-of-human-anatomy
+GLB conversion used: Liyucheng1997/242_lab-human-anatomy
+https://github.com/Liyucheng1997/242_lab-human-anatomy/tree/main/public/models
+
+Quasar modifications: selected nine named heart and great-vessel meshes for display, centred the model, generated label coordinates from mesh bounding-box centres. No mesh vertices were reshaped. This derivative asset remains CC BY-SA 4.0. The licence applies to the anatomy asset, not unrelated Quasar code or artwork.
+
+Labels preserve source English anatomical names. This reference is not patient-specific imaging and is not validated for diagnosis, surgical planning or anatomical measurement. Hidden structures may be behind the visible surface; label points represent centres of the named structures.
+
+Draco decoder: Google Draco, Apache License 2.0.
+https://github.com/google/draco/blob/main/LICENSE
+Model Viewer: Google, Apache License 2.0; see MODEL-VIEWER-LICENSE.txt.

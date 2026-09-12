@@ -13,7 +13,7 @@ test("database schema seeds and row-level security isolates accounts", async () 
   await db.exec(fs.readFileSync("supabase/seed.sql", "utf8"));
   assert.equal(
     (await db.query("select count(*)::int as n from facts")).rows[0].n,
-    16,
+    10,
   );
   const alice = "11111111-1111-4111-8111-111111111111",
     bob = "22222222-2222-4222-8222-222222222222";
@@ -36,7 +36,7 @@ test("database schema seeds and row-level security isolates accounts", async () 
     0,
   );
   await db.exec("set role anon");
-  assert.equal((await db.query("select * from scenes")).rows.length, 2);
+  assert.equal((await db.query("select * from scenes")).rows.length, 1);
   await assert.rejects(() =>
     db.exec("insert into facts values ('bad','bad','bad',0)"),
   );

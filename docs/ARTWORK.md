@@ -41,3 +41,17 @@ All three new raster atlases use the built-in image-generation tool. The uploade
 Prompt specification for the vocabulary atlas: exact 5-column by 2-row layout, hand-inked crosshatched cartoons with warm paper and ochre accents; loose-lid chef, meticulous tick inspecting a sock, ephemeral bubble wedding, resilient inflatable knight, avaricious rice king, ambiguous hedgehog shadow, candid tin-can confession, pragmatic wizard using a ladder, tenacious poker player, elusive eel escaping on skates. No cats, copied book panels, or named guide lore.
 
 Prompt specification for medical art: three equal panels forming an original defense harbor; harbor wall symbolizes skin barrier, round cleanup worker enclosing a germ symbolizes phagocytosis, Y-shaped matching tool symbolizes antibody specificity. Loose ink/gouache, warm paper, original human characters; no clinical procedure or literal-anatomy claim.
+
+## Illustrated learning update
+
+SAT now uses ten original human-led comic panels in assets/sat-human-cartoons.png. Each card pairs a sound or picture hook with a definition, caption and hidden recall. Five successful word recalls lead into an original SAT-style context question. These are not claimed to be released 2026 SAT questions or reproductions of Vocabulary Cartoons.
+
+The illustrated palace navigation is restored. Entering a numbered stop opens the supplied conservatory interior and floating memory card. World-specific peg objects, personal hooks, plant anchors and delayed route review support stable location cues and retrieval. The current interface is an illustrated walking map, not a first-person 3D environment.
+
+The three 96-second music loops are original synthesized arrangements with multiple sections and parts; no third-party recordings were sampled. Arrangement details are in music-scores.json. Pixel button silhouettes clip the supplied sprite sheet's white exterior without erasing its lettering.
+
+New artwork: sat-human-cartoons.png, medical-hooks.png, lesson-stories.png and world-cues-v2.png. palace-interiors.png preserves the user's selected attachment. Prompt records are in ARTWORK-UPDATE.json. Original illustrations are educational metaphors, not anatomical depictions.
+
+The active SAT atlas is `assets/sat-cartoons-user-selected.png`, copied byte-for-byte from the user's selected attachment. Its Resilient panel uses the flattened-and-repaired soldier; its Ambiguous panel uses the small porcupine with two possible shadow interpretations.
+
+Memory references: https://pmc.ncbi.nlm.nih.gov/articles/PMC5439266/ and https://pubmed.ncbi.nlm.nih.gov/21252317/ support location-based mnemonic training and retrieval practice; they do not establish guaranteed results for this app.

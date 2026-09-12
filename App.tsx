@@ -1,3 +1,5 @@
+import { FunFlex } from "./src/features/FunFlex";
+import { StudyShelf, AtlasArt } from "./src/components/StudyShelf";
 import { MedicineLesson } from "./src/features/MedicineLesson";
 import { Walker } from "./src/components/PalaceGame";
 import { EncounterMotion } from "./src/components/EncounterMotion";
@@ -140,8 +142,8 @@ function Quasar() {
   const userRef = useRef<string | null>(null);
   const storageReady = useRef(false);
   const scene = scenes.find((x) => x.id === sceneId)!;
-  const due = dueIds(p);
-  const mastered = Object.values(p.mastered).filter(Boolean).length;
+  const due = dueIds(p).filter(id => allFacts.some(f => f.id === id));
+  const mastered = allFacts.filter(f => p.mastered[f.id]).length;
   useEffect(() => {
     AsyncStorage.getItem(storageKey)
       .then((raw) => {
@@ -453,10 +455,7 @@ function Quasar() {
       onPress={() => openScene(sc.id)}
       style={({ pressed }) => [a.sceneCard, pressed && { opacity: 0.9 }]}
     >
-      <Image
-        source={art[sc.id as keyof typeof art][p.profile.style]}
-        style={{ width: "100%", aspectRatio: 1.8, backgroundColor: C.sage }}
-      />
+      <View style={{backgroundColor:C.yellow}}><AtlasArt source={require("./assets/sat-cartoons-user-selected.png")} columns={5} rows={2} index={7} height={112}/></View>
       <View style={{ padding: 18, gap: 9 }}>
         <Tag color={sc.color}>{sc.subject}</Tag>
         <Text style={s.h3}>{sc.title}</Text>
@@ -623,7 +622,7 @@ function Quasar() {
             {scenes.map(sceneCard)}
           </View>
           <View style={a.comingRow}>
-            {["Math", "Chemistry", "More CS"].map((name, i) => (
+            {["Math", "Chemistry"].map((name, i) => (
               <View key={name} style={a.coming}>
                 <Icon
                   name={i === 0 ? "spark" : i === 1 ? "leaf" : "book"}
@@ -653,27 +652,6 @@ function Quasar() {
           </View>
           <Icon name="arrow" />
         </Pressable>
-        <View style={s.section}>
-          <View style={s.between}>
-            <Text style={s.h2}>Just for the fun of it</Text>
-            <Tag color={C.peach}>FUN & FLEX</Tag>
-          </View>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => nav("flex")}
-            style={a.piCard}
-          >
-            <Text style={a.piSymbol}>π</Text>
-            <View style={{ flex: 1, gap: 5 }}>
-              <Text style={s.h3}>A palace for pi</Text>
-              <Text style={s.body}>
-                Walk a world. Remember 12 decimal digits with six unforgettable
-                objects.
-              </Text>
-            </View>
-            <Icon name="arrow" />
-          </Pressable>
-        </View>
         <Text style={[s.small, { textAlign: "center" }]}>
           Learn the story. Recall the idea. Apply what you know.
         </Text>
@@ -681,47 +659,15 @@ function Quasar() {
     );
   };
   const library = () => (
-    <View style={{ gap: 25 }}>
-      {heading(
-        "THE SCENE LIBRARY",
-        "Explore your subjects.",
-        "Explore a scene, follow its little story, and make the ideas your own.",
-      )}
-      {stylePicker()}
-      <View style={[a.grid, wide && { flexDirection: "row" }]}>
-        {scenes.map(sceneCard)}
-      </View>
-      <Card>
-        <View style={s.row}>
-          <Icon name="cards" />
-          <Text style={s.h3}>SAT pocket practice</Text>
-        </View>
-        <Text style={s.body}>
-          Ten vocabulary cards, including four extra words. Perfect for a spare
-          minute.
-        </Text>
-        <Button
-          secondary
-          icon="arrow"
-          onPress={() => {
-            nav("review");
-            startReview(
-              allFacts.filter((f) => f.sceneId === "market").map((f) => f.id),
-            );
-          }}
-        >
-          Open vocabulary cards
-        </Button>
+    <View style={{gap:24}}>
+      <FunFlex onWorlds={()=>nav("flex")}/>
+      <Card style={{backgroundColor:C.paper,borderRadius:30,borderWidth:1,borderColor:C.green}}>
+        <Tag>START WITH THE HOW</Tag><Text style={s.h2}>Six ways to make a memory.</Text>
+        <AtlasArt source={require("./assets/lesson-stories.png")} columns={3} rows={2} index={5} height={190}/>
+        <Text style={s.body}>Meet the peg baker, the moon astronomer and a traveler who gives every idea an address.</Text>
+        <Button onPress={()=>{setLesson(0);nav("course");}}>Open the memory toolkit</Button>
       </Card>
-      <Text style={s.h2}>Still growing</Text>
-      {["Math", "Chemistry", "More computer science"].map((x) => (
-        <Card key={x} style={{ opacity: 0.65 }}>
-          <View style={s.between}>
-            <Text style={s.h3}>{x}</Text>
-            <Tag>Coming soon</Tag>
-          </View>
-        </Card>
-      ))}
+      <Button secondary onPress={()=>openScene("market")}>Revisit the illustrated word market</Button>
     </View>
   );
   const scenePage = () => {
@@ -825,7 +771,7 @@ function Quasar() {
               secondary
               onPress={() => startReview(allFacts.map((f) => f.id))}
             >
-              Practice all 16 cards
+              Practice all 10 cards
             </Button>
             <Button secondary onPress={() => nav("library")}>
               Explore scenes
@@ -1370,7 +1316,7 @@ function Quasar() {
                     )}
                     <Text style={s.label}>What are you curious about?</Text>
                     <View style={s.row}>
-                      {["SAT vocabulary", "Computer science"].map((sub) => (
+                      {["SAT vocabulary", "Memory skills", "Medical foundations"].map((sub) => (
                         <Pressable
                           accessibilityRole="button"
                           accessibilityState={{

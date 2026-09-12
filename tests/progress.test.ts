@@ -11,6 +11,20 @@ import {
 import { allFacts, scenes, lessons } from "../src/data/content";
 import { checkRoute, journeys } from "../src/data/palaces";
 import { parseShoppingList, shoppingJourney } from "../src/lib/shoppingPalace";
+import { palaceRooms, objectPoints } from "../src/data/palaceRooms";
+
+test("every world has six distinct rooms with stable object anchors", () => {
+  assert.equal(palaceRooms.length, 3);
+  assert.equal(objectPoints.length, 3);
+  for (const rooms of palaceRooms) {
+    assert.equal(rooms.length, 6);
+    assert.equal(new Set(rooms.map((room) => room.objects.join("|"))).size, 6);
+    for (const room of rooms) {
+      assert.equal(room.objects.length, 3);
+      assert.ok(room.action.length > 30);
+    }
+  }
+});
 test("custom shopping routes preserve quantities and reject oversized or empty lists", () => {
   const items = parseShoppingList("2 loaves of bread, milk\n  carrots  ");
   assert.deepEqual(items, ["2 loaves of bread", "milk", "carrots"]);
@@ -30,8 +44,8 @@ test("palace pi mapping reconstructs the digits and rejects reordered or missing
   assert.equal(checkRoute([...answers].reverse(), items), false);
   assert.equal(checkRoute(answers.slice(1), items), false);
 });
-test("curriculum contains exactly two scenes, six cues each and unique facts", () => {
-  assert.equal(scenes.length, 2);
+test("curriculum contains one active scene, six cues each and unique facts", () => {
+  assert.equal(scenes.length, 1);
   for (const s of scenes) {
     assert.equal(s.facts.length, 6);
     for (const f of s.facts) {
@@ -40,7 +54,7 @@ test("curriculum contains exactly two scenes, six cues each and unique facts", (
       assert.ok(f.y > 0 && f.y < 100);
     }
   }
-  assert.equal(new Set(allFacts.map((f) => f.id)).size, 16);
+  assert.equal(new Set(allFacts.map((f) => f.id)).size, 10);
   assert.equal(lessons.length, 6);
 });
 test("missed recall does not mark mastery and is scheduled sooner", () => {

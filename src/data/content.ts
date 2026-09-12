@@ -117,86 +117,6 @@ const satRows = [
     "Ambiguity means multiple possible interpretations.",
   ],
 ] as const;
-const csRows = [
-  [
-    "algorithm",
-    "Algorithm",
-    "An ordered set of steps for solving a problem",
-    "The instruction stairs",
-    "Follow the arrow steps in order to reach the door. Skipping a step changes the route. An algorithm is a defined sequence of instructions.",
-    "Which is an algorithm?",
-    [
-      "A random pile of notes",
-      "Step-by-step directions for sorting parcels",
-      "The name of a computer",
-    ],
-    1,
-    "An algorithm gives ordered instructions to accomplish a task.",
-  ],
-  [
-    "queue",
-    "Queue",
-    "First in, first out (FIFO)",
-    "The parcel conveyor",
-    "Put a parcel at the back of a line. The parcel that entered first leaves first. Picture a fair queue at a counter.",
-    "A, B, then C enter an empty queue. Which leaves first?",
-    ["C", "B", "A"],
-    2,
-    "A queue removes the item that has been waiting longest.",
-  ],
-  [
-    "stack",
-    "Stack",
-    "Last in, first out (LIFO)",
-    "The plate tower",
-    "Add a plate to the top, then remove that same top plate first. The last plate in is the first plate out.",
-    "A, B, then C are pushed onto an empty stack. What pops first?",
-    ["C", "A", "B"],
-    0,
-    "The most recently pushed item sits on top of a stack.",
-  ],
-  [
-    "recursion",
-    "Recursion",
-    "Solving a problem using smaller instances of itself, with a stopping case",
-    "The nesting doors",
-    "Walk through a doorway containing a smaller version of itself. The final closed door is the base case: the journey must stop.",
-    "What keeps a recursive function from calling itself forever?",
-    ["A larger screen", "A reachable base case", "A longer name"],
-    1,
-    "A base case ends recursion; each call must make progress toward it.",
-  ],
-  [
-    "binary",
-    "Binary search",
-    "Finding a target in sorted data by repeatedly halving the search interval",
-    "The splitting ramp",
-    "Check the middle of a sorted row. One half cannot contain the target, so it goes down the other ramp. Half, then half again.",
-    "What does ordinary binary search require?",
-    [
-      "Randomly arranged data",
-      "A stack of plates",
-      "Data sorted by the searched key",
-    ],
-    2,
-    "Ordering lets a comparison eliminate half the remaining search interval.",
-  ],
-  [
-    "hash",
-    "Hash map",
-    "A structure mapping keys to values through a hash function",
-    "The key sorter",
-    "Insert a key into a sorter that directs it toward a drawer. Keys lead to values. Sometimes two keys reach one drawer: collisions need handling.",
-    "What does a hash map associate?",
-    [
-      "Keys with values",
-      "Only consecutive integers",
-      "Only the newest two items",
-    ],
-    0,
-    "Hash maps store key–value associations; collisions are resolved by the implementation.",
-  ],
-] as const;
 function makeFacts(rows: readonly (readonly any[])[], sceneId: string): Fact[] {
   return rows.map((r, i) => ({
     id: r[0],
@@ -230,28 +150,6 @@ export const scenes: SceneData[] = [
       sample:
         "The writer’s meticulous revision turned the confusing report into a lucid explanation.",
       keywords: [["meticulous"], ["lucid"]],
-    },
-  },
-  {
-    id: "workshop",
-    subject: "Computer science",
-    title: "The sorting workshop",
-    subtitle: "A little order. A lot of understanding.",
-    duration: "9 min",
-    color: "#DCE7D7",
-    facts: makeFacts(csRows, "workshop"),
-    application: {
-      question:
-        "Design a parcel service that handles arrivals fairly and lets an editor undo the most recent change. Which structure belongs to each job, and why?",
-      hint: "Explain the order in which each structure removes items.",
-      sample:
-        "Use a queue for parcels because first in is first out (FIFO). Use a stack for undo because the last change is removed first (LIFO).",
-      keywords: [
-        ["queue"],
-        ["stack"],
-        ["fifo", "first in", "oldest", "arrival"],
-        ["lifo", "last in", "recent", "newest"],
-      ],
     },
   },
 ];

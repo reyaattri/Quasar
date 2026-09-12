@@ -6,6 +6,7 @@ const out = path.resolve(".test-build");
 for (const rel of [
   "src/data/content.ts",
   "src/data/palaces.ts",
+  "src/data/palaceRooms.ts",
   "src/lib/shoppingPalace.ts",
   "src/lib/progress.ts",
   "tests/progress.test.ts",

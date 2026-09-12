@@ -31,7 +31,22 @@ test("medical cards open the studio without leaving saved lesson", async ({ page
   await page.getByRole("button", { name: "Explore in 3D" }).click();
   await expect(page.frameLocator('iframe').getByRole("heading", {name:"A barrier made of cells"})).toBeVisible();
   await page.getByRole("button", { name: "Back to medical cards" }).click();
-  await expect(page.getByText("The defense harbor.")).toBeVisible();
+  await expect(page.getByText("Inside the immunity club.")).toBeVisible();
   await expect(page.getByRole("button", {name:"Unfold my phone pass"})).toHaveCount(0);
+});
+
+test("sourced heart loads locally, labels named structures, and explains unavailable AR", async ({page})=>{
+  await page.route('https://www.gstatic.com/**',route=>route.abort());
+  await page.goto('/medical-room.html?concept=3');
+  await expect(page.locator('p#status')).toHaveText('Model ready. Drag to explore.',{timeout:30000});
+  await expect.poll(()=>page.locator('model-viewer').evaluate((m:any)=>m.loaded&&m.modelIsVisible)).toBe(true);
+  await expect(page.locator('#anatomy-labels button')).toHaveCount(9);
+  await page.locator('#anatomy-labels').getByRole('button',{name:'Left ventricle',exact:true}).click();
+  await expect(page.locator('[slot="hotspot-selected"]')).toHaveText('Left ventricle');
+  await page.screenshot({path:'docs/heart-anatomy-mobile.png',fullPage:true});
+  await page.getByRole('button',{name:'View in your room',exact:true}).click();
+  await expect(page.locator('p#status')).toContainText('compatible phone');
+  await page.getByRole('button',{name:'Hide model & recall'}).click();
+  await expect(page.locator('#anatomy-labels')).toBeHidden();
 });
 
