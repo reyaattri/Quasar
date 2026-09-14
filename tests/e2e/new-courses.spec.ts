@@ -58,7 +58,9 @@ test("Korean tracing and conversations never require microphone success", async 
     .click();
   const recording = await audioResponse;
   expect((await recording.body()).length).toBeGreaterThan(1000);
-  await expect(page.getByText(/Korean speaker recording\./)).toBeVisible();
+  await expect(
+    page.getByText("Listen first, then repeat at your own pace."),
+  ).toBeVisible();
   const canvas = page.getByLabel("Finger tracing canvas");
   await canvas.scrollIntoViewIfNeeded();
   const box = await canvas.boundingBox();

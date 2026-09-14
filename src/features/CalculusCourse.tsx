@@ -1,15 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import Svg, { Path, Line, Circle, Text as SvgText } from "react-native-svg";
 import { Button, C, Card, s, Tag, Text } from "../components/ui";
 import { SuccessBurst } from "../components/SuccessBurst";
 import { AtlasArt } from "../components/StudyShelf";
 import { AreaLab, PowerLab, EquationSteps } from "../components/CalculusLabs";
+import { LogExceptionLab, MechanismLab } from "../components/CalculusExplorers";
 
 import { calculusLessons } from "../data/calculusLessons";
 function SlopeLab() {
   const [x, setX] = useState(1),
     [h, setH] = useState(1);
+  const [running, setRunning] = useState(false);
+  useEffect(() => {
+    if (!running) return;
+    const timer = setInterval(
+      () =>
+        setH((old) => {
+          if (old <= 0.015) {
+            setRunning(false);
+            return 0.01;
+          }
+          return Math.max(0.01, old * 0.91);
+        }),
+      60,
+    );
+    return () => clearInterval(timer);
+  }, [running]);
   const px = (v: number) => 30 + v * 70,
     py = (v: number) => 205 - v * 20;
   const curve = Array.from(
@@ -29,6 +46,36 @@ function SlopeLab() {
         <Line x1={30} y1={20} x2={30} y2={205} stroke={C.ink} />
         <Path d={curve} stroke={C.green} strokeWidth={3} fill="none" />
         <Line
+          x1={px(x - 0.4)}
+          y1={py(x * x - 2 * x * 0.4)}
+          x2={px(x + 0.4)}
+          y2={py(x * x + 2 * x * 0.4)}
+          stroke="#718096"
+          strokeDasharray="5 4"
+          strokeWidth={2}
+        />
+        <Line
+          x1={px(x)}
+          y1={py(x * x)}
+          x2={px(x + h)}
+          y2={py(x * x)}
+          stroke={C.red}
+          strokeDasharray="3 3"
+        />
+        <Line
+          x1={px(x + h)}
+          y1={py(x * x)}
+          x2={px(x + h)}
+          y2={py((x + h) ** 2)}
+          stroke={C.red}
+          strokeDasharray="3 3"
+        />
+        {[0, 1, 2, 3].map((t) => (
+          <SvgText key={t} x={px(t) - 3} y={222} fontSize={12}>
+            {t}
+          </SvgText>
+        ))}
+        <Line
           x1={px(x)}
           y1={py(x * x)}
           x2={px(x + h)}
@@ -47,15 +94,28 @@ function SlopeLab() {
         </SvgText>
       </Svg>
       <Text style={s.body}>
-        x = {x} · h = {h}
+        x = {x} · h = {Number(h.toFixed(3))}
         {"\n"}Average slope: {(2 * x + h).toFixed(2)}
         {"\n"}Slope as h → 0: {2 * x}
       </Text>
+      <Text style={s.small}>
+        Red joins two points. Grey is the tangent at the first point. As the gap
+        shrinks, the red slope approaches the grey slope.
+      </Text>
+      <Button
+        onPress={() => {
+          setH(1);
+          setRunning(true);
+        }}
+      >
+        Animate secant into tangent
+      </Button>
       <Button
         secondary
-        onPress={() =>
-          setH(h === 1 ? 0.5 : h === 0.5 ? 0.1 : h === 0.1 ? 0.01 : 1)
-        }
+        onPress={() => {
+          setRunning(false);
+          setH(h === 1 ? 0.5 : h === 0.5 ? 0.1 : h === 0.1 ? 0.01 : 1);
+        }}
       >
         Bring footprints closer
       </Button>
@@ -66,6 +126,8 @@ function SlopeLab() {
   );
 }
 export function CalculusCourse() {
+  const [details, setDetails] = useState(false),
+    [hook, setHook] = useState(false);
   const [lesson, setLesson] = useState<number | null>(null),
     [step, setStep] = useState(0),
     [quiz, setQuiz] = useState(false),
@@ -76,8 +138,8 @@ export function CalculusCourse() {
         <Tag>THE CALCULUS WORKSHOP</Tag>
         <Text style={s.title}>Understand the move. Then remember it.</Text>
         <Text style={s.body}>
-          Three guided lessons with worked examples, visual hooks and an
-          application check. Start with derivatives, then reverse the process.
+          Change a value. Predict what happens. Watch the maths respond. Three
+          visual journeys from local change to accumulated totals.
         </Text>
         {calculusLessons.map((l, i) => (
           <Card
@@ -117,26 +179,61 @@ export function CalculusCourse() {
         <>
           <Card style={{ gap: 16 }}>
             <Text style={s.h2}>{current[0]}</Text>
-            <AtlasArt
-              source={require("../../assets/calculus-cats.png")}
-              columns={3}
-              rows={2}
-              index={lesson * 2 + (step >= 2 ? 1 : 0)}
-              height={280}
-            />
-            <Text style={s.body}>{current[1]}</Text>
-            <EquationSteps lines={workedEquations[lesson][step]} />
-            <Tag color={C.yellow}>YOUR MEMORY HOOK</Tag>
-            <Text style={s.body}>{current[2]}</Text>
+            <Text style={s.small}>EXPLORE FIRST · EXPLAIN · APPLY</Text>
           </Card>
           {lesson === 0 && step < 2 && <SlopeLab />}
           {lesson === 0 && step === 2 && <PowerLab />}
-          {lesson === 1 && step <= 2 && <PowerLab integral />}
+          {lesson === 0 && step === 3 && (
+            <MechanismLab key="terms" kind="terms" />
+          )}
+          {lesson === 0 && step === 4 && (
+            <MechanismLab key="chain" kind="chain" />
+          )}
+          {lesson === 1 && step === 1 && (
+            <MechanismLab key="constant" kind="constant" />
+          )}
+          {lesson === 1 && (step === 0 || step === 2) && <PowerLab integral />}
+          {lesson === 1 && step === 3 && <LogExceptionLab />}
+          {lesson === 1 && step === 4 && (
+            <MechanismLab key="sub" kind="substitution" />
+          )}
           {lesson === 2 && step <= 2 && <AreaLab />}
+          {lesson === 2 && step === 3 && (
+            <MechanismLab key="signed" kind="signed" />
+          )}
+          {lesson === 2 && step === 4 && (
+            <MechanismLab key="bounds" kind="substitution" />
+          )}
+          <Card style={{ gap: 14 }}>
+            <Tag>THE WORKED STEPS</Tag>
+            <EquationSteps lines={workedEquations[lesson][step]} />
+            <Button secondary onPress={() => setDetails(!details)}>
+              {details ? "Close explanation" : "Why does this work?"}
+            </Button>
+            {details && <Text style={s.body}>{current[1]}</Text>}
+            <Button secondary onPress={() => setHook(!hook)}>
+              {hook ? "Close memory hook" : "Give me a memory hook"}
+            </Button>
+            {hook && (
+              <>
+                <AtlasArt
+                  source={require("../../assets/calculus-cats.png")}
+                  columns={3}
+                  rows={2}
+                  index={lesson * 2 + (step >= 2 ? 1 : 0)}
+                  height={280}
+                />
+                <Tag color={C.yellow}>YOUR MEMORY HOOK</Tag>
+                <Text style={s.body}>{current[2]}</Text>
+              </>
+            )}
+          </Card>
           <Button
-            onPress={() =>
-              step === l.steps.length - 1 ? setQuiz(true) : setStep(step + 1)
-            }
+            onPress={() => {
+              setDetails(false);
+              setHook(false);
+              step === l.steps.length - 1 ? setQuiz(true) : setStep(step + 1);
+            }}
           >
             {step === l.steps.length - 1 ? "Try the application" : "Next step"}
           </Button>

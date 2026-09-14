@@ -28,6 +28,20 @@ const questions = [
     explain:
       "Identify whose difficulty matters: the readers are trying to understand the poems. Writing a poem is a different task from understanding one.",
   },
+  {
+    number: 4,
+    title: "An artist’s worldwide influence",
+    answer: 2,
+    explain:
+      "Notice the contrast between a career in one country and influence around the world. The missing phrase must express a geographical limit that the artist’s influence exceeds.",
+  },
+  {
+    number: 5,
+    title: "Breaking into a literary field",
+    answer: 1,
+    explain:
+      "The writer succeeded in entering the field. Read the blank as a question of access, not whether the genre was understandable or interesting.",
+  },
 ];
 export function OfficialSatPractice() {
   const [open, setOpen] = useState(false),
@@ -37,28 +51,36 @@ export function OfficialSatPractice() {
   const q = questions[index];
   return (
     <Card style={{ gap: 14, backgroundColor: C.sage }}>
-      <Tag>THREE OFFICIAL QUESTIONS</Tag>
+      <Tag>FIVE OFFICIAL QUESTIONS</Tag>
       <Text style={s.h2}>Try the real thing.</Text>
       <Text style={s.body}>
         College Board Practice Test 9 · Reading and Writing, Module 1, questions
-        1–3. These are published practice questions, not claimed to be questions
+        1–5. These are published practice questions, not claimed to be questions
         from a 2026 exam.
       </Text>
       {!open ? (
         <Button secondary onPress={() => setOpen(true)}>
-          Start three official SAT questions
+          Start five official SAT questions
         </Button>
       ) : (
         <>
           <Text style={s.h3}>
-            {index + 1} / 3 · {q.title}
+            {index + 1} / 5 · {q.title}
           </Text>
           <Text style={s.body}>
-            Open the official PDF at page 4 (printed page 2), read question{" "}
-            {q.number} and its choices, then return here to answer. The original
-            passage stays in College Board’s document.
+            Open the official PDF at page {q.number <= 3 ? 4 : 5} (printed page{" "}
+            {q.number <= 3 ? 2 : 3}), read question {q.number} and its choices,
+            then return here to answer. The original passage stays in College
+            Board’s document.
           </Text>
-          <Button secondary onPress={() => Linking.openURL(source)}>
+          <Button
+            secondary
+            onPress={() =>
+              Linking.openURL(
+                q.number <= 3 ? source : source.replace("page=4", "page=5"),
+              )
+            }
+          >
             Read official question {q.number} ↗
           </Button>
           {!read ? (
@@ -88,7 +110,7 @@ export function OfficialSatPractice() {
                   {choice === q.answer && (
                     <>
                       <SuccessBurst label="Official context cracked!" />
-                      {index < 2 ? (
+                      {index < 4 ? (
                         <Button
                           onPress={() => {
                             setIndex(index + 1);
@@ -100,8 +122,8 @@ export function OfficialSatPractice() {
                         </Button>
                       ) : (
                         <Text style={s.h3}>
-                          Three contexts completed. You tracked the evidence,
-                          not just a familiar word.
+                          Five contexts completed. You tracked the evidence, not
+                          just a familiar word.
                         </Text>
                       )}
                     </>

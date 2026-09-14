@@ -99,12 +99,12 @@ export function RoomAtmosphere({
         position: "absolute",
         inset: 0,
         overflow: "hidden",
-        opacity: 0.24,
+        opacity: 0.72,
       }}
     >
       <Image
         accessible={false}
-        blurRadius={24}
+        blurRadius={18}
         source={roomSheets[world]}
         resizeMode="stretch"
         style={{

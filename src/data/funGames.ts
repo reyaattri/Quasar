@@ -57,6 +57,7 @@ export const deck = suits.flatMap((s, si) =>
     name: `${rank} of ${s.name}`,
     object: pegs[ri],
     icon: pegIcons[ri],
+    costume: s.theme,
     hook: `${pegs[ri]} wearing ${s.theme}`,
     red: si === 0 || si === 2,
   })),

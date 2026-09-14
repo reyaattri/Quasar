@@ -52,6 +52,11 @@ test("SAT requires five recalls before each contextual question and resumes save
 }) => {
   await onboard(page);
   await page.getByRole("button", { name: "Start a five-word session" }).click();
+  await page.waitForFunction(() =>
+    Array.from(document.images).every(
+      (image) => image.complete && image.naturalWidth > 0,
+    ),
+  );
   await page.screenshot({
     path: "docs/sat-flashcard-mobile.png",
     fullPage: true,
@@ -111,14 +116,27 @@ test("SAT requires five recalls before each contextual question and resumes save
           page.getByText("Now use the meaning.", { exact: true }),
         ).toBeVisible();
       }
-      if(i===4){
-        await page.getByRole('button',{name:'Start three official SAT questions'}).click();
-        for(const [q,answer] of ['A','D','C'].entries()){
-          await expect(page.getByRole('button',{name:`Read official question ${q+1} ↗`})).toBeVisible();
-          await page.getByRole('button',{name:'I’ve read the official question'}).click();
-          await page.getByRole('button',{name:`Answer ${answer}`} ).click();
-          await expect(page.getByLabel('Official context cracked!',{exact:true})).toBeVisible();
-          if(q<2)await page.getByRole('button',{name:'Next official question'}).click();
+      if (i === 4) {
+        await page
+          .getByRole("button", { name: "Start five official SAT questions" })
+          .click();
+        for (const [q, answer] of ["A", "D", "C", "C", "B"].entries()) {
+          await expect(
+            page.getByRole("button", {
+              name: `Read official question ${q + 1} ↗`,
+            }),
+          ).toBeVisible();
+          await page
+            .getByRole("button", { name: "I’ve read the official question" })
+            .click();
+          await page.getByRole("button", { name: `Answer ${answer}` }).click();
+          await expect(
+            page.getByLabel("Official context cracked!", { exact: true }),
+          ).toBeVisible();
+          if (q < 4)
+            await page
+              .getByRole("button", { name: "Next official question" })
+              .click();
         }
       }
       await page

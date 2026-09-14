@@ -494,13 +494,17 @@ function Quasar() {
             </Button>
           </View>
           <Image
-            source={art[cont.id as keyof typeof art][p.profile.style]}
+            source={
+              cont.id === "market"
+                ? require("./assets/vocabulary-sketchbook-transparent.png")
+                : art[cont.id as keyof typeof art][p.profile.style]
+            }
             style={
               wide
                 ? { width: "45%", height: "100%", minHeight: 255 }
                 : { width: "100%", height: 205 }
             }
-            resizeMode="cover"
+            resizeMode={cont.id === "market" ? "contain" : "cover"}
           />
         </View>
         <View style={a.statsRow}>
@@ -656,13 +660,22 @@ function Quasar() {
   };
   const library = () => (
     <View style={{ gap: 24 }}>
-      <FunFlex onWorlds={() => nav("flex")} />
-      <Card style={{backgroundColor:C.yellow,gap:14,borderRadius:28}}>
+      <Card style={{ backgroundColor: C.yellow, gap: 14, borderRadius: 28 }}>
         <Tag>π · THE RIDICULOUS ROUTE</Tag>
+        <Image
+          source={require("./assets/pi-pie-transparent.png")}
+          resizeMode="contain"
+          style={{ width: "100%", height: 210 }}
+          accessibilityLabel="A runaway apple pie pulls an endless ribbon of digits"
+        />
         <Text style={s.h2}>100 digits. 50 impossible things.</Text>
-        <Text style={s.body}>Ten strange rooms, sound-coded objects, and recall without peeking. Build your first hundred decimal digits in order.</Text>
-        <Button onPress={()=>nav("pi")}>Open the π memory course</Button>
+        <Text style={s.body}>
+          Ten strange rooms, sound-coded objects, and recall without peeking.
+          Build your first hundred decimal digits in order.
+        </Text>
+        <Button onPress={() => nav("pi")}>Open the π memory course</Button>
       </Card>
+      <FunFlex onWorlds={() => nav("flex")} />
       <Card style={{ backgroundColor: C.peach, gap: 14, borderRadius: 28 }}>
         <Tag>NEW · THE CALCULUS WORKSHOP</Tag>
         <Text style={s.h2}>Slopes, crumbs, and the bigger picture.</Text>
@@ -674,6 +687,12 @@ function Quasar() {
       </Card>
       <Card style={{ backgroundColor: C.sage, gap: 14, borderRadius: 28 }}>
         <Tag>NEW · KOREAN NEIGHBOURHOOD</Tag>
+        <Image
+          source={require("./assets/korean-explore-transparent.png")}
+          resizeMode="contain"
+          style={{ width: "100%", height: 210 }}
+          accessibilityLabel="Two Korean learners trace a sound in the air"
+        />
         <Text style={s.h2}>Your first letters. Your first hello.</Text>
         <Text style={s.body}>
           See the shape, trace it with your finger, listen, and practise a small
@@ -1489,7 +1508,11 @@ function Quasar() {
               ) : page === "math" ? (
                 <CalculusCourse />
               ) : page === "pi" ? (
-                <PiCourse progress={p} onChange={setP} onWorlds={()=>nav("flex")} />
+                <PiCourse
+                  progress={p}
+                  onChange={setP}
+                  onWorlds={() => nav("flex")}
+                />
               ) : page === "korean" ? (
                 <KoreanCourse />
               ) : page === "medicine" ? (

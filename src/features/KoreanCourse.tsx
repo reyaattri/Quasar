@@ -13,7 +13,6 @@ import { Button, C, Card, s, Tag, Text } from "../components/ui";
 import { AtlasArt } from "../components/StudyShelf";
 import { readingPractice } from "../data/koreanPractice";
 import { koreanAudio } from "../data/koreanAudio";
-import audioCredits from "../../assets/korean/credits.json";
 
 const letters = [
   {
@@ -215,9 +214,7 @@ export function VoicePractice({
         player.replace(koreanAudio[phrase]);
         await player.seekTo(0);
         player.play();
-        setStatus(
-          "Korean speaker recording. Listen first, then repeat at your own pace.",
-        );
+        setStatus("Listen first, then repeat at your own pace.");
         return;
       }
       const voices = await Speech.getAvailableVoicesAsync();
@@ -417,7 +414,7 @@ export function KoreanCourse() {
             {item.name} · {item.sound}
           </Text>
           <AtlasArt
-            source={require("../../assets/korean-letter-sketches.png")}
+            source={require("../../assets/korean-actions-transparent.png")}
             columns={3}
             rows={2}
             index={index}
@@ -490,28 +487,9 @@ export function KoreanCourse() {
         Continue with King Sejong Institute ↗
       </Button>
       <Text style={s.small}>
-        Speaker recordings: HappyMidnight (나, 아, 이, 아이) and
-        TraceyJames19911993 (어), Wikimedia Commons, CC BY-SA 4.0. Original
-        recordings, unchanged. Other examples use an available Korean device
-        voice.
+        Listen first, copy the mouth movement and rhythm, then record yourself
+        when speaking unlocks.
       </Text>
-      <Button
-        secondary
-        onPress={() =>
-          Linking.openURL("https://creativecommons.org/licenses/by-sa/4.0/")
-        }
-      >
-        Audio licence and reuse ↗
-      </Button>
-      {audioCredits.map((credit) => (
-        <Button
-          key={credit.word}
-          secondary
-          onPress={() => Linking.openURL(credit.source)}
-        >
-          {credit.word} · {credit.author} · recording source ↗
-        </Button>
-      ))}
     </View>
   );
 }

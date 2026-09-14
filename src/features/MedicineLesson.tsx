@@ -10,6 +10,104 @@ const sheets = [
   require("../../assets/medical-gene-theatre.png"),
   require("../../assets/medical-signal-circus.png"),
 ];
+const pictureKeys = [
+  [
+    [
+      "TARGET STICKER = C3b",
+      "SCOOPING CLEANER = phagocyte",
+      "STICKER MAKES SCOOPING EASIER = opsonization",
+    ],
+    [
+      "TWO ALARMS = C3a and C5a",
+      "SCENT TRAIL = chemotaxis",
+      "C5a pulls neutrophils toward trouble",
+    ],
+    [
+      "PIPE STARTER = C5b",
+      "PIPE PIECES = C6, C7 and C8",
+      "RING OF C9 = membrane attack pore",
+    ],
+    [
+      "Y-SHAPED KEY = B-cell receptor",
+      "FITTER KEY = higher affinity",
+      "KEEPING THE BEST FIT = affinity maturation",
+    ],
+    [
+      "KEY TIPS = antigen specificity",
+      "NEW SLEEVE = constant region",
+      "SAME TIPS, NEW JOB = class switching",
+    ],
+    [
+      "PRINTER = plasma cell",
+      "PRINTED KEYS = antibodies",
+      "ARCHIVIST = memory B cell",
+    ],
+  ],
+  [
+    [
+      "LOCKED DNA VAULT = chromatin",
+      "DIRECTOR = transcription factors",
+      "COPY MACHINE = RNA polymerase II",
+    ],
+    [
+      "BOTTOM SCRIPT = template strand",
+      "SCRIBE MOVES 3′ → 5′",
+      "NEW RNA RIBBON GROWS 5′ → 3′",
+    ],
+    [
+      "SCISSORS REMOVE = introns",
+      "SEWN PIECES = exons",
+      "CAP + BEAD TAIL protect processed mRNA",
+    ],
+    [
+      "THEATRE DOOR = nuclear pore",
+      "APPROVED SCRIPT = processed mRNA",
+      "COURIER EXPORTS IT to cytoplasm",
+    ],
+    [
+      "THREE LETTER TICKETS = codons",
+      "BEAD COURIERS = tRNAs",
+      "STAGE MACHINE = ribosome",
+    ],
+    [
+      "BEAD CHAIN = polypeptide",
+      "COACH = chaperone",
+      "CORRECT SHAPE enables protein function",
+    ],
+  ],
+  [
+    [
+      "LIGHTNING COURIER = action potential",
+      "TIGHTROPE = motor axon",
+      "ARRIVAL depolarizes nerve terminal",
+    ],
+    [
+      "MARBLES = Ca²⁺",
+      "GATE = voltage-gated calcium channel",
+      "CALCIUM ARRIVAL triggers vesicle fusion",
+    ],
+    [
+      "ENVELOPES = acetylcholine",
+      "MAIL SACKS = vesicles",
+      "RELEASE crosses the synaptic cleft",
+    ],
+    [
+      "LOCK = nicotinic ACh receptor",
+      "OPEN DOOR = cation channel",
+      "END-PLATE depolarization starts muscle signal",
+    ],
+    [
+      "ROPE = actin and myosin",
+      "SECOND CALCIUM WAVE comes from muscle SR",
+      "TROPONIN moves the blocking tropomyosin",
+    ],
+    [
+      "CLEANER = acetylcholinesterase",
+      "CALCIUM PUMP returns Ca²⁺ to SR",
+      "CLEANUP lets the muscle relax",
+    ],
+  ],
+];
 function Picture({
   module,
   index,
@@ -264,7 +362,20 @@ export function MedicineLesson({
             <Picture module={selected} index={index} />
             <Text style={s.h3}>Make it ridiculous.</Text>
             <Text style={s.body}>{card.hook}</Text>
-            <Text style={s.h3}>Translate the picture.</Text>
+            <Tag>DECODE THE SCENE</Tag>
+            {pictureKeys[selected][index].map((key, i) => (
+              <View
+                key={key}
+                style={{
+                  padding: 12,
+                  borderRadius: 12,
+                  backgroundColor: i === 2 ? C.yellow : C.white,
+                }}
+              >
+                <Text style={i === 2 ? s.h3 : s.label}>{key}</Text>
+              </View>
+            ))}
+            <Text style={s.h3}>Now say the mechanism normally.</Text>
             <Text style={s.body}>{card.biology}</Text>
             {selected === 1 && index === 1 && <TranscriptionAct compact />}
             <Button onPress={() => setTesting(true)}>

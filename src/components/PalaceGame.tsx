@@ -255,11 +255,15 @@ export function PalaceGame({
   // Artwork and interaction share one aspect-preserving scene rectangle.
   const bounds = roomBounds(world, roomIndex);
   const sceneRatio = room ? bounds.w / bounds.h : 0.5;
-  const availableHeight = Math.max(100, height - 166);
-  const mapW = Math.min(width, availableHeight * sceneRatio);
+  // Controls float over the lower scene, so the illustration can use the whole game surface.
+  const availableHeight = Math.max(100, height);
+  // World maps use a cover fit: a narrow phone crops a sliver from the top and
+  // bottom instead of exposing side gutters. Room panels keep their square
+  // proportions and extend their own blurred atmosphere below the artwork.
+  const mapW = room ? Math.min(width, availableHeight * sceneRatio) : width;
   const mapH = mapW / sceneRatio;
   const sceneLeft = (width - mapW) / 2;
-  const sceneTop = (availableHeight - mapH) / 2;
+  const sceneTop = room ? 18 : (availableHeight - mapH) / 2;
   const walkTo = (index: number) => {
     state.current.target = index;
     state.current.direction = { x: 0, y: 0 };

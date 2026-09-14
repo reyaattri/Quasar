@@ -181,6 +181,18 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                             ? "Nearly identical names need different pictures. Exaggerate the one sound that changes, make both pictures interact at a fixed landmark, and say the contrast aloud: “CLARA—clarinet; CARA—car.” You will be shown the first name and must retrieve its twin."
                             : "Link unrelated words into a vivid story, then recall the words in order. This is a public, fictional practice phrase. Never use it as a real password or enter a real password here."}
                     </Text>
+                    <Card style={{ backgroundColor: C.sage, gap: 10 }}>
+                      <Text style={s.label}>WHY THIS WORKS</Text>
+                      <Text style={s.body}>
+                        {game === "cards"
+                          ? "Each card gets four answers: what is it, what is it wearing, where is it, and what impossible thing happens there. The same rank and suit pictures stay fixed, so one scene retrieves one exact card."
+                          : game === "names"
+                            ? "A face is already visible; a name is abstract. The sound-picture ties the name to one feature, while saying it and recalling it once creates a second route back."
+                            : game === "pairs"
+                              ? "Similar names interfere with each other. We enlarge the one sound that changes, give each sound its own object, then make the two objects collide."
+                              : "A linked story turns six separate words into cause and effect. Every picture must physically change the next one, and the last image loops back to the first."}
+                      </Text>
+                    </Card>
                     {game === "cards" && (
                       <View
                         style={{
@@ -274,14 +286,40 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                             <Text style={s.h2}>
                               {card.icon} {card.object}
                             </Text>
-                            <Text style={s.body}>
-                              Imagine a {card.hook} bouncing against the{" "}
-                              {cardPlace(step).toLowerCase()}. Hear the crash
-                              before you move on.
-                            </Text>
+                            {[
+                              [
+                                "1 · RANK BECOMES",
+                                `${card.rank} → ${card.object}`,
+                              ],
+                              [
+                                "2 · SUIT DRESSES IT",
+                                `${card.suit} → ${card.costume}`,
+                              ],
+                              ["3 · ADDRESS", cardPlace(step)],
+                              [
+                                "4 · COLLISION",
+                                `The ${card.hook} slams into the ${cardPlace(step).toLowerCase()}, which yelps and throws it back.`,
+                              ],
+                            ].map(([label, value], cueIndex) => (
+                              <View
+                                key={label}
+                                style={{
+                                  padding: 12,
+                                  borderRadius: 14,
+                                  backgroundColor:
+                                    cueIndex === 3 ? C.yellow : C.sage,
+                                }}
+                              >
+                                <Text style={s.label}>{label}</Text>
+                                <Text style={cueIndex === 3 ? s.h3 : s.body}>
+                                  {value}
+                                </Text>
+                              </View>
+                            ))}
                             <Text style={s.small}>
-                              Rank = {card.object}. Suit = costume. Keep this
-                              association the same every time.
+                              Close your eyes and retrieve: address → collision
+                              → costume → card. Keep every rank and suit code
+                              unchanged between practices.
                             </Text>
                           </>
                         );
@@ -319,11 +357,36 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                           </Card>
                         </View>
                         <Tag>{cardPlace(step)}</Tag>
-                        <Text style={s.body}>
-                          {pairs[step][2]} Stage the collision at the{" "}
-                          {cardPlace(step).toLowerCase()}, say both hooks aloud,
-                          then look away and retrieve them.
-                        </Text>
+                        {[
+                          [
+                            "HEAR THE SPLIT",
+                            "Say both names slowly. Stretch only the sound that changes.",
+                          ],
+                          ["GIVE EACH SOUND A BODY", pairs[step][2]],
+                          [
+                            "MAKE THEM COLLIDE",
+                            `Stage the argument at the ${cardPlace(step).toLowerCase()}. Make it noisy, moving and absurd.`,
+                          ],
+                          [
+                            "RETRIEVE BACKWARDS",
+                            `Look away. Ask: “Who was paired with ${pairs[step][0]}?” Then reverse the question.`,
+                          ],
+                        ].map(([label, value], cueIndex) => (
+                          <View
+                            key={label}
+                            style={{
+                              padding: 12,
+                              borderRadius: 14,
+                              backgroundColor:
+                                cueIndex === 2 ? C.yellow : C.white,
+                            }}
+                          >
+                            <Text style={s.label}>{label}</Text>
+                            <Text style={cueIndex === 2 ? s.h3 : s.body}>
+                              {value}
+                            </Text>
+                          </View>
+                        ))}
                       </>
                     ) : (
                       <>
@@ -332,6 +395,18 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                         </Text>
                         <Text style={s.h2}>{phrase[step]}</Text>
                         <Text style={s.body}>{phraseHooks[step]}</Text>
+                        <Card style={{ backgroundColor: C.sage, gap: 8 }}>
+                          <Text style={s.label}>LINK {step + 1}</Text>
+                          <Text style={s.body}>
+                            {step === 0
+                              ? "Start the movie. See the otter grab the velvet; do not merely place the two side by side."
+                              : `Replay the previous action, then watch ${phrase[step]} cause the next impossible change. Add a sound, texture and sudden movement.`}
+                          </Text>
+                          <Text style={s.small}>
+                            Check both directions: what came before this image,
+                            and what did it make happen next?
+                          </Text>
+                        </Card>
                         <Tag>Fictional practice · not a usable password</Tag>
                       </>
                     )}
