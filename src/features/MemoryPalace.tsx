@@ -1,5 +1,6 @@
 import { roomFor, objectPoints } from "../data/palaceRooms";
 import { contextualCue } from "../data/worldCues";
+import { landmarkPeg } from "../data/landmarkPegs";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { EncounterMotion } from "../components/EncounterMotion";
 import { RoomMemoryPicture } from "../components/RoomInterior";
@@ -170,6 +171,19 @@ export function MemoryPalace({
   if (value.hooks?.[cueKey]) item.story = value.hooks[cueKey];
   const roomData = roomFor(value.world, value.stop);
   const anchor = Math.min(2, value.roomAnchors?.[cueKey] ?? 0);
+  if (journey.id === "pi" && anchor > 0)
+    Object.assign(item, landmarkPeg(value.world, value.stop, anchor));
+  if (value.hooks?.[cueKey]) item.story = value.hooks[cueKey];
+  const previewPeg =
+    journey.id === 'pi' && plant > 0
+      ? landmarkPeg(value.world, value.stop, plant)
+      : contextualCue(
+          journey.items[value.stop] ?? journey.items[0],
+          value.world,
+          value.stop,
+          places[value.stop],
+          journey.id === "pi",
+        );
   if (!value.hooks?.[cueKey])
     item.story =
       journey.id === "pi"
@@ -524,6 +538,22 @@ export function MemoryPalace({
                 <>
                   <Tag>{places[value.stop]}</Tag>
                   <Text style={s.h2}>{roomData.objects[plant]}</Text>
+                  {journey.id === "pi" && (
+                    <>
+                      <RoomMemoryPicture
+                        world={value.world}
+                        stop={value.stop}
+                        anchor={plant}
+                        journeyId={journey.id}
+                        itemIndex={value.stop}
+                        symbol={item.symbol}
+                        label={`${previewPeg.object} at ${roomData.objects[plant]}`}
+                      />
+                      <Text style={s.h3}>{previewPeg.object}</Text>
+                      <Text style={s.body}>{previewPeg.story}</Text>
+                      <Text style={s.label}>{previewPeg.decode}</Text>
+                    </>
+                  )}
                   <Text style={s.body}>
                     {
                       "A distinct landmark in this room. Keep the same anchor when you revisit."
@@ -630,7 +660,7 @@ export function MemoryPalace({
                         </>
                       )}
                       {journey.id === "pi" ? (
-                        <EncounterMotion variant={value.stop}>
+                        <View>
                           <RoomMemoryPicture
                             world={value.world}
                             stop={value.stop}
@@ -640,7 +670,7 @@ export function MemoryPalace({
                             symbol={item.symbol}
                             label={`${item.object} on ${roomData.objects[anchor]}`}
                           />
-                        </EncounterMotion>
+                        </View>
                       ) : sceneFact ? (
                         <FactImage fact={sceneFact} style="storybook" />
                       ) : (

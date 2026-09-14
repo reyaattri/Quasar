@@ -1,3 +1,5 @@
+import { SatArtwork } from "../components/SatArtwork";
+import { OfficialSatPractice } from "./OfficialSatPractice";
 import { vocabularyCues } from "../data/vocabularyCues";
 import { Text } from "../components/ui";
 import React, { useState } from "react";
@@ -76,6 +78,7 @@ export function SatCourse({
         >
           Practise the deck again
         </Button>
+        <OfficialSatPractice />
       </Card>
     );
   if (session.phase === "context") {
@@ -88,30 +91,7 @@ export function SatCourse({
           Original digital-SAT-style practice · not an official or released 2026
           exam question
         </Text>
-        <View
-          style={{
-            gap: 10,
-            padding: 16,
-            backgroundColor: C.sage,
-            borderRadius: 8,
-          }}
-        >
-          <Text style={s.h3}>Work with official SAT questions</Text>
-          <Text style={s.body}>
-            Open College Board’s question bank for real practice questions. The
-            bank does not establish that a question appeared on a 2026 exam.
-          </Text>{" "}
-          <Button
-            secondary
-            onPress={() =>
-              Linking.openURL(
-                "https://satsuiteeducatorquestionbank.collegeboard.org/",
-              )
-            }
-          >
-            Official College Board practice ↗
-          </Button>
-        </View>
+        <OfficialSatPractice />
         <Card>
           <Text style={s.body}>{question.passage}</Text>
           <Text style={s.h3}>
@@ -190,34 +170,7 @@ export function SatCourse({
               {vocabularyCues[index].type}
             </Tag>
             <Text style={s.h2}>{vocabularyCues[index].hook}</Text>
-            <View
-              style={{
-                alignSelf: "center",
-                width,
-                height: (width * 5) / 3,
-                overflow: "hidden",
-                borderRadius: 18,
-              }}
-            >
-              <Image
-                resizeMode="stretch"
-                accessibilityLabel={jokes[index]}
-                source={
-                  index === 5
-                    ? require("../../assets/sat-cartoons-user-selected.png")
-                    : index === 1
-                      ? require("../../assets/sat-ink-cartoons.png")
-                      : require("../../assets/sat-latest-selected.png")
-                }
-                style={{
-                  position: "absolute",
-                  width: width * 5,
-                  height: (width * 10) / 3,
-                  left: -(index % 5) * width,
-                  top: (-Math.floor(index / 5) * width * 5) / 3,
-                }}
-              />
-            </View>
+            <SatArtwork index={index} />
             <Text style={[s.h3, { textAlign: "center" }]}>
               {vocabularyCues[index].caption}
             </Text>

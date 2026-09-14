@@ -47,57 +47,6 @@ test("custom shopping palace handles eight items, local recall and reload", asyn
     "milk\nbread\nrice\napples\nlemons\neggs\noats\nsoap",
   );
 });
-test("medical symbols have recall questions and save genuine results", async ({
-  page,
-}) => {
-  await onboard(page);
-  await page
-    .getByRole("button", { name: "Explore medical foundations" })
-    .click();
-  await expect
-    .poll(() =>
-      page
-        .locator("img")
-        .evaluateAll(
-          (images) =>
-            images.length > 0 &&
-            images.every(
-              (image) =>
-                (image as HTMLImageElement).complete &&
-                (image as HTMLImageElement).naturalWidth > 0,
-            ),
-        ),
-    )
-    .toBe(true);
-  await page.screenshot({ path: "docs/medical-mobile.png" });
-  for (const choice of [
-    "Tag microbes, recruit inflammation, form a membrane pore",
-    "The antibody's antigen specificity",
-  ]) {
-    await page.getByRole("button", { name: "Hide scene & recall" }).click();
-    await page.getByRole("button", { name: choice, exact: true }).click();
-    await expect(
-      page.getByText("Correct. Connect the symbol back to the biology."),
-    ).toBeVisible();
-    await page
-      .getByRole("button", {
-        name: choice.startsWith("The antibody")
-          ? "Solve the patient case"
-          : "Next scene",
-        exact: true,
-      })
-      .click();
-  }
-  await expect(
-    page.getByText("Why do the infections keep returning?"),
-  ).toBeVisible();
-  await page
-    .getByRole("button", { name: "X-linked agammaglobulinemia (XLA)" })
-    .click();
-  await expect(page.getByText("The pattern points to XLA.")).toBeVisible();
-  await page.getByRole("button", { name: "Return to the two stories" }).click();
-  await expect(page.getByText("2 of 2 concepts recalled")).toBeVisible();
-});
 test("SAT requires five recalls before each contextual question and resumes saved progress", async ({
   page,
 }) => {
@@ -109,7 +58,11 @@ test("SAT requires five recalls before each contextual question and resumes save
   });
   const facts = allFacts.filter((f) => f.sceneId === "market");
   for (let i = 0; i < 10; i++) {
-    await page.waitForFunction(() => Array.from(document.images).every(image => image.complete && image.naturalWidth > 0));
+    await page.waitForFunction(() =>
+      Array.from(document.images).every(
+        (image) => image.complete && image.naturalWidth > 0,
+      ),
+    );
     if (i === 3) {
       await expect(page.getByText(/RESILIENT soldier/)).toBeVisible();
       await page.screenshot({
@@ -157,6 +110,16 @@ test("SAT requires five recalls before each contextual question and resumes save
         await expect(
           page.getByText("Now use the meaning.", { exact: true }),
         ).toBeVisible();
+      }
+      if(i===4){
+        await page.getByRole('button',{name:'Start three official SAT questions'}).click();
+        for(const [q,answer] of ['A','D','C'].entries()){
+          await expect(page.getByRole('button',{name:`Read official question ${q+1} ↗`})).toBeVisible();
+          await page.getByRole('button',{name:'I’ve read the official question'}).click();
+          await page.getByRole('button',{name:`Answer ${answer}`} ).click();
+          await expect(page.getByLabel('Official context cracked!',{exact:true})).toBeVisible();
+          if(q<2)await page.getByRole('button',{name:'Next official question'}).click();
+        }
       }
       await page
         .getByRole("button", {
@@ -217,7 +180,14 @@ test("illustrated worlds enter rooms, recall all stops and persist", async ({
     await expect(
       page.getByRole("button", { name: "Hide cue & recall", exact: true }),
     ).toBeVisible({ timeout: 15000 });
-    if (i === 1) await page.screenshot({ path: "docs/palace-hover-card.png" });
+    if (i === 1) {
+      await page.waitForFunction(() =>
+        Array.from(document.images).every(
+          (image) => image.complete && image.naturalWidth > 0,
+        ),
+      );
+      await page.screenshot({ path: "docs/palace-hover-card.png" });
+    }
     await page
       .getByRole("button", { name: "Hide cue & recall", exact: true })
       .click();
@@ -262,6 +232,8 @@ test("illustrated worlds enter rooms, recall all stops and persist", async ({
   await page
     .getByRole("button", { name: "Continue your walk", exact: true })
     .click();
-  await expect(page.getByText("Midnight rooftops", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Midnight rooftops", { exact: true }),
+  ).toBeVisible();
   await expect(page.getByText("6/6 recalled", { exact: true })).toBeVisible();
 });

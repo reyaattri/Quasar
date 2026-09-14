@@ -1,4 +1,4 @@
-import { RoomInterior } from "./RoomInterior";
+import { RoomInterior, RoomAtmosphere, roomBounds } from "./RoomInterior";
 import React, { useEffect, useRef, useState } from "react";
 import {
   AccessibilityInfo,
@@ -252,10 +252,14 @@ export function PalaceGame({
       }
     };
   }, []);
-  const mapH = height,
-    mapW = width;
-  const cameraX = 0,
-    cameraY = 0;
+  // Artwork and interaction share one aspect-preserving scene rectangle.
+  const bounds = roomBounds(world, roomIndex);
+  const sceneRatio = room ? bounds.w / bounds.h : 0.5;
+  const availableHeight = Math.max(100, height - 166);
+  const mapW = Math.min(width, availableHeight * sceneRatio);
+  const mapH = mapW / sceneRatio;
+  const sceneLeft = (width - mapW) / 2;
+  const sceneTop = (availableHeight - mapH) / 2;
   const walkTo = (index: number) => {
     state.current.target = index;
     state.current.direction = { x: 0, y: 0 };
@@ -285,12 +289,22 @@ export function PalaceGame({
           backgroundColor: ["#DCE8CA", "#F4D59E", "#242039"][world],
         }}
       >
+        <RoomAtmosphere
+          world={world}
+          stop={room ? roomIndex : 0}
+          width={width}
+          height={height}
+        />
         <View
+          testID="palace-scene"
           style={{
             position: "absolute",
             width: mapW,
             height: mapH,
-            transform: [{ translateX: -cameraX }, { translateY: -cameraY }],
+            left: sceneLeft,
+            top: sceneTop,
+            borderRadius: room ? 14 : 6,
+            overflow: "hidden",
           }}
         >
           <View style={{ width: mapW, height: mapH, overflow: "hidden" }}>
@@ -347,10 +361,14 @@ export function PalaceGame({
               key={i}
               accessibilityRole="button"
               accessibilityLabel={
-                labels ? `Walk to ${labels[i]}` : `Walk to stop ${i + 1}`
+                room && i === (recalled[0] ?? 0)
+                  ? `Open memory on ${labels?.[i]}`
+                  : labels
+                    ? `Walk to ${labels[i]}`
+                    : `Walk to stop ${i + 1}`
               }
               onPress={() => {
-                if (state.current.near === i && !walking) onInspect();
+                if (state.current.near === i && !walking) onArrive(i);
                 else walkTo(i);
               }}
               style={{
@@ -377,49 +395,6 @@ export function PalaceGame({
               </Text>
             </Pressable>
           ))}
-          {room && memoryLabel && (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={
-                "Open memory on " + labels?.[recalled[0] ?? 0]
-              }
-              onPress={onInspect}
-              style={{
-                position: "absolute",
-                left: Math.max(
-                  6,
-                  (points[recalled[0] ?? 0].x / 100) * mapW - 48,
-                ),
-                top: (points[recalled[0] ?? 0].y / 100) * mapH - 73,
-                width: 96,
-                padding: 8,
-                borderRadius: 18,
-                borderWidth: 3,
-                borderColor: C.yellow,
-                backgroundColor: C.paper,
-              }}
-            >
-              <EncounterMotion variant={roomIndex}>
-                <Text style={{ fontSize: 17, textAlign: "center" }}>✦</Text>
-              </EncounterMotion>
-              <Text
-                style={{
-                  fontSize: 11,
-                  fontWeight: "800",
-                  textAlign: "center",
-                  color: C.ink,
-                }}
-              >
-                OPEN MEMORY
-              </Text>
-              <Text
-                numberOfLines={1}
-                style={{ fontSize: 11, textAlign: "center", color: C.ink }}
-              >
-                {memoryLabel}
-              </Text>
-            </Pressable>
-          )}
           <View
             accessible={false}
             style={{
@@ -496,7 +471,7 @@ export function PalaceGame({
                 }}
               >
                 <Text style={s.label}>
-                  {room ? "Inspect plant" : "Inspect memory"}
+                  {room ? "Inspect object" : "Inspect memory"}
                 </Text>
               </Pressable>
             )}

@@ -1,6 +1,10 @@
+import { vocabularyCues } from "./src/data/vocabularyCues";
 import { FunFlex } from "./src/features/FunFlex";
 import { StudyShelf, AtlasArt } from "./src/components/StudyShelf";
 import { MedicineLesson } from "./src/features/MedicineLesson";
+import { CalculusCourse } from "./src/features/CalculusCourse";
+import { KoreanCourse } from "./src/features/KoreanCourse";
+import { PiCourse } from "./src/features/PiCourse";
 import { Walker } from "./src/components/PalaceGame";
 import { EncounterMotion } from "./src/components/EncounterMotion";
 import { Text } from "./src/components/ui";
@@ -85,6 +89,9 @@ type Page =
   | "flex"
   | "sat"
   | "medicine"
+  | "math"
+  | "korean"
+  | "pi"
   | "paywall";
 const tabs = [
   ["home", "home", "Today"],
@@ -142,8 +149,8 @@ function Quasar() {
   const userRef = useRef<string | null>(null);
   const storageReady = useRef(false);
   const scene = scenes.find((x) => x.id === sceneId)!;
-  const due = dueIds(p).filter(id => allFacts.some(f => f.id === id));
-  const mastered = allFacts.filter(f => p.mastered[f.id]).length;
+  const due = dueIds(p).filter((id) => allFacts.some((f) => f.id === id));
+  const mastered = allFacts.filter((f) => p.mastered[f.id]).length;
   useEffect(() => {
     AsyncStorage.getItem(storageKey)
       .then((raw) => {
@@ -257,6 +264,10 @@ function Quasar() {
     return () => listener.remove();
   }, [page, fact]);
   const openScene = (id: string) => {
+    if (id === "market") {
+      nav("sat");
+      return;
+    }
     setSceneId(id);
     setP((v) => ({ ...v, lastScene: id }));
     setApplicationText("");
@@ -362,37 +373,6 @@ function Quasar() {
       {body && <Text style={s.body}>{body}</Text>}
     </View>
   );
-  const stylePicker = () => (
-    <View style={s.row}>
-      {(["storybook", "doodle"] as ArtStyle[]).map((style) => (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: p.profile.style === style }}
-          aria-selected={p.profile.style === style}
-          key={style}
-          onPress={() => updateProfile("style", style)}
-          style={[
-            a.styleChoice,
-            p.profile.style === style && {
-              backgroundColor: C.green,
-              borderColor: C.green,
-            },
-          ]}
-        >
-          <Icon
-            name={style === "storybook" ? "leaf" : "spark"}
-            size={16}
-            color={p.profile.style === style ? C.white : C.ink}
-          />
-          <Text
-            style={[s.label, p.profile.style === style && { color: C.white }]}
-          >
-            {style === "storybook" ? "Storybook" : "Doodle"}
-          </Text>
-        </Pressable>
-      ))}
-    </View>
-  );
   const courseBody = () => {
     const l = lessons[lesson];
     return (
@@ -455,12 +435,26 @@ function Quasar() {
       onPress={() => openScene(sc.id)}
       style={({ pressed }) => [a.sceneCard, pressed && { opacity: 0.9 }]}
     >
-      <View style={{backgroundColor:C.yellow}}><AtlasArt source={require("./assets/sat-cartoons-user-selected.png")} columns={5} rows={2} index={7} height={112}/></View>
+      <View style={{ backgroundColor: C.yellow }}>
+        <AtlasArt
+          source={require("./assets/sat-latest-selected.png")}
+          columns={5}
+          rows={2}
+          index={7}
+          height={112}
+        />
+      </View>
       <View style={{ padding: 18, gap: 9 }}>
         <Tag color={sc.color}>{sc.subject}</Tag>
-        <Text style={s.h3}>{sc.title}</Text>
+        <Text style={s.h3}>
+          {sc.id === "market" ? "SAT words in pictures" : sc.title}
+        </Text>
         <View style={s.between}>
-          <Text style={s.small}>6 memory cues · {sc.duration}</Text>
+          <Text style={s.small}>
+            {sc.id === "market"
+              ? "10 words · two five-word sessions"
+              : `${sc.facts.length} memory cues · ${sc.duration}`}
+          </Text>
           <Icon name="arrow" size={20} />
         </View>
       </View>
@@ -468,7 +462,8 @@ function Quasar() {
   );
   const home = () => {
     const cont = scenes.find((x) => x.id === p.lastScene) ?? scenes[0];
-    const n = cont.facts.filter((f) => p.mastered[f.id]).length;
+    const deck = allFacts.filter((f) => f.sceneId === cont.id);
+    const n = deck.filter((f) => p.mastered[f.id]).length;
     return (
       <View style={{ gap: 30 }}>
         <View style={s.between}>
@@ -486,12 +481,13 @@ function Quasar() {
           <View style={{ flex: 1, gap: 15, padding: 24 }}>
             <Tag color="#D4DFB9">CONTINUE LEARNING</Tag>
             <Text style={[s.h2, { fontSize: 30, lineHeight: 35 }]}>
-              {cont.title}
+              {cont.id === "market" ? "Your vocabulary sketchbook" : cont.title}
             </Text>
             <Text style={[s.body, { color: C.ink }]}>
               {n
-                ? n + " of 6 concepts recalled. Pick up where you left off."
-                : "Turn six ideas into pictures you can remember and use."}
+                ? n +
+                  ` of ${deck.length} words recalled. Pick up where you left off.`
+                : "Learn five illustrated words, then use them in context."}
             </Text>
             <Button icon="arrow" onPress={() => openScene(cont.id)}>
               {n ? "Continue learning" : "Start exploring"}
@@ -577,11 +573,11 @@ function Quasar() {
               borderWidth: 2,
             }}
           >
-            <Tag>THE DEFENSE HARBOR</Tag>
-            <Text style={s.h3}>Meet the body’s defense crew.</Text>
+            <Tag>THE BIOLOGY STUDIO</Tag>
+            <Text style={s.h3}>Meet the cast. Understand the mechanism.</Text>
             <Text style={s.body}>
-              Learn three immunity concepts through an illustrated medical
-              memory scene.
+              Learn immunity, gene expression and nerve signalling through
+              stories, linked recall and patient cases.
             </Text>
             <Button onPress={() => nav("medicine")}>
               Explore medical foundations
@@ -622,7 +618,7 @@ function Quasar() {
             {scenes.map(sceneCard)}
           </View>
           <View style={a.comingRow}>
-            {["Math", "Chemistry"].map((name, i) => (
+            {["Chemistry"].map((name, i) => (
               <View key={name} style={a.coming}>
                 <Icon
                   name={i === 0 ? "spark" : i === 1 ? "leaf" : "book"}
@@ -659,15 +655,65 @@ function Quasar() {
     );
   };
   const library = () => (
-    <View style={{gap:24}}>
-      <FunFlex onWorlds={()=>nav("flex")}/>
-      <Card style={{backgroundColor:C.paper,borderRadius:30,borderWidth:1,borderColor:C.green}}>
-        <Tag>START WITH THE HOW</Tag><Text style={s.h2}>Six ways to make a memory.</Text>
-        <AtlasArt source={require("./assets/lesson-stories.png")} columns={3} rows={2} index={5} height={190}/>
-        <Text style={s.body}>Meet the peg baker, the moon astronomer and a traveler who gives every idea an address.</Text>
-        <Button onPress={()=>{setLesson(0);nav("course");}}>Open the memory toolkit</Button>
+    <View style={{ gap: 24 }}>
+      <FunFlex onWorlds={() => nav("flex")} />
+      <Card style={{backgroundColor:C.yellow,gap:14,borderRadius:28}}>
+        <Tag>π · THE RIDICULOUS ROUTE</Tag>
+        <Text style={s.h2}>100 digits. 50 impossible things.</Text>
+        <Text style={s.body}>Ten strange rooms, sound-coded objects, and recall without peeking. Build your first hundred decimal digits in order.</Text>
+        <Button onPress={()=>nav("pi")}>Open the π memory course</Button>
       </Card>
-      <Button secondary onPress={()=>openScene("market")}>Revisit the illustrated word market</Button>
+      <Card style={{ backgroundColor: C.peach, gap: 14, borderRadius: 28 }}>
+        <Tag>NEW · THE CALCULUS WORKSHOP</Tag>
+        <Text style={s.h2}>Slopes, crumbs, and the bigger picture.</Text>
+        <Text style={s.body}>
+          Three lessons: derivatives, integration and accumulation. Work through
+          each move before trying it yourself.
+        </Text>
+        <Button onPress={() => nav("math")}>Open calculus lessons</Button>
+      </Card>
+      <Card style={{ backgroundColor: C.sage, gap: 14, borderRadius: 28 }}>
+        <Tag>NEW · KOREAN NEIGHBOURHOOD</Tag>
+        <Text style={s.h2}>Your first letters. Your first hello.</Text>
+        <Text style={s.body}>
+          See the shape, trace it with your finger, listen, and practise a small
+          conversation at your pace.
+        </Text>
+        <Button onPress={() => nav("korean")}>Open Korean practice</Button>
+      </Card>
+      <Card
+        style={{
+          backgroundColor: C.paper,
+          borderRadius: 30,
+          borderWidth: 1,
+          borderColor: C.green,
+        }}
+      >
+        <Tag>START WITH THE HOW</Tag>
+        <Text style={s.h2}>Six ways to make a memory.</Text>
+        <AtlasArt
+          source={require("./assets/lesson-stories.png")}
+          columns={3}
+          rows={2}
+          index={5}
+          height={190}
+        />
+        <Text style={s.body}>
+          Meet the peg baker, the moon astronomer and a traveler who gives every
+          idea an address.
+        </Text>
+        <Button
+          onPress={() => {
+            setLesson(0);
+            nav("course");
+          }}
+        >
+          Open the memory toolkit
+        </Button>
+      </Card>
+      <Button secondary onPress={() => openScene("market")}>
+        Open your vocabulary deck
+      </Button>
     </View>
   );
   const scenePage = () => {
@@ -688,7 +734,7 @@ function Quasar() {
           scene.title,
           "Tap a numbered object. Give the idea a picture, then try recalling it.",
         )}
-        {stylePicker()}
+
         <Scene
           scene={scene}
           style={p.profile.style}
@@ -761,7 +807,7 @@ function Quasar() {
               <Text style={s.body}>
                 {due.length
                   ? "Your review timing is personalized with spaced repetition."
-                  : "Explore a scene or practice a few cards while your next review grows."}
+                  : "Practise the vocabulary deck or try a memory challenge while your next review grows."}
               </Text>
               <Button disabled={!due.length} onPress={() => startReview(due)}>
                 Start due reviews
@@ -774,7 +820,7 @@ function Quasar() {
               Practice all 10 cards
             </Button>
             <Button secondary onPress={() => nav("library")}>
-              Explore scenes
+              Discover a new memory challenge
             </Button>
           </>
         ) : !f ? (
@@ -812,7 +858,15 @@ function Quasar() {
                 <>
                   <FactImage fact={f} style={p.profile.style} />
                   <Text style={s.h3}>{f.definition}</Text>
-                  <Text style={s.body}>{f.story}</Text>
+                  <Text style={s.body}>
+                    {f.sceneId === "market"
+                      ? vocabularyCues[
+                          allFacts
+                            .filter((f) => f.sceneId === "market")
+                            .findIndex((item) => item.id === f.id)
+                        ].story
+                      : f.story}
+                  </Text>
                   <View style={s.row}>
                     <View style={{ flex: 1 }}>
                       <Button secondary onPress={() => rateReview(false)}>
@@ -901,7 +955,8 @@ function Quasar() {
             <View style={s.between}>
               <Text style={[s.h3, { flex: 1 }]}>{sc.title}</Text>
               <Text style={s.label}>
-                {sc.facts.filter((f) => p.mastered[f.id]).length}/6
+                {sc.facts.filter((f) => p.mastered[f.id]).length}/
+                {sc.facts.length}
               </Text>
             </View>
             <Text style={s.small}>
@@ -910,7 +965,7 @@ function Quasar() {
                 : "Application reflection still to come"}
             </Text>
             <Button secondary onPress={() => openScene(sc.id)}>
-              Visit scene
+              Open vocabulary deck
             </Button>
           </Card>
         ))}
@@ -952,9 +1007,8 @@ function Quasar() {
     <View style={{ gap: 23 }}>
       {heading("MAKE YOURSELF AT HOME", "Settings")}
       <Card>
-        <Text style={s.h3}>Your learning style</Text>
-        <Text style={s.body}>Same memory cues. A different kind of charm.</Text>
-        {stylePicker()}
+        <Text style={s.h3}>Your study profile</Text>
+
         <Field
           label="What should we call you?"
           value={p.profile.name}
@@ -1316,7 +1370,11 @@ function Quasar() {
                     )}
                     <Text style={s.label}>What are you curious about?</Text>
                     <View style={s.row}>
-                      {["SAT vocabulary", "Memory skills", "Medical foundations"].map((sub) => (
+                      {[
+                        "SAT vocabulary",
+                        "Memory skills",
+                        "Medical foundations",
+                      ].map((sub) => (
                         <Pressable
                           accessibilityRole="button"
                           accessibilityState={{
@@ -1394,8 +1452,7 @@ function Quasar() {
                       value={p.profile.friend}
                       onChangeText={(v) => updateProfile("friend", v)}
                     />
-                    <Text style={s.label}>Pick your picture-book feel</Text>
-                    {stylePicker()}
+
                     <Button
                       icon="arrow"
                       onPress={() => {
@@ -1429,6 +1486,12 @@ function Quasar() {
                   saved={p.palace}
                   onSave={(palace) => setP((old) => ({ ...old, palace }))}
                 />
+              ) : page === "math" ? (
+                <CalculusCourse />
+              ) : page === "pi" ? (
+                <PiCourse progress={p} onChange={setP} onWorlds={()=>nav("flex")} />
+              ) : page === "korean" ? (
+                <KoreanCourse />
               ) : page === "medicine" ? (
                 <MedicineLesson
                   recalled={p.medicalRecalled ?? []}

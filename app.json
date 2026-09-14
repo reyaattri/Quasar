@@ -23,7 +23,14 @@
       "description": "Little stories. Lasting memories."
     },
     "plugins": [
-      "expo-dev-client"
+      "expo-dev-client",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow Quasar to record your practice phrase so you can listen back.",
+          "enableBackgroundRecording": false
+        }
+      ]
     ],
     "icon": "./assets/icon.png"
   }

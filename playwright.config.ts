@@ -10,6 +10,7 @@ export default defineConfig({
   },
   webServer: {
     command: "npm run web -- --port 8081",
+    env: {EXPO_NO_TELEMETRY:'1',EXPO_OFFLINE:'1',BROWSER:'none'},
     url: "http://localhost:8081",
     reuseExistingServer: true,
     timeout: 180000,

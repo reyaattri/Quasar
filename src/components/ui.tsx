@@ -161,6 +161,7 @@ export function Field({
   placeholder = "",
   multiline = false,
   secureTextEntry = false,
+  keyboardType = 'default',
 }: {
   label: string;
   value: string;
@@ -168,6 +169,7 @@ export function Field({
   placeholder?: string;
   multiline?: boolean;
   secureTextEntry?: boolean;
+  keyboardType?: 'default' | 'number-pad';
 }) {
   return (
     <View style={{ gap: 7 }}>
@@ -180,6 +182,7 @@ export function Field({
         placeholderTextColor={C.muted}
         multiline={multiline}
         secureTextEntry={secureTextEntry}
+        keyboardType={keyboardType}
         autoCapitalize={
           secureTextEntry || label.toLowerCase().includes("email")
             ? "none"

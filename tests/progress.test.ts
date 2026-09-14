@@ -12,6 +12,54 @@ import { allFacts, scenes, lessons } from "../src/data/content";
 import { checkRoute, journeys } from "../src/data/palaces";
 import { parseShoppingList, shoppingJourney } from "../src/lib/shoppingPalace";
 import { palaceRooms, objectPoints } from "../src/data/palaceRooms";
+import { landmarkPeg } from "../src/data/landmarkPegs";
+import { worldPegs } from "../src/data/worldCues";
+import { PI_DECIMALS, piStops, checkPiRecall } from "../src/data/piCourse";
+
+test("pi course matches an independently computed pi expansion and detects recall omissions", () => {
+  const scale = 10n ** 115n;
+  const atan = (d: bigint) => {
+    let power = scale / d,
+      sum = power,
+      sign = -1n;
+    for (let k = 3n; power !== 0n; k += 2n) {
+      power /= d * d;
+      sum += sign * (power / k);
+      sign = -sign;
+    }
+    return sum;
+  };
+  const pi = 16n * atan(5n) - 4n * atan(239n);
+  assert.equal(PI_DECIMALS, pi.toString().slice(1, 101));
+  assert.equal(piStops.length, 50);
+  assert.equal(
+    new Set(piStops.map((p) => p.room + " / " + p.location)).size,
+    50,
+  );
+  assert.equal(checkPiRecall("14 15 92 65 35", 0, 10).correct, true);
+  assert.equal(checkPiRecall("141592653", 0, 10).wrong, 9);
+  assert.equal(checkPiRecall("14159265350", 0, 10).correct, false);
+});
+
+test("all room landmarks have distinct mnemonic objects without changing the encoded pi pair", () => {
+  const pairs = ["14", "15", "92", "65", "35", "89"];
+  for (let w = 0; w < 3; w++)
+    for (let room = 0; room < 6; room++) {
+      const alternatives = [landmarkPeg(w, room, 1), landmarkPeg(w, room, 2)];
+      assert.equal(
+        new Set([worldPegs[w][room][0], ...alternatives.map((p) => p.object)])
+          .size,
+        3,
+      );
+      for (const peg of alternatives) {
+        assert.equal(
+          [...peg.decode.matchAll(/\((\d)\)/g)].map((m) => m[1]).join(""),
+          pairs[room],
+        );
+        assert.ok(peg.story.length > 40);
+      }
+    }
+});
 
 test("every world has six distinct rooms with stable object anchors", () => {
   assert.equal(palaceRooms.length, 3);

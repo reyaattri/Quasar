@@ -34,6 +34,7 @@ export type Progress = {
   analytics: boolean;
   palace?: PalaceSave;
   medicalRecalled?: number[];
+  piCourse?: { rooms: number[]; lastRecall: string };
   satSession?: {
     index: number;
     phase: "learn" | "context" | "done";

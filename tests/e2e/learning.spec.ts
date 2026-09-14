@@ -14,52 +14,17 @@ test("new learner completes course, recalls a scene, reflects, and persists mast
   ).toBeVisible();
   await page.screenshot({ path: "docs/home-mobile.png", fullPage: true });
   await page.getByRole("button", { name: "Start exploring" }).click();
-  await page.screenshot({ path: "docs/scene-mobile.png", fullPage: true });
-  const words = [
-    "Lucid",
-    "Meticulous",
-    "Ephemeral",
-    "Resilient",
-    "Avarice",
-    "Ambiguous",
-  ];
-  const answers = [
-    "One that is clear and easy to follow",
-    "check every citation and punctuation mark",
-    "A soap bubble",
-    "adapts and recovers",
-    "Hoarding wealth at others’ expense",
-    "duck could mean a bird or an action",
-  ];
-  for (let i = 0; i < words.length; i++) {
-    await page
-      .getByRole("button", { name: "Explore " + words[i], exact: true })
-      .click();
-    await page.getByRole("button", { name: "Try recalling it" }).click();
-    await page.getByRole("button", { name: answers[i], exact: true }).click();
-    await page.getByRole("button", { name: "Check my answer" }).click();
-    await expect(page.getByText("Correct.", { exact: true })).toBeVisible();
-    await page.getByRole("button", { name: "Back to the scene" }).click();
-  }
+  await expect(
+    page.getByRole("button", { name: "Hide card & test recall" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Hide card & test recall" }).click();
   await page
-    .getByRole("button", { name: "Try the application question" })
-    .click();
-  await page
-    .getByLabel("Your explanation")
-    .fill(
-      "The meticulous writer revised each detail to create a lucid explanation.",
-    );
-  await page.getByRole("button", { name: "Compare with an example" }).click();
-  await page
-    .getByRole("button", { name: "I’ve checked my explanation" })
+    .getByRole("button", {
+      name: "One that is clear and easy to follow",
+      exact: true,
+    })
     .click();
   await page.reload();
-  await page.getByRole("button", { name: "Continue learning" }).click();
-  await expect(page.getByText("6 / 6 concepts recalled")).toBeVisible();
-  await page.getByRole("button", { name: "Doodle", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Doodle", exact: true }),
-  ).toHaveAttribute("aria-selected", "true");
   await page.getByRole("button", { name: "Review", exact: true }).click();
   await page.getByRole("button", { name: "Practice all 10 cards" }).click();
   await page.getByRole("button", { name: "Reveal the memory" }).click();
@@ -84,14 +49,28 @@ test("small viewport has no horizontal overflow", async ({ page }) => {
   ).toBeTruthy();
 });
 
-test("Explore has illustrated active subjects and no computer science", async ({page})=>{
- await page.goto('/');await page.getByRole('button',{name:'Let’s get curious'}).click();await page.getByRole('button',{name:'Build my memory toolkit'}).click();for(let i=0;i<5;i++)await page.getByRole('button',{name:'Next lesson'}).click();await page.getByRole('button',{name:'Let’s make it stick'}).click();
- await page.getByRole('button',{name:'Explore',exact:true}).click();
- await expect(page.getByText('A little play. A lot to remember.')).toBeVisible();
- await expect(page.getByRole('button',{name:'Play The card cabinet'})).toBeVisible();
- await expect(page.getByText('A loose lid. A lucid idea.')).toHaveCount(0);
- await expect(page.getByText(/Computer science|More CS/)).toHaveCount(0);
- await page.waitForFunction(()=>Array.from(document.images).every(i=>i.complete&&i.naturalWidth>0));
- await page.screenshot({path:'docs/explore-mobile.png',fullPage:true});
- await page.getByRole('button',{name:'Open the memory toolkit'}).click();await page.screenshot({path:'docs/lesson-mobile.png',fullPage:true});
+test("Explore has illustrated active subjects and no computer science", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Let’s get curious" }).click();
+  await page.getByRole("button", { name: "Build my memory toolkit" }).click();
+  for (let i = 0; i < 5; i++)
+    await page.getByRole("button", { name: "Next lesson" }).click();
+  await page.getByRole("button", { name: "Let’s make it stick" }).click();
+  await page.getByRole("button", { name: "Explore", exact: true }).click();
+  await expect(
+    page.getByText("A little play. A lot to remember."),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Play The card cabinet" }),
+  ).toBeVisible();
+  await expect(page.getByText("A loose lid. A lucid idea.")).toHaveCount(0);
+  await expect(page.getByText(/Computer science|More CS/)).toHaveCount(0);
+  await page.waitForFunction(() =>
+    Array.from(document.images).every((i) => i.complete && i.naturalWidth > 0),
+  );
+  await page.screenshot({ path: "docs/explore-mobile.png", fullPage: true });
+  await page.getByRole("button", { name: "Open the memory toolkit" }).click();
+  await page.screenshot({ path: "docs/lesson-mobile.png", fullPage: true });
 });

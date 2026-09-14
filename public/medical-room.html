@@ -270,6 +270,58 @@
         Room placement appears on compatible phones. Camera access starts only
         when you choose “Place in my room”.
       </p>
+      <section
+        aria-label="Experimental molecular structures"
+        style="
+          margin: 24px 0;
+          padding: 16px;
+          background: #fffdf4;
+          border-radius: 20px;
+        "
+      >
+        <h2>From the story to a real molecule</h2>
+        <p>
+          Explore deposited experimental coordinates in Mol*. Rotate, zoom,
+          select a residue for its label, and open the controls to colour by
+          chain or change the representation.
+        </p>
+        <div class="controls">
+          <button data-molecule="1HZH">Human IgG antibody</button
+          ><button data-molecule="5FMW">Complement C9 pore</button
+          ><button id="close-molecule" hidden>Close molecular view</button>
+        </div>
+        <p id="molecule-description" role="status">
+          The experimental molecule loads here when you reach this section.
+          Allow a few seconds for the coordinate data.
+        </p>
+        <iframe
+          id="molecule-view"
+          title="Experimental molecular structure in Molstar"
+          hidden
+          allowfullscreen
+          style="
+            width: 100%;
+            height: 560px;
+            border: 1px solid #294d3b;
+            border-radius: 12px;
+          "
+        ></iframe>
+        <p>
+          <a
+            id="molecule-source"
+            href="https://www.rcsb.org/structure/1HZH"
+            target="_blank"
+            rel="noopener"
+            >Read the structure record and experimental limitations</a
+          >
+        </p>
+        <p class="small">
+          Bundled viewer: Mol* 5.9.0. Coordinates: RCSB PDB / wwPDB (CC0). Experimental structures show
+          molecules, not cells or vascular anatomy. The C9 assembly is one
+          component of the membrane attack complex, not the entire complement
+          cascade. No molecular AR placement is provided.
+        </p>
+      </section>
       <a href="/">Back to Quasar</a>
     </main>
     <script>
@@ -392,15 +444,22 @@
         ].forEach((id) => (document.querySelector("#" + id).hidden = !heart));
         stopFlow();
         model.querySelectorAll("[slot^=hotspot]").forEach((n) => n.remove());
-        if (!heart) return;
-        if (!heartLabels.length)
+        document.querySelector("#anatomy-labels").hidden = i === 4;
+        document.querySelector("#labels-toggle").hidden = i === 4;
+        if (i === 4) return;
+        if (heart && !heartLabels.length)
           heartLabels = await (
             await fetch("/medical/heart-labels.json")
           ).json();
-        if (current !== 3) return;
+        const labels = heart
+          ? heartLabels
+          : await (
+              await fetch("/medical/" + data[i].file + "-labels.json")
+            ).json();
+        if (current !== i) return;
         const list = document.querySelector("#anatomy-labels");
         list.replaceChildren();
-        heartLabels.forEach((item, n) => {
+        labels.forEach((item, n) => {
           const b = document.createElement("button");
           b.textContent = item.name;
           b.onclick = () => {
@@ -578,6 +637,52 @@
         (id) => (document.querySelector("#" + id).oninput = drawWave),
       );
       drawWave();
+      const molecularCopy = {
+        "1HZH":
+          "Human IgG1 b12 · PDB 1HZH · Saphire et al., Science (2001). X-ray diffraction, 2.7 Å. Find the two antigen-binding arms and the heavy-chain constant region. This is a specific antibody, not every antibody class.",
+        "5FMW":
+          "Poly-C9 component of the membrane attack complex · PDB 5FMW. Find the central opening and repeated subunits. Connect the repeated subunits to the builder’s purple pipes. This is the C9 assembly, not C3b or a phagocyte.",
+      };
+      document.querySelectorAll("[data-molecule]").forEach(
+        (button) =>
+          (button.onclick = () => {
+            const id = button.dataset.molecule;
+            const frame = document.querySelector("#molecule-view");
+            frame.src =
+              "/molecular-room.html?pdb=" +
+              id +
+              "";
+            frame.hidden = false;
+            document.querySelector("#close-molecule").hidden = false;
+            document.querySelector("#molecule-description").textContent =
+              molecularCopy[id];
+            document.querySelector("#molecule-source").href =
+              "https://www.rcsb.org/structure/" + id;
+          }),
+      );
+      document.querySelector("#close-molecule").onclick = () => {
+        const frame = document.querySelector("#molecule-view");
+        frame.hidden = true;
+        frame.removeAttribute("src");
+        document.querySelector("#close-molecule").hidden = true;
+      };
+      const moleculeSection = document.querySelector(
+        '[aria-label="Experimental molecular structures"]',
+      );
+      let moleculeStarted = false;
+      new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting) && !moleculeStarted) {
+            moleculeStarted = true;
+            document
+              .querySelector(
+                '[data-molecule="' + (current === 1 ? "5FMW" : "1HZH") + '"]',
+              )
+              .click();
+          }
+        },
+        { threshold: 0.1 },
+      ).observe(moleculeSection);
       const initial = Number(
         new URLSearchParams(location.search).get("concept"),
       );

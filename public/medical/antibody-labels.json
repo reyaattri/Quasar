@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Antibody stem",
+    "position": [
+      0,
+      0.13,
+      0.025
+    ]
+  },
+  {
+    "name": "Binding arm",
+    "position": [
+      -0.065,
+      0.26,
+      0.025
+    ]
+  },
+  {
+    "name": "Binding site",
+    "position": [
+      -0.13,
+      0.34,
+      0.03
+    ]
+  },
+  {
+    "name": "Antigen target",
+    "position": [
+      0.15,
+      0.41,
+      0.044
+    ]
+  }
+]

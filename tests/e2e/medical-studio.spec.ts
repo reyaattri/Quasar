@@ -62,6 +62,7 @@ test("medical cards open the studio without leaving saved lesson", async ({
   await page
     .getByRole("button", { name: "Explore medical foundations" })
     .click();
+  await page.getByRole("button", { name: "Start the immunity club" }).click();
   await page.getByRole("button", { name: "Explore in 3D" }).click();
   await expect(
     page
@@ -69,7 +70,9 @@ test("medical cards open the studio without leaving saved lesson", async ({
       .getByRole("heading", { name: "A cell that engulfs" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Back to medical cards" }).click();
-  await expect(page.getByText("Inside the immunity club.")).toBeVisible();
+  await expect(
+    page.getByText("The immunity club", { exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Unfold my phone pass" }),
   ).toHaveCount(0);

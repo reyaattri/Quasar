@@ -1,3 +1,5 @@
+import { SatArtwork } from "./SatArtwork";
+import { allFacts } from "../data/content";
 import { Text } from "./ui";
 import { art } from "../data/art";
 import React, { useState } from "react";
@@ -78,6 +80,15 @@ export function Scene({
 export function FactImage({ fact, style }: { fact: Fact; style: ArtStyle }) {
   const [w, setW] = useState(340);
   const imageWidth = w * 3;
+  if (fact.sceneId === "market")
+    return (
+      <SatArtwork
+        index={allFacts
+          .filter((f) => f.sceneId === "market")
+          .findIndex((f) => f.id === fact.id)}
+        width={168}
+      />
+    );
   const imageHeight = imageWidth / 1.5;
   return (
     <View
