@@ -17,8 +17,8 @@ export function EquationSteps({ lines }: { lines: string[] }) {
         <Text
           key={i}
           style={{
-            fontSize: 21,
-            lineHeight: 31,
+            fontSize: 18,
+            lineHeight: 28,
             color: C.ink,
             fontVariant: ["tabular-nums"],
           }}
