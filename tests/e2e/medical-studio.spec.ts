@@ -50,7 +50,7 @@ test("medical studio loads all original models and hides cues for recall", async
   ).toBe(true);
 });
 
-test("medical cards open the studio without leaving saved lesson", async ({
+test("biology cards open a matching real molecular structure without losing the lesson", async ({
   page,
 }) => {
   await page.goto("/");
@@ -60,18 +60,19 @@ test("medical cards open the studio without leaving saved lesson", async ({
     await page.getByRole("button", { name: "Next lesson" }).click();
   await page.getByRole("button", { name: "Let’s make it stick" }).click();
   await page
-    .getByRole("button", { name: "Explore medical foundations" })
+    .getByRole("button", { name: "Explore biology foundations" })
     .click();
-  await page.getByRole("button", { name: "Start the immunity club" }).click();
-  await page.getByRole("button", { name: "Explore in 3D" }).click();
+  await page
+    .getByRole("button", { name: "Start cells: tiny worlds at work" })
+    .click();
+  await page.getByRole("button", { name: "Open Photosystem II in 3D" }).click();
+  await expect(page.frameLocator("iframe").locator("#status")).toContainText(
+    "1RWT ready",
+    { timeout: 30000 },
+  );
+  await page.getByRole("button", { name: "Back to biology lesson" }).click();
   await expect(
-    page
-      .frameLocator("iframe")
-      .getByRole("heading", { name: "A cell that engulfs" }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Back to medical cards" }).click();
-  await expect(
-    page.getByText("The immunity club", { exact: true }),
+    page.getByText("Cells: tiny worlds at work", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Unfold my phone pass" }),

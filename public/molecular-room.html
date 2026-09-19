@@ -1,19 +1,75 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quasar molecular explorer</title><link rel="stylesheet" href="/medical/molstar.css"><style>html,body{margin:0;height:100%;font:14px system-ui;background:#fffdf4}#viewer{position:absolute;inset:38px 0 0}#status{position:absolute;top:0;left:0;right:0;padding:10px;background:#e6ebd9;z-index:5}</style></head><body><div id="status" role="status">Loading experimental coordinates…</div><div id="viewer"></div><script src="/medical/molstar.js"></script><script>
-(async()=>{
- const requested=new URLSearchParams(location.search).get('pdb');
- const id=['1HZH','5FMW','1Y1W'].includes(requested)?requested:'1HZH';
- const status=document.getElementById('status');
- try {
-  const viewer=await molstar.Viewer.create('viewer',{layoutIsExpanded:false,layoutShowControls:false,layoutShowSequence:false,layoutShowLog:false,layoutShowLeftPanel:false,viewportShowAnimation:false,viewportShowExpand:true});
-  window.quasarViewer=viewer;
-  await viewer.loadStructureFromUrl('/medical/'+id+'.cif','mmcif',false);
-  const canvas=viewer.plugin.canvas3d;
-  canvas?.commit(true);
-  canvas?.requestCameraReset({durationMs:0});
-  canvas?.requestDraw();
-  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-  window.quasarMoleculeReady=id;
-  status.textContent=id+' ready · drag to rotate · pinch to zoom';
- }catch(error){status.textContent='The model could not render. Try reloading or open its source record.';console.error(error);}
-})();
-</script></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Quasar molecular explorer</title>
+    <link rel="stylesheet" href="/medical/molstar.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        font: 14px system-ui;
+        background: #fffdf4;
+      }
+      #viewer {
+        position: absolute;
+        inset: 38px 0 0;
+      }
+      #status {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 10px;
+        background: #e6ebd9;
+        z-index: 5;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="status" role="status">Loading experimental coordinates…</div>
+    <div id="viewer"></div>
+    <script src="/medical/molstar.js"></script>
+    <script>
+      (async () => {
+        const requested = new URLSearchParams(location.search).get("pdb");
+        const id = ["1HZH", "5FMW", "1Y1W", "1RWT", "1KX5"].includes(requested)
+          ? requested
+          : "1HZH";
+        const status = document.getElementById("status");
+        try {
+          const viewer = await molstar.Viewer.create("viewer", {
+            layoutIsExpanded: false,
+            layoutShowControls: false,
+            layoutShowSequence: false,
+            layoutShowLog: false,
+            layoutShowLeftPanel: false,
+            viewportShowAnimation: false,
+            viewportShowExpand: true,
+          });
+          window.quasarViewer = viewer;
+          await viewer.loadStructureFromUrl(
+            "/medical/" + id + ".cif",
+            "mmcif",
+            false,
+          );
+          const canvas = viewer.plugin.canvas3d;
+          canvas?.commit(true);
+          canvas?.requestCameraReset({ durationMs: 0 });
+          canvas?.requestDraw();
+          await new Promise((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve)),
+          );
+          window.quasarMoleculeReady = id;
+          status.textContent = id + " ready · drag to rotate · pinch to zoom";
+        } catch (error) {
+          status.textContent =
+            "The model could not render. Try reloading or open its source record.";
+          console.error(error);
+        }
+      })();
+    </script>
+  </body>
+</html>

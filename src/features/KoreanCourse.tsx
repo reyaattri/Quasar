@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { PanResponder, View, Linking } from "react-native";
+import { Image, PanResponder, View, Linking } from "react-native";
 import Svg, { Path, Circle, Text as SvgText, Rect } from "react-native-svg";
 import * as Speech from "expo-speech";
 import {
@@ -62,6 +62,92 @@ const letters = [
     sound: "silent at the start of a syllable; ng at the end",
     hook: "An empty ring saves a seat before a vowel: it is silent there. At the bottom of a syllable it rings ng. Same shape, different job depending on position.",
     paths: ["M140 60 C45 60 45 205 140 205 C235 205 235 60 140 60"],
+  },
+];
+const storyBeats = [
+  {
+    title: "The starting corner · ㄱ",
+    action:
+      "Nari raises an L-shaped starter launcher. Its hard corner gives the shape ㄱ. The recording—not the English hint—is the sound target.",
+    recall: "corner launcher · ㄱ",
+    art: "corner",
+  },
+  {
+    title: "The enormous nose · ㄴ",
+    action:
+      "The signal wakes a guard whose nose drops down and turns right. Trace the nose route: ㄴ. Nose supplies the n reminder.",
+    recall: "bent nose · ㄴ",
+    art: "nose",
+  },
+  {
+    title: "The market door · ㄷ",
+    action:
+      "Nari throws open a three-sided market door. Top, side, floor: ㄷ. Door supplies the d reminder.",
+    recall: "three-sided door · ㄷ",
+    art: "door",
+  },
+  {
+    title: "The rattlesnake escape · ㄹ",
+    action:
+      "A rattlesnake zigzags out of the doorway in four sharp turns. Its body draws ㄹ. Listen for the Korean r/l sound instead of forcing either English sound.",
+    recall: "rattlesnake turns · ㄹ",
+    art: "snake",
+  },
+  {
+    title: "The square bucket · ㅂ",
+    action:
+      "Minho drops a square bucket over the snake, then straps a second bar across it. The trapped shape becomes ㅂ; bucket cues b.",
+    recall: "barred bucket · ㅂ",
+    art: "bucket",
+  },
+  {
+    title: "The hill at midnight · ㅅ",
+    action:
+      "The snake escapes toward a steep hill. Two slopes meet at the summit and draw ㅅ. Summit supplies the s reminder.",
+    recall: "hill summit · ㅅ",
+    art: "hill",
+  },
+  {
+    title: "Nothing at the summit · ㅇ",
+    action:
+      "Nari reaches the top and finds one perfectly round empty moon: ㅇ. It holds a silent place before a vowel and rings ng at the end.",
+    recall: "empty round place · ㅇ",
+    art: "moon",
+  },
+  {
+    title: "The jump · ㅈ",
+    action:
+      "The snake returns, so Nari jumps from the hill. Add the jumper’s flat launch board above ㅅ and you get ㅈ, the j reminder.",
+    recall: "jump board over hill · ㅈ",
+    art: "jump",
+  },
+  {
+    title: "The champion landing · ㅊ",
+    action:
+      "The jump is so high that Nari lands as champion. The medal ribbon adds one more short stroke above ㅈ: ㅊ, the ch reminder.",
+    recall: "champion stripe · ㅊ",
+    art: "champion",
+  },
+  {
+    title: "The door collision · ㅋ",
+    action:
+      "Nari charges back toward the snake, misses, and hits the old ㄱ corner so hard that it splits into two rails: ㅋ, the stronger k sound.",
+    recall: "split corner · ㅋ",
+    art: "crash",
+  },
+  {
+    title: "The pillar rescue · ㅍ",
+    action:
+      "Minho braces between twin pillars and two crossbeams. The whole pose draws ㅍ and gives the p reminder.",
+    recall: "twin pillars · ㅍ",
+    art: "pillars",
+  },
+  {
+    title: "The surprise hat · ㅎ",
+    action:
+      "The roof pops loose and drops a round festival hat between two bars. Hat gives the h reminder and the final shape ㅎ.",
+    recall: "festival hat · ㅎ",
+    art: "hat",
   },
 ];
 const scenes = [
@@ -361,10 +447,213 @@ function Host({ index }: { index: number }) {
     </Svg>
   );
 }
-export function KoreanCourse() {
-  const [mode, setMode] = useState<"letters" | "conversation" | "recall">(
-      "letters",
+
+function KoreanFigure({
+  index,
+  height = 285,
+}: {
+  index: number;
+  height?: number;
+}) {
+  if (index < 4) {
+    return (
+      <AtlasArt
+        source={require("../../assets/korean-actions-transparent.png")}
+        columns={3}
+        rows={2}
+        index={index}
+        height={height}
+        inset={0.94}
+      />
+    );
+  }
+  const source =
+    index === 4
+      ? require("../../assets/korean-elevator.png")
+      : require("../../assets/korean-gong.png");
+  return (
+    <View
+      testID="korean-figure-art"
+      style={{ height, overflow: "hidden", alignItems: "center" }}
+    >
+      <Image
+        accessible={false}
+        source={source}
+        resizeMode="contain"
+        style={{ width: "94%", height: height + 24, marginTop: -18 }}
+      />
+    </View>
+  );
+}
+
+function StoryBeatSketch({ index }: { index: number }) {
+  const beat = storyBeats[index];
+  const glyph = beat.recall.split(" · ").at(-1) || "";
+  const drawings: Record<string, React.ReactNode> = {
+    corner: (
+      <Path
+        d="M72 55v70h78"
+        stroke={C.red}
+        strokeWidth={14}
+        fill="none"
+        strokeLinecap="round"
+      />
     ),
+    nose: (
+      <Path
+        d="M108 45v72h70"
+        stroke={C.red}
+        strokeWidth={14}
+        fill="none"
+        strokeLinecap="round"
+      />
+    ),
+    door: (
+      <Path
+        d="M70 125V52h105v73"
+        stroke={C.red}
+        strokeWidth={14}
+        fill="none"
+        strokeLinecap="round"
+      />
+    ),
+    snake: (
+      <Path
+        d="M70 45h105v38H88v42h100"
+        stroke={C.red}
+        strokeWidth={14}
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    ),
+    bucket: (
+      <Path
+        d="M72 45v90m104-90v90M72 58h104M72 95h104M72 135h104"
+        stroke={C.red}
+        strokeWidth={12}
+        fill="none"
+      />
+    ),
+    hill: (
+      <Path
+        d="M58 137L123 52l65 85"
+        stroke={C.green}
+        strokeWidth={14}
+        fill="none"
+        strokeLinecap="round"
+      />
+    ),
+    moon: (
+      <Circle
+        cx={123}
+        cy={94}
+        r={54}
+        stroke={C.green}
+        strokeWidth={14}
+        fill="none"
+      />
+    ),
+    jump: (
+      <>
+        <Path
+          d="M58 137L123 70l65 67M72 48h102"
+          stroke={C.red}
+          strokeWidth={12}
+          fill="none"
+          strokeLinecap="round"
+        />
+        <Circle cx={123} cy={28} r={10} fill={C.yellow} />
+      </>
+    ),
+    champion: (
+      <>
+        <Path
+          d="M58 137L123 75l65 62M72 54h102M98 29h50"
+          stroke={C.red}
+          strokeWidth={11}
+          fill="none"
+          strokeLinecap="round"
+        />
+        <Circle cx={123} cy={29} r={12} fill={C.yellow} />
+      </>
+    ),
+    crash: (
+      <Path
+        d="M65 48v86m0-45h102M155 48v86"
+        stroke={C.red}
+        strokeWidth={13}
+        fill="none"
+        strokeLinecap="round"
+      />
+    ),
+    pillars: (
+      <Path
+        d="M68 45v95m108-95v95M68 67h108M68 117h108"
+        stroke={C.green}
+        strokeWidth={14}
+        fill="none"
+      />
+    ),
+    hat: (
+      <>
+        <Path d="M70 50h106M82 138h82" stroke={C.green} strokeWidth={12} />
+        <Circle
+          cx={123}
+          cy={94}
+          r={38}
+          stroke={C.red}
+          strokeWidth={12}
+          fill={C.yellow}
+        />
+      </>
+    ),
+  };
+  return (
+    <View
+      style={{ height: 260, alignItems: "center", justifyContent: "center" }}
+    >
+      <Svg
+        width="100%"
+        height="230"
+        viewBox="0 0 300 190"
+        accessibilityLabel={`${beat.title} memory drawing`}
+      >
+        <Path
+          d="M32 158Q150 176 268 158"
+          stroke={C.line}
+          strokeWidth={3}
+          fill="none"
+          strokeDasharray="7 7"
+        />
+        {drawings[beat.art]}
+        <Circle
+          cx={235}
+          cy={74}
+          r={26}
+          fill="#E5B994"
+          stroke={C.ink}
+          strokeWidth={4}
+        />
+        <Path
+          d="M218 65q18-30 39 0M233 101v50m0-35l-27 23m27-23 28 20"
+          stroke={C.ink}
+          strokeWidth={7}
+          fill="none"
+          strokeLinecap="round"
+        />
+        <SvgText x={250} y={36} fill={C.ink} fontSize={26} fontWeight="700">
+          {glyph}
+        </SvgText>
+      </Svg>
+    </View>
+  );
+}
+
+export function KoreanCourse() {
+  const [mode, setMode] = useState<
+      "story" | "letters" | "conversation" | "recall"
+    >("story"),
     [index, setIndex] = useState(0),
     [answer, setAnswer] = useState<string | null>(null);
   const [readingDone, setReadingDone] = useState(false);
@@ -375,11 +664,20 @@ export function KoreanCourse() {
       <Tag color={C.peach}>THE KOREAN NEIGHBOURHOOD</Tag>
       <Text style={s.title}>See it. Trace it. Say it.</Text>
       <Text style={s.body}>
-        A first visit to Hangeul: six letters, simple syllables, and three
-        everyday exchanges. Shape stories help recall; listen carefully because
-        English spellings do not capture every Korean sound.
+        First watch one ridiculous visual story. Then replay it with Korean
+        sounds, trace each shape, and immediately read real syllable blocks.
+        English cues start the memory; the Korean audio corrects the sound.
       </Text>
       <View style={{ gap: 10 }}>
+        <Button
+          secondary
+          onPress={() => {
+            setMode("story");
+            setIndex(0);
+          }}
+        >
+          Replay the picture story
+        </Button>
         <Button
           secondary
           onPress={() => {
@@ -402,10 +700,42 @@ export function KoreanCourse() {
             : "Conversations unlock after reading practice"}
         </Button>
       </View>
-      {mode === "letters" ? (
+      {mode === "story" ? (
+        <Card style={{ gap: 16, backgroundColor: C.peach }}>
+          <Tag>
+            ACT I · PICTURE FIRST · {index + 1} OF {storyBeats.length}
+          </Tag>
+          <StoryBeatSketch index={index} />
+          <Text style={s.h2}>{storyBeats[index].title}</Text>
+          <Text style={s.body}>{storyBeats[index].action}</Text>
+          <View
+            style={{
+              alignSelf: "flex-start",
+              backgroundColor: C.paper,
+              borderRadius: 18,
+              paddingHorizontal: 14,
+              paddingVertical: 10,
+            }}
+          >
+            <Text style={s.label}>{storyBeats[index].recall}</Text>
+          </View>
+          <Button
+            onPress={() => {
+              if (index === storyBeats.length - 1) {
+                setMode("letters");
+                setIndex(0);
+              } else setIndex(index + 1);
+            }}
+          >
+            {index === storyBeats.length - 1
+              ? "Act II · attach the Korean sounds"
+              : "What happens next?"}
+          </Button>
+        </Card>
+      ) : mode === "letters" ? (
         <Card style={{ gap: 16 }}>
           <Tag>
-            LETTER {index + 1} OF {letters.length}
+            ACT II · SOUND PASS · LETTER {index + 1} OF {letters.length}
           </Tag>
           <Text style={{ fontSize: 72, textAlign: "center", color: C.ink }}>
             {item.letter}
@@ -413,13 +743,7 @@ export function KoreanCourse() {
           <Text style={s.h2}>
             {item.name} · {item.sound}
           </Text>
-          <AtlasArt
-            source={require("../../assets/korean-actions-transparent.png")}
-            columns={3}
-            rows={2}
-            index={index}
-            height={285}
-          />
+          <KoreanFigure index={index} />
           <Text style={s.body}>{item.hook}</Text>
           <TracePad key={index} paths={item.paths} />
           <VoicePractice

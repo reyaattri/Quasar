@@ -11,7 +11,7 @@ for (const [index, lesson] of medicalModules.entries())
       await page.getByRole("button", { name: "Next lesson" }).click();
     await page.getByRole("button", { name: "Let’s make it stick" }).click();
     await page
-      .getByRole("button", { name: "Explore medical foundations" })
+      .getByRole("button", { name: "Explore biology foundations" })
       .click();
     await page
       .getByRole("button", {
@@ -51,7 +51,9 @@ for (const [index, lesson] of medicalModules.entries())
     await expect(
       page.getByText("The whole scene is back!", { exact: true }),
     ).toBeVisible();
-    await page.getByRole("button", { name: "Solve the patient case" }).click();
+    await page
+      .getByRole("button", { name: "Solve the field challenge" })
+      .click();
     const wrong = (lesson.case.answer + 1) % lesson.case.choices.length;
     await page
       .getByRole("button", { name: lesson.case.choices[wrong], exact: true })
@@ -71,7 +73,7 @@ for (const [index, lesson] of medicalModules.entries())
       .click();
     await expect(
       page.getByText(
-        index === 0 ? lesson.case.hint : "You connected the clinical clues.",
+        index === 0 ? lesson.case.hint : "You connected the biological clues.",
         { exact: true },
       ),
     ).toBeVisible();

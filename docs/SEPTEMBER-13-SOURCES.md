@@ -14,10 +14,15 @@ Original Quasar teaching text, quizzes, characters and mnemonic interactions. Th
 
 ## Biology
 
-- DNA to RNA: https://www.ncbi.nlm.nih.gov/books/NBK26887/
-- RNA polymerase structure: https://www.rcsb.org/structure/1Y1W — experimental yeast polymerase II elongation complex, 4.00 Å, Kettenberger, Armache and Cramer. The static RNA image was rendered with the bundled Mol* viewer from these coordinates, using scripts/render-molecular-reference.cjs. It is not a photograph or a human-cell simulation.
-- Antibody: https://www.rcsb.org/structure/1HZH — experimental human IgG1.
-- Complement: https://www.rcsb.org/structure/5FMW — poly-C9, not the whole complement cascade.
+- The three active modules now begin with cells, continue through DNA evidence and packing, and finish with replication, transcription and translation. The explanations and questions are original; the protected passage supplied as a reference was not copied.
+- OpenStax Biology 2e, DNA structure and sequencing: https://openstax.org/books/biology-2e/pages/14-2-dna-structure-and-sequencing
+- OpenStax Biology 2e, prokaryotic cell division and chromosome organization: https://openstax.org/books/biology-2e/pages/10-5-prokaryotic-cell-division
+- HHMI BioInteractive, DNA replication animation: https://www.biointeractive.org/classroom-resources/dna-replication-basic-detail
+- ASU Ask A Biologist, visible DNA extraction activity: https://askabiologist.asu.edu/listen-and-watch/see-DNA
+- Photosystem II: https://www.rcsb.org/structure/1RWT — experimental photosynthetic reaction-centre structure.
+- Nucleosome core: https://www.rcsb.org/structure/1KX5 — experimental DNA–histone complex.
+- RNA polymerase structure: https://www.rcsb.org/structure/1Y1W — experimental yeast polymerase II elongation complex, 4.00 Å, Kettenberger, Armache and Cramer.
+- The three static molecular images were rendered with the bundled Mol* viewer from deposited coordinates using scripts/render-molecular-reference.cjs. They are orientation previews; the lesson opens the interactive structures directly.
 - PDB coordinates: CC0, https://www.rcsb.org/pages/usage-policy. Mol* 5.9.0 is bundled with its MIT license in public/medical/MOLSTAR-LICENSE.
 - The case source and each biology lesson's reference are linked in src/data/medicalLessons.ts. The immunity case is adapted from a published case report; other cases are explicitly original educational vignettes.
 - The barrier and phagocyte GLBs remain schematic, not microscopy-derived cell models. Repeated barrier labels are consolidated into one epithelial layer label. Whole-cell microscopy and clinical blood-flow simulation are not implemented.
@@ -28,6 +33,7 @@ Original Quasar teaching text, quizzes, characters and mnemonic interactions. Th
 - Alphabet introduction curriculum: https://www.iksi.or.kr/lms/crse/crseApply.do?crseNo=119352
 - National Institute of Korean Language romanization: https://www.korean.go.kr/front_eng/roman/roman_01.do
 - The requested Instagram reel was accessible in the browser; its shape-association approach informed the original letter hooks. Its creator artwork is not copied. https://www.instagram.com/reel/DS-F9zCkhzg/
+- The user-supplied September 19 recording was reviewed locally. Quasar follows its useful learning order—picture story, sound pass, vowel pass, immediate decoding—using a new night-market story, original characters, original drawings and original wording.
 - Teuida's conversational practice informed user-paced exchanges: https://play.google.com/store/apps/details?id=net.teuida.teuida&hl=en_US
 - Sketchy's story/symbol/recall/case approach informed lesson sequencing: https://www.sketchy.com/
 - Names and faces use a salient facial feature, a concrete substitute-word picture, exaggeration, immediate spoken repetition, and later retrieval: https://artofmemory.com/wiki/Memorizing_Names_and_Faces/

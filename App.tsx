@@ -578,13 +578,21 @@ function Quasar() {
             }}
           >
             <Tag>THE BIOLOGY STUDIO</Tag>
-            <Text style={s.h3}>Meet the cast. Understand the mechanism.</Text>
+            <AtlasArt
+              source={require("./assets/bio-cells-world.png")}
+              columns={3}
+              rows={2}
+              index={2}
+              height={165}
+              inset={0.92}
+            />
+            <Text style={s.h3}>Start tiny. Build the whole living story.</Text>
             <Text style={s.body}>
-              Learn immunity, gene expression and nerve signalling through
-              stories, linked recall and patient cases.
+              Explore cells, photosynthesis, DNA structure, replication and gene
+              expression through evidence, memory scenes and mini labs.
             </Text>
             <Button onPress={() => nav("medicine")}>
-              Explore medical foundations
+              Explore biology foundations
             </Button>
           </Card>
           <Text style={s.h2}>Your memory toolkit</Text>
@@ -678,6 +686,14 @@ function Quasar() {
       <FunFlex onWorlds={() => nav("flex")} />
       <Card style={{ backgroundColor: C.peach, gap: 14, borderRadius: 28 }}>
         <Tag>NEW · THE CALCULUS WORKSHOP</Tag>
+        <AtlasArt
+          source={require("./assets/calculus-cats.png")}
+          columns={3}
+          rows={2}
+          index={0}
+          height={155}
+          inset={0.9}
+        />
         <Text style={s.h2}>Slopes, crumbs, and the bigger picture.</Text>
         <Text style={s.body}>
           Three lessons: derivatives, integration and accumulation. Work through
@@ -1392,7 +1408,7 @@ function Quasar() {
                       {[
                         "SAT vocabulary",
                         "Memory skills",
-                        "Medical foundations",
+                        "Biology foundations",
                       ].map((sub) => (
                         <Pressable
                           accessibilityRole="button"

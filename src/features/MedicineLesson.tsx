@@ -1,110 +1,121 @@
 import React, { useState } from "react";
 import { Image, Linking, View } from "react-native";
 import { Button, C, Card, s, Tag, Text } from "../components/ui";
+import { BioMiniLab } from "../components/BioMiniLab";
 import { MedicalStudio } from "../components/MedicalStudio";
 import { SuccessBurst } from "../components/SuccessBurst";
 import { medicalModules, type MedicalModule } from "../data/medicalLessons";
 import { TranscriptionAct } from "./TranscriptionAct";
 const sheets = [
-  require("../../assets/medical-human-stories.png"),
-  require("../../assets/medical-gene-theatre.png"),
-  require("../../assets/medical-signal-circus.png"),
+  require("../../assets/bio-cells-world.png"),
+  require("../../assets/bio-dna-detectives.png"),
+  require("../../assets/bio-replication-lab.png"),
+];
+const realStructures = [
+  require("../../assets/photosystem-real.png"),
+  require("../../assets/nucleosome-real.png"),
+  require("../../assets/rna-polymerase-real.png"),
+];
+const realStructureNames = [
+  "Experimental Photosystem II structure",
+  "Experimental nucleosome structure",
+  "Experimental RNA polymerase II structure",
 ];
 const pictureKeys = [
   [
     [
-      "TARGET STICKER = C3b",
-      "SCOOPING CLEANER = phagocyte",
-      "STICKER MAKES SCOOPING EASIER = opsonization",
+      "OPEN WORKSHOP = prokaryote",
+      "NUCLEUS OFFICE = eukaryote",
+      "BOTH ARE CELLS WITH DNA + RIBOSOMES",
     ],
     [
-      "TWO ALARMS = C3a and C5a",
-      "SCENT TRAIL = chemotaxis",
-      "C5a pulls neutrophils toward trouble",
+      "LONG RIBBON = about 2 m DNA",
+      "TINY ROOM = nucleus",
+      "FOLDING, NOT DELETING, MAKES IT FIT",
     ],
     [
-      "PIPE STARTER = C5b",
-      "PIPE PIECES = C6, C7 and C8",
-      "RING OF C9 = membrane attack pore",
+      "GREEN BARK = chlorophyll",
+      "LEAVES ON BREAK = drought leaf loss",
+      "STEMS KEEP CATCHING LIGHT",
     ],
     [
-      "Y-SHAPED KEY = B-cell receptor",
-      "FITTER KEY = higher affinity",
-      "KEEPING THE BEST FIT = affinity maturation",
+      "RED RAYS STOP = water absorbs red light",
+      "DROP STAYS BLOOD",
+      "AVAILABLE LIGHT CHANGES APPEARANCE",
     ],
     [
-      "KEY TIPS = antigen specificity",
-      "NEW SLEEVE = constant region",
-      "SAME TIPS, NEW JOB = class switching",
+      "SUN = captured energy",
+      "WATER + CO₂ = inputs",
+      "SUGAR + O₂ = overall products",
     ],
     [
-      "PRINTER = plasma cell",
-      "PRINTED KEYS = antibodies",
-      "ARCHIVIST = memory B cell",
-    ],
-  ],
-  [
-    [
-      "LOCKED DNA VAULT = chromatin",
-      "DIRECTOR = transcription factors",
-      "COPY MACHINE = RNA polymerase II",
-    ],
-    [
-      "BOTTOM SCRIPT = template strand",
-      "SCRIBE MOVES 3′ → 5′",
-      "NEW RNA RIBBON GROWS 5′ → 3′",
-    ],
-    [
-      "SCISSORS REMOVE = introns",
-      "SEWN PIECES = exons",
-      "CAP + BEAD TAIL protect processed mRNA",
-    ],
-    [
-      "THEATRE DOOR = nuclear pore",
-      "APPROVED SCRIPT = processed mRNA",
-      "COURIER EXPORTS IT to cytoplasm",
-    ],
-    [
-      "THREE LETTER TICKETS = codons",
-      "BEAD COURIERS = tRNAs",
-      "STAGE MACHINE = ribosome",
-    ],
-    [
-      "BEAD CHAIN = polypeptide",
-      "COACH = chaperone",
-      "CORRECT SHAPE enables protein function",
+      "FUEL + O₂ ENTER",
+      "MITOCHONDRION TRANSFERS ENERGY",
+      "ATP PACKS LEAVE FOR CELL WORK",
     ],
   ],
   [
     [
-      "LIGHTNING COURIER = action potential",
-      "TIGHTROPE = motor axon",
-      "ARRIVAL depolarizes nerve terminal",
+      "X-RAYS SCATTER",
+      "X PATTERN = repeating helical clue",
+      "PATTERN CONSTRAINS SHAPE; IT IS NOT A PHOTO",
     ],
     [
-      "MARBLES = Ca²⁺",
-      "GATE = voltage-gated calcium channel",
-      "CALCIUM ARRIVAL triggers vesicle fusion",
+      "MODEL BUILDERS = proposed structure",
+      "DIFFRACTION + CHEMISTRY = constraints",
+      "MANY SCIENTISTS SUPPLIED THE EVIDENCE",
     ],
     [
-      "ENVELOPES = acetylcholine",
-      "MAIL SACKS = vesicles",
-      "RELEASE crosses the synaptic cleft",
+      "CIRCLE HAT = phosphate",
+      "PENTAGON PACK = deoxyribose",
+      "CARD = A, T, C OR G BASE",
     ],
     [
-      "LOCK = nicotinic ACh receptor",
-      "OPEN DOOR = cation channel",
-      "END-PLATE depolarization starts muscle signal",
+      "A–T = TWO HANDS",
+      "C–G = THREE HANDS",
+      "ONE LARGE + ONE SMALL BASE KEEPS WIDTH STEADY",
     ],
     [
-      "ROPE = actin and myosin",
-      "SECOND CALCIUM WAVE comes from muscle SR",
-      "TROPONIN moves the blocking tropomyosin",
+      "SPOOLS = histones",
+      "BEADS = nucleosomes",
+      "COILING MAKES COMPACT CHROMATIN",
     ],
     [
-      "CLEANER = acetylcholinesterase",
-      "CALCIUM PUMP returns Ca²⁺ to SR",
-      "CLEANUP lets the muscle relax",
+      "OPEN CIRCLE = prokaryotic nucleoid",
+      "LOCKED LIBRARY = eukaryotic nucleus",
+      "CIRCULAR VS LINEAR IS THE CORE MODEL",
+    ],
+  ],
+  [
+    [
+      "ZIPPER WORKER = helicase",
+      "OPEN FORK = separated templates",
+      "OPENING PREPARES DNA FOR COPYING",
+    ],
+    [
+      "EACH OLD RAIL = template",
+      "EACH GETS ONE NEW PARTNER",
+      "TWO DAUGHTERS ARE HALF OLD + HALF NEW",
+    ],
+    [
+      "BUILDER = DNA polymerase",
+      "3′ HANDLE = only addition point",
+      "PROOFREADER REMOVES MANY MISMATCHES",
+    ],
+    [
+      "TRAIN = RNA polymerase",
+      "TEMPLATE READ 3′→5′",
+      "RNA GROWS 5′→3′ AND USES U",
+    ],
+    [
+      "THREE-TILE TICKET = codon",
+      "WAITER = tRNA",
+      "RIBOSOME LINKS AMINO-ACID BEADS",
+    ],
+    [
+      "DETERGENT OPENS MEMBRANES",
+      "FILTER HOLDS DEBRIS",
+      "COLD ALCOHOL REVEALS DNA STRINGS",
     ],
   ],
 ];
@@ -119,9 +130,8 @@ function Picture({
 }) {
   const [width, setWidth] = useState(290);
   const row = index < 3 ? 0 : 1;
-  // The circus sheet has a deliberately shorter upper row. Respect its actual panel edges.
-  const y = module === 2 ? (row === 0 ? 0 : 470) : row * 512;
-  const panelH = module === 2 ? (row === 0 ? 459 : 554) : 512;
+  const y = row * 512;
+  const panelH = 512;
   const scale = width / 512;
   return (
     <View
@@ -187,10 +197,11 @@ export function MedicineLesson({
     return (
       <View style={{ gap: 22 }}>
         <Tag color={C.peach}>THE BIOLOGY STUDIO</Tag>
-        <Text style={s.title}>Big ideas. Unforgettable casts.</Text>
+        <Text style={s.title}>Biology, from the beginning.</Text>
         <Text style={s.body}>
-          Three guided lessons. Learn six concepts, connect their pictures into
-          one scene, reconstruct the route, then solve a patient case.
+          Start with cells, build DNA from the evidence, then make it copy and
+          speak. Each lesson combines accurate explanations, restrained memory
+          cartoons, an interactive mini lab and a field challenge.
         </Text>
         {medicalModules.map((lesson, i) => (
           <Card
@@ -205,6 +216,19 @@ export function MedicineLesson({
             <Text style={s.h2}>{lesson.title}</Text>
             <Picture module={i} index={0} whole />
             <Text style={s.body}>{lesson.subtitle}</Text>
+            <View
+              style={{ backgroundColor: C.ink, borderRadius: 18, padding: 8 }}
+            >
+              <Image
+                source={realStructures[i]}
+                resizeMode="contain"
+                style={{ width: "100%", height: 145, borderRadius: 12 }}
+                accessibilityLabel={realStructureNames[i]}
+              />
+              <Text style={[s.small, { color: C.paper, padding: 8 }]}>
+                REAL DATA PREVIEW · {realStructureNames[i].toUpperCase()}
+              </Text>
+            </View>
             <Text style={s.small}>
               {
                 lesson.cards.filter((_, j) =>
@@ -219,7 +243,9 @@ export function MedicineLesson({
           </Card>
         ))}
         <Button secondary onPress={() => setActOpen(!actOpen)}>
-          {actOpen ? "Close the RNA detail lab" : "Open the RNA detail lab"}
+          {actOpen
+            ? "Close the molecular detail lab"
+            : "Open the molecular detail lab"}
         </Button>
         {actOpen && <TranscriptionAct />}
       </View>
@@ -260,6 +286,12 @@ export function MedicineLesson({
           <>
             <Picture module={selected} index={0} whole />
             <Text style={s.body}>{lesson.scene}</Text>
+            <BioMiniLab module={selected} />
+            {lesson.video && (
+              <Button secondary onPress={() => Linking.openURL(lesson.video!)}>
+                Watch the real process ↗
+              </Button>
+            )}
             {lesson.cards.map((c, i) => (
               <Text key={c.title} style={s.label}>
                 {i + 1}. {c.title}
@@ -336,7 +368,7 @@ export function MedicineLesson({
               <>
                 <SuccessBurst label="Six ideas connected!" />
                 <Button onPress={() => setPhase("case")}>
-                  Solve the patient case
+                  Solve the field challenge
                 </Button>
               </>
             ) : (
@@ -377,7 +409,11 @@ export function MedicineLesson({
             ))}
             <Text style={s.h3}>Now say the mechanism normally.</Text>
             <Text style={s.body}>{card.biology}</Text>
-            {selected === 1 && index === 1 && <TranscriptionAct compact />}
+            <Card style={{ backgroundColor: C.sage, gap: 6 }}>
+              <Text style={s.label}>REAL-WORLD DETAIL</Text>
+              <Text style={s.body}>{card.fact}</Text>
+            </Card>
+            {selected === 2 && index === 3 && <TranscriptionAct compact />}
             <Button onPress={() => setTesting(true)}>
               Hide card & recall concept
             </Button>
@@ -422,9 +458,9 @@ export function MedicineLesson({
         )}
       </Card>
       <Button secondary onPress={() => Linking.openURL(lesson.source)}>
-        Read the biology reference ↗
+        Open the free biology reference ↗
       </Button>
-      {selected === 0 && <MedicalStudio concept={index < 3 ? 1 : 2} />}
+      <MedicalStudio concept={selected} />
       <Text style={s.small}>
         Original memory metaphors and educational practice. Not a diagnostic
         tool.
@@ -447,14 +483,14 @@ function PatientCase({
   return (
     <View style={{ gap: 18 }}>
       <Tag color={C.yellow}>
-        CASE CONFERENCE · ATTEMPT {Math.min(attempts + 1, 2)} OF 2
+        FIELD CHALLENGE · ATTEMPT {Math.min(attempts + 1, 2)} OF 2
       </Tag>
       <Text style={s.title}>{c.title}</Text>
       <Card style={{ backgroundColor: "#E7DFEF", borderRadius: 28 }}>
         <Text style={s.label}>
           {c.source
-            ? "ADAPTED FROM A PHYSICIAN-AUTHORED OPEN-ACCESS CASE"
-            : "ORIGINAL EDUCATIONAL PATIENT VIGNETTE"}
+            ? "ADAPTED FROM AN OPEN EDUCATIONAL SOURCE"
+            : "ORIGINAL BIOLOGY APPLICATION QUESTION"}
         </Text>
         <Text style={s.body}>{c.prompt}</Text>
         {c.choices.map((choice, i) => (
@@ -473,10 +509,10 @@ function PatientCase({
       </Card>
       {answer !== null && (
         <Card style={{ backgroundColor: correct ? C.sage : C.peach }}>
-          {correct && <SuccessBurst label="Case solved!" />}
+          {correct && <SuccessBurst label="Challenge solved!" />}
           <Text accessibilityLiveRegion="polite" style={s.h2}>
             {correct
-              ? "You connected the clinical clues."
+              ? "You connected the biological clues."
               : finished
                 ? c.hint
                 : "Not quite. You have another try."}
@@ -486,7 +522,7 @@ function PatientCase({
               <Text style={s.body}>{c.explanation}</Text>
               {c.source && (
                 <Button secondary onPress={() => Linking.openURL(c.source!)}>
-                  Read the source case ↗
+                  Read the source ↗
                 </Button>
               )}
               <Button onPress={onBack}>Revisit the lesson scene</Button>

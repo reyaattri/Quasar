@@ -50,6 +50,12 @@ test("Korean tracing and conversations never require microphone success", async 
   await onboard(page);
   await page.getByRole("button", { name: "Explore", exact: true }).click();
   await page.getByRole("button", { name: "Open Korean practice" }).click();
+  for (let i = 0; i < 11; i++) {
+    await page.getByRole("button", { name: "What happens next?" }).click();
+  }
+  await page
+    .getByRole("button", { name: "Act II · attach the Korean sounds" })
+    .click();
   const audioResponse = page.waitForResponse(
     (r) => r.url().includes(".ogg") && r.ok(),
   );
@@ -74,8 +80,19 @@ test("Korean tracing and conversations never require microphone success", async 
     .getByRole("button", { name: "Hide guide & draw from memory" })
     .click();
   await page.screenshot({ path: "docs/korean-tracing-mobile.png" });
-  for (let i = 0; i < 5; i++)
+  for (let i = 0; i < 5; i++) {
     await page.getByRole("button", { name: "Next letter" }).click();
+    if (i === 3) {
+      await page.getByTestId("korean-figure-art").screenshot({
+        path: "docs/korean-letter-5-art.png",
+      });
+    }
+    if (i === 4) {
+      await page.getByTestId("korean-figure-art").screenshot({
+        path: "docs/korean-letter-6-art.png",
+      });
+    }
+  }
   await page.getByRole("button", { name: "Build a syllable" }).click();
   for (const [i, q] of readingPractice.entries()) {
     await page.getByRole("button", { name: "Hide the hint & answer" }).click();
@@ -108,9 +125,11 @@ test("RNA pairs bases, explains directions, and provides real structure", async 
 }) => {
   await onboard(page);
   await page
-    .getByRole("button", { name: "Explore medical foundations" })
+    .getByRole("button", { name: "Explore biology foundations" })
     .click();
-  await page.getByRole("button", { name: "Open the RNA detail lab" }).click();
+  await page
+    .getByRole("button", { name: "Open the molecular detail lab" })
+    .click();
   await page.getByRole("button", { name: "C", exact: true }).click();
   await expect(page.getByText(/Try the complementary/)).toBeVisible();
   for (const base of "AUGCCU")
