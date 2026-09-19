@@ -491,121 +491,305 @@ function StoryBeatSketch({ index }: { index: number }) {
   const glyph = beat.recall.split(" · ").at(-1) || "";
   const drawings: Record<string, React.ReactNode> = {
     corner: (
-      <Path
-        d="M72 55v70h78"
-        stroke={C.red}
-        strokeWidth={14}
-        fill="none"
-        strokeLinecap="round"
-      />
+      <>
+        <Path
+          d="M52 132V50h96"
+          stroke={C.red}
+          strokeWidth={18}
+          fill="none"
+          strokeLinecap="round"
+        />
+        <Path
+          d="M40 132h120l-18 18H58z"
+          fill={C.yellow}
+          stroke={C.ink}
+          strokeWidth={4}
+        />
+        <Circle
+          cx={88}
+          cy={93}
+          r={13}
+          fill={C.paper}
+          stroke={C.ink}
+          strokeWidth={4}
+        />
+      </>
     ),
     nose: (
-      <Path
-        d="M108 45v72h70"
-        stroke={C.red}
-        strokeWidth={14}
-        fill="none"
-        strokeLinecap="round"
-      />
+      <>
+        <Circle
+          cx={87}
+          cy={82}
+          r={43}
+          fill="#E5B994"
+          stroke={C.ink}
+          strokeWidth={4}
+        />
+        <Path
+          d="M85 58v54h82"
+          stroke={C.red}
+          strokeWidth={17}
+          fill="none"
+          strokeLinecap="round"
+        />
+        <Circle cx={70} cy={75} r={4} fill={C.ink} />
+        <Path
+          d="M61 99q15 12 28 0"
+          stroke={C.ink}
+          strokeWidth={4}
+          fill="none"
+        />
+      </>
     ),
     door: (
-      <Path
-        d="M70 125V52h105v73"
-        stroke={C.red}
-        strokeWidth={14}
-        fill="none"
-        strokeLinecap="round"
-      />
+      <>
+        <Path
+          d="M55 142V42h118v100"
+          fill="#A96D45"
+          stroke={C.ink}
+          strokeWidth={6}
+        />
+        <Path
+          d="M72 128V58h78v70"
+          fill={C.peach}
+          stroke={C.red}
+          strokeWidth={9}
+        />
+        <Circle
+          cx={137}
+          cy={95}
+          r={6}
+          fill={C.yellow}
+          stroke={C.ink}
+          strokeWidth={3}
+        />
+      </>
     ),
     snake: (
-      <Path
-        d="M70 45h105v38H88v42h100"
-        stroke={C.red}
-        strokeWidth={14}
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <>
+        <Path
+          d="M42 50h118v35H72v48h105"
+          stroke={C.green}
+          strokeWidth={22}
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <Circle
+          cx={180}
+          cy={133}
+          r={16}
+          fill={C.green}
+          stroke={C.ink}
+          strokeWidth={4}
+        />
+        <Circle cx={184} cy={128} r={2.5} fill={C.paper} />
+        <Path
+          d="M193 137l16 7-16 3"
+          stroke={C.red}
+          strokeWidth={3}
+          fill="none"
+        />
+      </>
     ),
     bucket: (
-      <Path
-        d="M72 45v90m104-90v90M72 58h104M72 95h104M72 135h104"
-        stroke={C.red}
-        strokeWidth={12}
-        fill="none"
-      />
+      <>
+        <Path
+          d="M56 62h120l-14 82H70z"
+          fill="#79A9C8"
+          stroke={C.ink}
+          strokeWidth={5}
+        />
+        <Path d="M70 82h92M65 113h102" stroke={C.red} strokeWidth={11} />
+        <Path
+          d="M71 62q45-55 91 0"
+          stroke={C.ink}
+          strokeWidth={5}
+          fill="none"
+        />
+        <Path
+          d="M151 45q26-17 32 5"
+          stroke={C.green}
+          strokeWidth={10}
+          fill="none"
+          strokeLinecap="round"
+        />
+      </>
     ),
     hill: (
-      <Path
-        d="M58 137L123 52l65 85"
-        stroke={C.green}
-        strokeWidth={14}
-        fill="none"
-        strokeLinecap="round"
-      />
+      <>
+        <Path
+          d="M28 145L121 38l90 107z"
+          fill="#8DB67C"
+          stroke={C.ink}
+          strokeWidth={5}
+        />
+        <Path d="M121 38l-18 23h36z" fill={C.paper} />
+        <Path
+          d="M74 117q38-25 49-61"
+          stroke={C.yellow}
+          strokeWidth={8}
+          fill="none"
+          strokeDasharray="6 7"
+        />
+        <Circle cx={74} cy={115} r={9} fill={C.red} />
+      </>
     ),
     moon: (
-      <Circle
-        cx={123}
-        cy={94}
-        r={54}
-        stroke={C.green}
-        strokeWidth={14}
-        fill="none"
-      />
+      <>
+        <Circle
+          cx={120}
+          cy={88}
+          r={56}
+          fill={C.yellow}
+          stroke={C.ink}
+          strokeWidth={5}
+        />
+        <Circle
+          cx={120}
+          cy={88}
+          r={31}
+          fill={C.peach}
+          stroke={C.red}
+          strokeWidth={9}
+        />
+        <Path
+          d="M42 41l5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2z"
+          fill={C.paper}
+        />
+      </>
     ),
     jump: (
       <>
         <Path
-          d="M58 137L123 70l65 67M72 48h102"
+          d="M35 145L116 75l74 70z"
+          fill="#8DB67C"
+          stroke={C.ink}
+          strokeWidth={5}
+        />
+        <Circle
+          cx={119}
+          cy={35}
+          r={12}
+          fill="#E5B994"
+          stroke={C.ink}
+          strokeWidth={4}
+        />
+        <Path
+          d="M118 48l3 39m0-22-25-17m25 17 28-22m-28 44-26 30m26-30 31 28"
           stroke={C.red}
-          strokeWidth={12}
+          strokeWidth={9}
           fill="none"
           strokeLinecap="round"
         />
-        <Circle cx={123} cy={28} r={10} fill={C.yellow} />
       </>
     ),
     champion: (
       <>
         <Path
-          d="M58 137L123 75l65 62M72 54h102M98 29h50"
+          d="M55 145L116 84l58 61z"
+          fill="#8DB67C"
+          stroke={C.ink}
+          strokeWidth={5}
+        />
+        <Circle
+          cx={120}
+          cy={48}
+          r={15}
+          fill="#E5B994"
+          stroke={C.ink}
+          strokeWidth={4}
+        />
+        <Path
+          d="M120 65v51m0-34-33-17m33 17 35-21m-35 55-29 27m29-27 30 27"
           stroke={C.red}
-          strokeWidth={11}
+          strokeWidth={10}
           fill="none"
           strokeLinecap="round"
         />
-        <Circle cx={123} cy={29} r={12} fill={C.yellow} />
+        <Circle
+          cx={120}
+          cy={83}
+          r={12}
+          fill={C.yellow}
+          stroke={C.ink}
+          strokeWidth={3}
+        />
+        <Path
+          d="M105 25h30l-5 18h-20z"
+          fill={C.yellow}
+          stroke={C.ink}
+          strokeWidth={3}
+        />
       </>
     ),
     crash: (
-      <Path
-        d="M65 48v86m0-45h102M155 48v86"
-        stroke={C.red}
-        strokeWidth={13}
-        fill="none"
-        strokeLinecap="round"
-      />
+      <>
+        <Path
+          d="M48 35v110h118V35z"
+          fill="#A96D45"
+          stroke={C.ink}
+          strokeWidth={6}
+        />
+        <Path d="M35 88h145M95 28v120" stroke={C.red} strokeWidth={12} />
+        <Path
+          d="M170 55l18-14m-12 38 24-2m-28 25 18 14"
+          stroke={C.yellow}
+          strokeWidth={6}
+        />
+      </>
     ),
     pillars: (
-      <Path
-        d="M68 45v95m108-95v95M68 67h108M68 117h108"
-        stroke={C.green}
-        strokeWidth={14}
-        fill="none"
-      />
+      <>
+        <Rect
+          x={48}
+          y={35}
+          width={34}
+          height={115}
+          rx={8}
+          fill="#BC8B58"
+          stroke={C.ink}
+          strokeWidth={5}
+        />
+        <Rect
+          x={158}
+          y={35}
+          width={34}
+          height={115}
+          rx={8}
+          fill="#BC8B58"
+          stroke={C.ink}
+          strokeWidth={5}
+        />
+        <Path d="M48 62h144M48 121h144" stroke={C.green} strokeWidth={12} />
+        <Circle
+          cx={120}
+          cy={88}
+          r={19}
+          fill="#E5B994"
+          stroke={C.ink}
+          strokeWidth={4}
+        />
+      </>
     ),
     hat: (
       <>
-        <Path d="M70 50h106M82 138h82" stroke={C.green} strokeWidth={12} />
+        <Path d="M54 47h138M73 142h100" stroke={C.green} strokeWidth={12} />
         <Circle
           cx={123}
-          cy={94}
-          r={38}
-          stroke={C.red}
-          strokeWidth={12}
-          fill={C.yellow}
+          cy={101}
+          r={32}
+          fill="#E5B994"
+          stroke={C.ink}
+          strokeWidth={4}
         />
+        <Path
+          d="M80 84q42-54 84 0z"
+          fill={C.red}
+          stroke={C.ink}
+          strokeWidth={5}
+        />
+        <Path d="M72 84h102" stroke={C.yellow} strokeWidth={10} />
       </>
     ),
   };
@@ -619,6 +803,16 @@ function StoryBeatSketch({ index }: { index: number }) {
         viewBox="0 0 300 190"
         accessibilityLabel={`${beat.title} memory drawing`}
       >
+        <Rect
+          x={4}
+          y={4}
+          width={292}
+          height={180}
+          rx={26}
+          fill="#FFF8E8"
+          stroke={C.line}
+          strokeWidth={2}
+        />
         <Path
           d="M32 158Q150 176 268 158"
           stroke={C.line}

@@ -65,6 +65,7 @@ test("biology cards open a matching real molecular structure without losing the 
   await page
     .getByRole("button", { name: "Start cells: tiny worlds at work" })
     .click();
+  await page.getByRole("button", { name: "Open molecular explorer" }).click();
   await page.getByRole("button", { name: "Open Photosystem II in 3D" }).click();
   await expect(page.frameLocator("iframe").locator("#status")).toContainText(
     "1RWT ready",

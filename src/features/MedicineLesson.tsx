@@ -11,16 +11,6 @@ const sheets = [
   require("../../assets/bio-dna-detectives.png"),
   require("../../assets/bio-replication-lab.png"),
 ];
-const realStructures = [
-  require("../../assets/photosystem-real.png"),
-  require("../../assets/nucleosome-real.png"),
-  require("../../assets/rna-polymerase-real.png"),
-];
-const realStructureNames = [
-  "Experimental Photosystem II structure",
-  "Experimental nucleosome structure",
-  "Experimental RNA polymerase II structure",
-];
 const pictureKeys = [
   [
     [
@@ -184,6 +174,8 @@ export function MedicineLesson({
   const [order, setOrder] = useState<number[]>([]),
     [orderFeedback, setOrderFeedback] = useState("");
   const [actOpen, setActOpen] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [studioOpen, setStudioOpen] = useState(false);
   const start = (i: number) => {
     setSelected(i);
     setIndex(0);
@@ -192,6 +184,8 @@ export function MedicineLesson({
     setAnswer(null);
     setOrder([]);
     setOrderFeedback("");
+    setShowDetails(false);
+    setStudioOpen(false);
   };
   if (selected === null)
     return (
@@ -216,19 +210,6 @@ export function MedicineLesson({
             <Text style={s.h2}>{lesson.title}</Text>
             <Picture module={i} index={0} whole />
             <Text style={s.body}>{lesson.subtitle}</Text>
-            <View
-              style={{ backgroundColor: C.ink, borderRadius: 18, padding: 8 }}
-            >
-              <Image
-                source={realStructures[i]}
-                resizeMode="contain"
-                style={{ width: "100%", height: 145, borderRadius: 12 }}
-                accessibilityLabel={realStructureNames[i]}
-              />
-              <Text style={[s.small, { color: C.paper, padding: 8 }]}>
-                REAL DATA PREVIEW · {realStructureNames[i].toUpperCase()}
-              </Text>
-            </View>
             <Text style={s.small}>
               {
                 lesson.cards.filter((_, j) =>
@@ -392,28 +373,34 @@ export function MedicineLesson({
         {!testing ? (
           <>
             <Picture module={selected} index={index} />
-            <Text style={s.h3}>Make it ridiculous.</Text>
+            <Text style={s.h3}>The strange picture</Text>
             <Text style={s.body}>{card.hook}</Text>
-            <Tag>DECODE THE SCENE</Tag>
-            {pictureKeys[selected][index].map((key, i) => (
-              <View
-                key={key}
-                style={{
-                  padding: 12,
-                  borderRadius: 12,
-                  backgroundColor: i === 2 ? C.yellow : C.white,
-                }}
-              >
-                <Text style={i === 2 ? s.h3 : s.label}>{key}</Text>
+            <View
+              style={{
+                padding: 14,
+                borderRadius: 18,
+                backgroundColor: C.white,
+                gap: 8,
+              }}
+            >
+              <Text style={s.label}>THREE THINGS TO NOTICE</Text>
+              {pictureKeys[selected][index].map((key, i) => (
+                <Text key={key} style={s.small}>
+                  {i + 1}. {key.toLowerCase()}
+                </Text>
+              ))}
+            </View>
+            <Button secondary onPress={() => setShowDetails(!showDetails)}>
+              {showDetails ? "Keep it short" : "Explain the real biology"}
+            </Button>
+            {showDetails && (
+              <View style={{ gap: 10 }}>
+                <Text style={s.h3}>What is really happening?</Text>
+                <Text style={s.body}>{card.biology}</Text>
+                <Text style={s.small}>{card.fact}</Text>
+                {selected === 2 && index === 3 && <TranscriptionAct compact />}
               </View>
-            ))}
-            <Text style={s.h3}>Now say the mechanism normally.</Text>
-            <Text style={s.body}>{card.biology}</Text>
-            <Card style={{ backgroundColor: C.sage, gap: 6 }}>
-              <Text style={s.label}>REAL-WORLD DETAIL</Text>
-              <Text style={s.body}>{card.fact}</Text>
-            </Card>
-            {selected === 2 && index === 3 && <TranscriptionAct compact />}
+            )}
             <Button onPress={() => setTesting(true)}>
               Hide card & recall concept
             </Button>
@@ -446,6 +433,7 @@ export function MedicineLesson({
                   onPress={() => {
                     setTesting(false);
                     setAnswer(null);
+                    setShowDetails(false);
                     if (index === 5) setPhase("scene");
                     else setIndex(index + 1);
                   }}
@@ -460,7 +448,10 @@ export function MedicineLesson({
       <Button secondary onPress={() => Linking.openURL(lesson.source)}>
         Open the free biology reference ↗
       </Button>
-      <MedicalStudio concept={selected} />
+      <Button secondary onPress={() => setStudioOpen(!studioOpen)}>
+        {studioOpen ? "Close molecular explorer" : "Open molecular explorer"}
+      </Button>
+      {studioOpen && <MedicalStudio concept={selected} />}
       <Text style={s.small}>
         Original memory metaphors and educational practice. Not a diagnostic
         tool.
