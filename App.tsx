@@ -1,3 +1,4 @@
+import { ExploreMemoryArt } from "./src/components/MemoryActivityArt";
 import { vocabularyCues } from "./src/data/vocabularyCues";
 import { FunFlex } from "./src/features/FunFlex";
 import { StudyShelf, AtlasArt } from "./src/components/StudyShelf";
@@ -692,14 +693,7 @@ function Quasar() {
       <FunFlex onWorlds={() => nav("flex")} />
       <Card style={{ backgroundColor: C.peach, gap: 14, borderRadius: 28 }}>
         <Tag>NEW · THE CALCULUS WORKSHOP</Tag>
-        <AtlasArt
-          source={require("./assets/calculus-cats.png")}
-          columns={3}
-          rows={2}
-          index={0}
-          height={155}
-          inset={0.9}
-        />
+        <ExploreMemoryArt kind="calculus" />
         <Text style={s.h2}>Slopes, crumbs, and the bigger picture.</Text>
         <Text style={s.body}>
           Three lessons: derivatives, integration and accumulation. Work through

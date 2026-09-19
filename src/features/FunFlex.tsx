@@ -3,7 +3,10 @@ import { View, Pressable, Modal, ScrollView, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, Button, Card, Tag, Field, C, s } from "../components/ui";
 import { Portrait } from "../components/Portrait";
-import { AtlasArt } from "../components/StudyShelf";
+import {
+  CardMemoryArt,
+  ExploreMemoryArt,
+} from "../components/MemoryActivityArt";
 import {
   deck,
   shuffle,
@@ -113,30 +116,8 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
             transform: [{ scale: pressed ? 0.985 : 1 }],
           })}
         >
-          {c.kind === "cards" ? (
-            <AtlasArt
-              source={require("../../assets/sat-latest-selected.png")}
-              columns={5}
-              rows={2}
-              index={8}
-              height={180}
-            />
-          ) : c.kind === "phrase" ? (
-            <AtlasArt
-              source={require("../../assets/lesson-stories.png")}
-              columns={3}
-              rows={2}
-              index={2}
-              height={170}
-            />
-          ) : c.kind === "pairs" ? (
-            <AtlasArt
-              source={require("../../assets/lesson-stories.png")}
-              columns={3}
-              rows={2}
-              index={4}
-              height={170}
-            />
+          {c.kind !== "names" ? (
+            <ExploreMemoryArt kind={c.kind} />
           ) : c.kind === "names" ? (
             <View
               style={{
@@ -164,21 +145,6 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
           </Text>
         </Pressable>
       ))}
-      <Card style={{ backgroundColor: C.sage }}>
-        <Tag>TAKE IT FOR A WALK</Tag>
-        <AtlasArt
-          source={require("../../assets/lesson-stories.png")}
-          columns={3}
-          rows={2}
-          index={5}
-          height={180}
-        />
-        <Text style={s.h2}>Pi, plants & shopping lists.</Text>
-        <Text style={s.body}>
-          Enter a world and find a memory waiting inside every room.
-        </Text>
-        <Button onPress={onWorlds}>Explore memory worlds</Button>
-      </Card>
       <Modal
         visible={!!game}
         animationType="slide"
@@ -273,46 +239,56 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                         return (
                           <>
                             <View
-                              accessibilityLabel={card.name}
                               style={{
-                                width: 160,
-                                height: 215,
-                                borderRadius: 16,
-                                backgroundColor: "#FFFEF8",
-                                borderColor: C.ink,
-                                borderWidth: 2,
-                                padding: 14,
-                                alignSelf: "center",
-                                transform: [{ rotate: "-3deg" }],
-                                justifyContent: "space-between",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 10,
                               }}
                             >
-                              <Text
+                              <View
+                                testID="playing-card"
+                                accessibilityLabel={card.name}
                                 style={{
-                                  fontSize: 27,
-                                  color: card.red ? "#B94146" : C.ink,
+                                  width: 112,
+                                  height: 180,
+                                  borderRadius: 16,
+                                  backgroundColor: "#FFFEF8",
+                                  borderColor: C.ink,
+                                  borderWidth: 2,
+                                  padding: 14,
+                                  alignSelf: "center",
+                                  transform: [{ rotate: "-3deg" }],
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                {card.id}
-                              </Text>
-                              <Text
-                                style={{
-                                  fontSize: 66,
-                                  textAlign: "center",
-                                  color: card.red ? "#B94146" : C.ink,
-                                }}
-                              >
-                                {card.suit}
-                              </Text>
-                              <Text
-                                style={{
-                                  fontSize: 25,
-                                  textAlign: "right",
-                                  color: card.red ? "#B94146" : C.ink,
-                                }}
-                              >
-                                {card.id}
-                              </Text>
+                                <Text
+                                  style={{
+                                    fontSize: 27,
+                                    color: card.red ? "#B94146" : C.ink,
+                                  }}
+                                >
+                                  {card.id}
+                                </Text>
+                                <Text
+                                  style={{
+                                    fontSize: 66,
+                                    textAlign: "center",
+                                    color: card.red ? "#B94146" : C.ink,
+                                  }}
+                                >
+                                  {card.suit}
+                                </Text>
+                                <Text
+                                  style={{
+                                    fontSize: 25,
+                                    textAlign: "right",
+                                    color: card.red ? "#B94146" : C.ink,
+                                  }}
+                                >
+                                  {card.id}
+                                </Text>
+                              </View>
+                              <CardMemoryArt card={card} step={step} />
                             </View>
                             <Tag>{cardPlace(step)}</Tag>
                             <Text style={s.h2}>
@@ -321,7 +297,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                             {[
                               [
                                 "1 · RANK BECOMES",
-                                `${card.rank} → ${card.object}`,
+                                `${card.rank} → ${card.object}. ${card.rank === "4" ? "The mast and triangular sail suggest the shape of 4." : "Keep this same rank-object pair each time you practise."}`,
                               ],
                               [
                                 "2 · SUIT DRESSES IT",
@@ -330,7 +306,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                               ["3 · ADDRESS", cardPlace(step)],
                               [
                                 "4 · COLLISION",
-                                `The ${card.hook} slams into the ${cardPlace(step).toLowerCase()}, which yelps and throws it back.`,
+                                `At the ${cardPlace(step).toLowerCase()}, the ${card.object} ${card.suit === "♠" ? "inflates its black astronaut suit until it squeaks" : card.suit === "♥" ? "whips its red velvet cape into a giant heart" : card.suit === "♣" ? "sprouts noisy green leaves from its garden costume" : "rattles its sparkling diamond armour like a chandelier"}. It ${step % 4 === 0 ? "hooks the door handle and swings the whole door like a pendulum" : step % 4 === 1 ? "bounces on the table until the legs dance" : step % 4 === 2 ? "presses against the window until the glass turns to jelly" : "spins the chair like a runaway carnival ride"}. Hear the crash. Picture the costume. Say: ${card.name}.`,
                               ],
                             ].map(([label, value], cueIndex) => (
                               <View

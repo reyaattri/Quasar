@@ -8,6 +8,8 @@ export function AtlasArt({
   index,
   height = 210,
   inset = 1,
+  sourceWidth = 1536,
+  sourceHeight = 1024,
 }: {
   source: ImageSourcePropType;
   columns: number;
@@ -15,10 +17,12 @@ export function AtlasArt({
   index: number;
   height?: number;
   inset?: number;
+  sourceWidth?: number;
+  sourceHeight?: number;
 }) {
   const [width, setWidth] = useState(250),
-    cw = 1536 / columns,
-    ch = 1024 / rows,
+    cw = sourceWidth / columns,
+    ch = sourceHeight / rows,
     scale = Math.min(width / cw, height / ch) * inset;
   return (
     <View
@@ -42,8 +46,8 @@ export function AtlasArt({
           source={source}
           style={{
             position: "absolute",
-            width: 1536 * scale,
-            height: 1024 * scale,
+            width: sourceWidth * scale,
+            height: sourceHeight * scale,
             left: -(index % columns) * cw * scale,
             top: -Math.floor(index / columns) * ch * scale,
           }}

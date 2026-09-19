@@ -20,12 +20,8 @@ test("Fun and Flex card sequence stays fixed and scores exact order", async ({
   const seen: string[] = [];
   for (let i = 0; i < 6; i++) {
     const label = await page
-      .locator("[aria-label]")
-      .evaluateAll((els) =>
-        els
-          .map((e) => e.getAttribute("aria-label"))
-          .find((x) => x && /^[A2-9JQK]|^10/.test(x) && x.includes(" of ")),
-      );
+      .getByTestId("playing-card")
+      .getAttribute("aria-label");
     seen.push(deck.find((c) => c.name === label)!.id);
     if (i === 0) await page.screenshot({ path: "docs/fun-cards-mobile.png" });
     await page
