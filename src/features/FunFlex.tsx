@@ -3,6 +3,7 @@ import { View, Pressable, Modal, ScrollView, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, Button, Card, Tag, Field, C, s } from "../components/ui";
 import { Portrait } from "../components/Portrait";
+import { AtlasArt } from "../components/StudyShelf";
 import {
   deck,
   shuffle,
@@ -112,7 +113,31 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
             transform: [{ scale: pressed ? 0.985 : 1 }],
           })}
         >
-          {c.kind === "names" ? (
+          {c.kind === "cards" ? (
+            <AtlasArt
+              source={require("../../assets/sat-latest-selected.png")}
+              columns={5}
+              rows={2}
+              index={8}
+              height={180}
+            />
+          ) : c.kind === "phrase" ? (
+            <AtlasArt
+              source={require("../../assets/lesson-stories.png")}
+              columns={3}
+              rows={2}
+              index={2}
+              height={170}
+            />
+          ) : c.kind === "pairs" ? (
+            <AtlasArt
+              source={require("../../assets/lesson-stories.png")}
+              columns={3}
+              rows={2}
+              index={4}
+              height={170}
+            />
+          ) : c.kind === "names" ? (
             <View
               style={{
                 flexDirection: "row",
@@ -141,6 +166,13 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
       ))}
       <Card style={{ backgroundColor: C.sage }}>
         <Tag>TAKE IT FOR A WALK</Tag>
+        <AtlasArt
+          source={require("../../assets/lesson-stories.png")}
+          columns={3}
+          rows={2}
+          index={5}
+          height={180}
+        />
         <Text style={s.h2}>Pi, plants & shopping lists.</Text>
         <Text style={s.body}>
           Enter a world and find a memory waiting inside every room.

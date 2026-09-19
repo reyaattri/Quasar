@@ -606,9 +606,15 @@ function Quasar() {
               }}
               style={a.tip}
             >
-              <Icon
-                name={["pin", "key", "link", "book", "smile", "map"][index]}
-              />
+              <View style={{ width: 92 }}>
+                <AtlasArt
+                  source={require("./assets/lesson-stories.png")}
+                  columns={3}
+                  rows={2}
+                  index={index}
+                  height={92}
+                />
+              </View>
               <View style={{ flex: 1 }}>
                 <Text style={s.h3}>{item.title}</Text>
                 <Text style={s.small}>
