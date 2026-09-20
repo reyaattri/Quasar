@@ -1,3 +1,4 @@
+import { biologyCoaching } from "../data/lessonCoaching";
 import React, { useState } from "react";
 import { Image, Linking, View } from "react-native";
 import { Button, C, Card, s, Tag, Text } from "../components/ui";
@@ -373,8 +374,13 @@ export function MedicineLesson({
         {!testing ? (
           <>
             <Picture module={selected} index={index} />
-            <Text style={s.h3}>The strange picture</Text>
+            <Text style={s.h3}>What is happening?</Text>
+            <Text style={s.body}>{card.biology}</Text>
+            <Text style={s.h3}>{biologyCoaching[selected][index][0]}</Text>
+            <Text style={s.body}>{biologyCoaching[selected][index][1]}</Text>
+            <Text style={s.h3}>Connect it to the picture</Text>
             <Text style={s.body}>{card.hook}</Text>
+            <Text style={s.small}>{biologyCoaching[selected][index][2]}</Text>
             <View
               style={{
                 padding: 14,
@@ -396,7 +402,9 @@ export function MedicineLesson({
             {showDetails && (
               <View style={{ gap: 10 }}>
                 <Text style={s.h3}>What is really happening?</Text>
-                <Text style={s.body}>{card.biology}</Text>
+                <Text style={s.body}>
+                  {biologyCoaching[selected][index][3]}
+                </Text>
                 <Text style={s.small}>{card.fact}</Text>
                 {selected === 2 && index === 3 && <TranscriptionAct compact />}
               </View>

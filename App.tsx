@@ -1,3 +1,4 @@
+import { ToolkitIcon } from "./src/components/ToolkitIcon";
 import { ExploreMemoryArt } from "./src/components/MemoryActivityArt";
 import { vocabularyCues } from "./src/data/vocabularyCues";
 import { FunFlex } from "./src/features/FunFlex";
@@ -608,13 +609,7 @@ function Quasar() {
               style={a.tip}
             >
               <View style={{ width: 92 }}>
-                <AtlasArt
-                  source={require("./assets/lesson-stories.png")}
-                  columns={3}
-                  rows={2}
-                  index={index}
-                  height={92}
-                />
+                <ToolkitIcon index={index} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={s.h3}>{item.title}</Text>
@@ -624,49 +619,7 @@ function Quasar() {
               </View>
             </Pressable>
           ))}
-          <View style={s.between}>
-            <Text style={s.h2}>Your subjects</Text>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => nav("library")}
-            >
-              <Text style={s.link}>View all →</Text>
-            </Pressable>
-          </View>
-          <View style={[a.grid, wide && { flexDirection: "row" }]}>
-            {scenes.map(sceneCard)}
-          </View>
-          <View style={a.comingRow}>
-            {["Chemistry"].map((name, i) => (
-              <View key={name} style={a.coming}>
-                <Icon
-                  name={i === 0 ? "spark" : i === 1 ? "leaf" : "book"}
-                  size={19}
-                  color={C.muted}
-                />
-                <Text style={s.label}>{name}</Text>
-                <Text style={[s.small, { fontSize: 10 }]}>COMING SOON</Text>
-              </View>
-            ))}
-          </View>
         </View>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => {
-            setLesson(0);
-            nav("course");
-          }}
-          style={a.tip}
-        >
-          <View style={a.tipIcon}>
-            <Icon name="pin" size={27} />
-          </View>
-          <View style={{ flex: 1, gap: 5 }}>
-            <Text style={s.h3}>Learn how to remember</Text>
-            <Text style={s.body}>Practice six proven memory techniques.</Text>
-          </View>
-          <Icon name="arrow" />
-        </Pressable>
         <Text style={[s.small, { textAlign: "center" }]}>
           Learn the story. Recall the idea. Apply what you know.
         </Text>

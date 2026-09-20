@@ -4,6 +4,7 @@ import { Button, Card, C, s, Tag, Text, Field } from "../components/ui";
 import { SuccessBurst } from "../components/SuccessBurst";
 import { piStops, piRooms, majorSounds, checkPiRecall } from "../data/piCourse";
 import type { Progress } from "../lib/progress";
+import { PiStoryArt } from "../components/PiStoryArt";
 
 export function PiCourse({
   progress,
@@ -44,6 +45,11 @@ export function PiCourse({
         </Text>
         <Card style={{ backgroundColor: C.yellow, gap: 12 }}>
           <Text style={s.h2}>Turn sounds into pictures</Text>
+          <PiStoryArt
+            index={60}
+            label="A tyre directs the sounds T and R: 14"
+            height={210}
+          />
           <Text style={s.body}>
             Two digits become one object. 14 becomes tyre: T = 1, R = 4. Vowels
             do not count. Put the tyre at the flour door, make it do something
@@ -62,6 +68,26 @@ export function PiCourse({
             named landmarks in order.
           </Text>
         </Card>
+        {[
+          [
+            "Listen, don’t spell",
+            "Ignore vowels. Only the consonant sounds carry digits: tyre has T and R, so it gives 1 and 4.",
+          ],
+          [
+            "Give each picture an address",
+            "Walk the landmarks in the same order. Make the object crash into its landmark so the place brings the object back.",
+          ],
+          [
+            "Hide, retrieve, revisit",
+            "Close the picture. Rebuild its action in your head, say the sounds, then write the digits. Revisit the missed location before trying again.",
+          ],
+        ].map(([title, body], i) => (
+          <Card key={title} style={{ gap: 10 }}>
+            <PiStoryArt index={61 + i} label={title} height={190} />
+            <Text style={s.h2}>{title}</Text>
+            <Text style={s.body}>{body}</Text>
+          </Card>
+        ))}
         {piRooms.map((r, i) => (
           <Card
             key={r[0]}
@@ -72,6 +98,11 @@ export function PiCourse({
               {done.includes(i) ? " · RECALLED" : ""}
             </Tag>
             <Text style={s.h2}>{r[0]}</Text>
+            <PiStoryArt
+              index={50 + i}
+              label={`Route through ${r[0]}`}
+              height={230}
+            />
             <Text style={s.small}>{r.slice(1).join(" → ")}</Text>
             <Button onPress={() => begin(i)}>Enter π room {i + 1}</Button>
           </Card>
@@ -158,6 +189,10 @@ export function PiCourse({
                 {item.pair}
               </Text>
               <Text style={s.h2}>{item.object}</Text>
+              <PiStoryArt
+                index={item.index}
+                label={`${item.object} at ${item.location}`}
+              />
               <Text style={s.body}>{item.story}</Text>
               <Text style={s.label}>{item.decode}</Text>
             </Card>

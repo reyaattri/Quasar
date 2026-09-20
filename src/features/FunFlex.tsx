@@ -1,3 +1,4 @@
+import { ActivityStoryArt } from "../components/ActivityStoryArt";
 import React, { useState } from "react";
 import { View, Pressable, Modal, ScrollView, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -116,24 +117,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
             transform: [{ scale: pressed ? 0.985 : 1 }],
           })}
         >
-          {c.kind !== "names" ? (
-            <ExploreMemoryArt kind={c.kind} />
-          ) : c.kind === "names" ? (
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "center",
-                gap: 12,
-              }}
-            >
-              <Portrait index={0} size={84} />
-              <Portrait index={5} size={84} />
-            </View>
-          ) : (
-            <Text style={{ fontSize: 47, color: i === 0 ? "#F2DFA8" : C.ink }}>
-              {c.glyph}
-            </Text>
-          )}
+          <ExploreMemoryArt kind={c.kind} />
           <Text style={[s.h2, { color: i === 0 ? "#FFF8EA" : C.ink }]}>
             {titles[c.kind]}
           </Text>
@@ -172,7 +156,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                   <>
                     <Text style={s.body}>
                       {game === "cards"
-                        ? "Use one fixed picture for each rank, and a costume for each suit. A swan is 2; a red velvet swan is 2 of hearts. Place each picture at the next numbered landmark. Start small before trying a full deck."
+                        ? "Each card has its own illustrated incident. Two swans fight over heart-shaped toast: swan recalls 2, heart toast recalls hearts. Place that whole incident at your next landmark. Start with six before attempting 52."
                         : game === "names"
                           ? "Spot one facial feature. Turn the name into a concrete sound-picture. Make that picture collide with the feature, say the name aloud, then retrieve it once before moving on. Later the portraits are mixed: recall the name and meeting order."
                           : game === "pairs"
@@ -183,7 +167,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                       <Text style={s.label}>WHY THIS WORKS</Text>
                       <Text style={s.body}>
                         {game === "cards"
-                          ? "Each card gets four answers: what is it, what is it wearing, where is it, and what impossible thing happens there. The same rank and suit pictures stay fixed, so one scene retrieves one exact card."
+                          ? "Notice the main object, the suit clue inside its action, and its place on your route. Replay the incident from that address; then name the card without looking. Reuse the same incident for that exact card in future sessions."
                           : game === "names"
                             ? "A face is already visible; a name is abstract. The sound-picture ties the name to one feature, while saying it and recalling it once creates a second route back."
                             : game === "pairs"
@@ -300,13 +284,13 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                                 `${card.rank} → ${card.object}. ${card.rank === "4" ? "The mast and triangular sail suggest the shape of 4." : "Keep this same rank-object pair each time you practise."}`,
                               ],
                               [
-                                "2 · SUIT DRESSES IT",
-                                `${card.suit} → ${card.costume}`,
+                                "2 · FIND THE SUIT CLUE",
+                                `${card.suit} → ${card.suitCue}`,
                               ],
                               ["3 · ADDRESS", cardPlace(step)],
                               [
                                 "4 · COLLISION",
-                                `At the ${cardPlace(step).toLowerCase()}, the ${card.object} ${card.suit === "♠" ? "inflates its black astronaut suit until it squeaks" : card.suit === "♥" ? "whips its red velvet cape into a giant heart" : card.suit === "♣" ? "sprouts noisy green leaves from its garden costume" : "rattles its sparkling diamond armour like a chandelier"}. It ${step % 4 === 0 ? "hooks the door handle and swings the whole door like a pendulum" : step % 4 === 1 ? "bounces on the table until the legs dance" : step % 4 === 2 ? "presses against the window until the glass turns to jelly" : "spins the chair like a runaway carnival ride"}. Hear the crash. Picture the costume. Say: ${card.name}.`,
+                                `${card.hook}. Stage this whole incident at the ${cardPlace(step).toLowerCase()}. Make the movement enormous and add its sound. Now look away: which object gives the rank, and which detail gives the suit? Say ${card.name}, then move to the next address.`,
                               ],
                             ].map(([label, value], cueIndex) => (
                               <View
@@ -326,7 +310,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                             ))}
                             <Text style={s.small}>
                               Close your eyes and retrieve: address → collision
-                              → costume → card. Keep every rank and suit code
+                              → suit clue → card. Keep each card’s story
                               unchanged between practices.
                             </Text>
                           </>
@@ -339,7 +323,11 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                         return (
                           <>
                             <View style={{ alignItems: "center" }}>
-                              <Portrait index={index} />
+                              <ActivityStoryArt
+                                kind="names"
+                                index={index}
+                                label={person.hook}
+                              />
                             </View>
                             <Text style={s.h2}>Meet {person.name}.</Text>
                             <Tag>1 · NOTICE {person.feature.toUpperCase()}</Tag>
@@ -354,6 +342,11 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                       })()
                     ) : game === "pairs" ? (
                       <>
+                        <ActivityStoryArt
+                          kind="twins"
+                          index={step}
+                          label={pairs[step][2]}
+                        />
                         <View style={{ flexDirection: "row", gap: 10 }}>
                           <Card style={{ flex: 1, backgroundColor: C.peach }}>
                             <Text style={s.label}>FIRST NAME</Text>
@@ -401,6 +394,11 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                         <Text style={{ fontSize: 78, textAlign: "center" }}>
                           {phraseIcons[step]}
                         </Text>
+                        <ActivityStoryArt
+                          kind="secret"
+                          index={step}
+                          label={phraseHooks[step]}
+                        />
                         <Text style={s.h2}>{phrase[step]}</Text>
                         <Text style={s.body}>{phraseHooks[step]}</Text>
                         <Card style={{ backgroundColor: C.sage, gap: 8 }}>

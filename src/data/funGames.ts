@@ -1,3 +1,4 @@
+import { cardStories } from "./cardStories";
 export const ranks = [
   "A",
   "2",
@@ -14,10 +15,10 @@ export const ranks = [
   "K",
 ];
 export const suits = [
-  { mark: "♥", name: "hearts", theme: "a red velvet costume" },
-  { mark: "♣", name: "clubs", theme: "a green garden costume" },
-  { mark: "♦", name: "diamonds", theme: "a sparkling crystal costume" },
-  { mark: "♠", name: "spades", theme: "a black space suit" },
+  { mark: "♥", name: "hearts", theme: "love, hearts and affection" },
+  { mark: "♣", name: "clubs", theme: "clover and surprising growth" },
+  { mark: "♦", name: "diamonds", theme: "diamonds and sparkling mishaps" },
+  { mark: "♠", name: "spades", theme: "digging and buried surprises" },
 ];
 export const pegs = [
   "candle",
@@ -57,8 +58,10 @@ export const deck = suits.flatMap((s, si) =>
     name: `${rank} of ${s.name}`,
     object: pegs[ri],
     icon: pegIcons[ri],
-    costume: s.theme,
-    hook: `${pegs[ri]} wearing ${s.theme}`,
+    suitCue: s.theme,
+    artGroup: s.name as keyof typeof cardStories,
+    artIndex: ri,
+    hook: cardStories[s.name as keyof typeof cardStories][ri],
     red: si === 0 || si === 2,
   })),
 );
@@ -143,8 +146,8 @@ export const phrase = [
 ];
 export const phraseIcons = ["🦦", "🧵", "🚀", "🥞", "🌲", "🎺"];
 export const phraseHooks = [
-  "An otter wears a velvet cape.",
-  "The velvet cape catches a rocket.",
+  "An otter pulls a velvet cloth off a table.",
+  "The velvet cloth snags a rocket as it launches.",
   "The rocket lands in a pancake.",
   "The pancake grows into a forest.",
   "The forest plays a giant trumpet.",

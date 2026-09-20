@@ -1,3 +1,6 @@
+import { ActivityStoryArt } from "../components/ActivityStoryArt";
+import { mathsCoaching } from "../data/lessonCoaching";
+import { GeneratedMemoryArt } from "../components/MemoryActivityArt";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import Svg, { Path, Line, Circle, Text as SvgText } from "react-native-svg";
@@ -179,6 +182,12 @@ export function CalculusCourse() {
         <>
           <Card style={{ gap: 16 }}>
             <Text style={s.h2}>{current[0]}</Text>
+            <ActivityStoryArt
+              kind="calculus"
+              index={lesson * 5 + step}
+              label={current[0] + " memory illustration"}
+              height={245}
+            />
             <Text style={s.small}>EXPLORE FIRST · EXPLAIN · APPLY</Text>
           </Card>
           {lesson === 0 && step < 2 && <SlopeLab />}
@@ -205,24 +214,27 @@ export function CalculusCourse() {
             <MechanismLab key="bounds" kind="substitution" />
           )}
           <Card style={{ gap: 14 }}>
+            <Tag>UNDERSTAND THE IDEA</Tag>
+            <Text style={s.body}>{current[1]}</Text>
+            <Text style={s.h3}>{mathsCoaching[lesson][step][0]}</Text>
+            <Text style={s.body}>{mathsCoaching[lesson][step][1]}</Text>
             <Tag>THE WORKED STEPS</Tag>
             <EquationSteps lines={workedEquations[lesson][step]} />
             <Button secondary onPress={() => setDetails(!details)}>
               {details ? "Close explanation" : "Why does this work?"}
             </Button>
-            {details && <Text style={s.body}>{current[1]}</Text>}
+            {details && (
+              <View style={{ gap: 12 }}>
+                <Text style={s.body}>{mathsCoaching[lesson][step][2]}</Text>
+                <Text style={s.h3}>Watch out for this</Text>
+                <Text style={s.body}>{mathsCoaching[lesson][step][3]}</Text>
+              </View>
+            )}
             <Button secondary onPress={() => setHook(!hook)}>
               {hook ? "Close memory hook" : "Give me a memory hook"}
             </Button>
             {hook && (
               <>
-                <AtlasArt
-                  source={require("../../assets/calculus-cats.png")}
-                  columns={3}
-                  rows={2}
-                  index={lesson * 2 + (step >= 2 ? 1 : 0)}
-                  height={280}
-                />
                 <Tag color={C.yellow}>YOUR MEMORY HOOK</Tag>
                 <Text style={s.body}>{current[2]}</Text>
               </>
