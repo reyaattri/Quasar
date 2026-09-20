@@ -14,7 +14,6 @@ import {
   cardPlace,
   people,
   phrase,
-  phraseIcons,
   phraseHooks,
   pairs,
 } from "../data/funGames";
@@ -32,7 +31,6 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
     [sequence, setSequence] = useState<string[]>([]),
     [step, setStep] = useState(0),
     [answers, setAnswers] = useState<string[]>([]),
-    [orders, setOrders] = useState<string[]>([]),
     [faceOrder, setFaceOrder] = useState<number[]>([]);
   const start = (kind: Game) => {
     setGame(kind);
@@ -53,7 +51,6 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
     setSequence(ids);
     setStep(0);
     setAnswers(Array(ids.length).fill(""));
-    setOrders(Array(ids.length).fill(""));
     setFaceOrder(shuffle(ids.map((_, i) => i)));
     setPhase("study");
   };
@@ -66,8 +63,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
         ? pairs[Number(sequence[i])][1]
         : sequence[i];
   const correct = (i: number) =>
-    answers[i]?.trim().toLowerCase() === expected(i).toLowerCase() &&
-    (game !== "names" || Number(orders[i]) === faceOrder[i] + 1);
+    answers[i]?.trim().toLowerCase() === expected(i).toLowerCase();
   const entries = [
     {
       kind: "cards" as Game,
@@ -158,7 +154,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                       {game === "cards"
                         ? "Each card has its own illustrated incident. Two swans fight over heart-shaped toast: swan recalls 2, heart toast recalls hearts. Place that whole incident at your next landmark. Start with six before attempting 52."
                         : game === "names"
-                          ? "Spot one facial feature. Turn the name into a concrete sound-picture. Make that picture collide with the feature, say the name aloud, then retrieve it once before moving on. Later the portraits are mixed: recall the name and meeting order."
+                          ? "Spot one facial feature. Turn the name into a concrete sound-picture. Connect the picture to the feature, say the name aloud, then retrieve it once before moving on. Later the portraits are mixed: recall each name."
                           : game === "pairs"
                             ? "Nearly identical names need different pictures. Exaggerate the one sound that changes, make both pictures interact at a fixed landmark, and say the contrast aloud: “CLARA—clarinet; CARA—car.” You will be shown the first name and must retrieve its twin."
                             : "Link unrelated words into a vivid story, then recall the words in order. This is a public, fictional practice phrase. Never use it as a real password or enter a real password here."}
@@ -171,7 +167,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                           : game === "names"
                             ? "A face is already visible; a name is abstract. The sound-picture ties the name to one feature, while saying it and recalling it once creates a second route back."
                             : game === "pairs"
-                              ? "Similar names interfere with each other. We enlarge the one sound that changes, give each sound its own object, then make the two objects collide."
+                              ? "Similar names interfere with each other. We enlarge the one sound that changes, give each sound its own object, give them distinct actions."
                               : "A linked story turns six separate words into cause and effect. Every picture must physically change the next one, and the last image loops back to the first."}
                       </Text>
                     </Card>
@@ -289,7 +285,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                               ],
                               ["3 · ADDRESS", cardPlace(step)],
                               [
-                                "4 · COLLISION",
+                                "4 · REPLAY THE STORY",
                                 `${card.hook}. Stage this whole incident at the ${cardPlace(step).toLowerCase()}. Make the movement enormous and add its sound. Now look away: which object gives the rank, and which detail gives the suit? Say ${card.name}, then move to the next address.`,
                               ],
                             ].map(([label, value], cueIndex) => (
@@ -309,9 +305,9 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                               </View>
                             ))}
                             <Text style={s.small}>
-                              Close your eyes and retrieve: address → collision
-                              → suit clue → card. Keep each card’s story
-                              unchanged between practices.
+                              Close your eyes and retrieve: address → story →
+                              suit clue → card. Keep each card’s story unchanged
+                              between practices.
                             </Text>
                           </>
                         );
@@ -334,8 +330,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                             <Text style={s.body}>
                               {person.hook} Make it move, hear it, then say
                               “Hello, {person.name}.” Close your eyes and
-                              retrieve the name once. This is person {step + 1}{" "}
-                              in your meeting line.
+                              retrieve the name once.
                             </Text>
                           </>
                         );
@@ -365,10 +360,6 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                           ],
                           ["GIVE EACH SOUND A BODY", pairs[step][2]],
                           [
-                            "MAKE THEM COLLIDE",
-                            `Stage the argument at the ${cardPlace(step).toLowerCase()}. Make it noisy, moving and absurd.`,
-                          ],
-                          [
                             "RETRIEVE BACKWARDS",
                             `Look away. Ask: “Who was paired with ${pairs[step][0]}?” Then reverse the question.`,
                           ],
@@ -391,9 +382,6 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                       </>
                     ) : (
                       <>
-                        <Text style={{ fontSize: 78, textAlign: "center" }}>
-                          {phraseIcons[step]}
-                        </Text>
                         <ActivityStoryArt
                           kind="secret"
                           index={step}
@@ -437,7 +425,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                   <>
                     <Text style={s.body}>
                       {game === "names"
-                        ? "The faces are mixed up. Name each person and enter their original meeting position."
+                        ? "The faces are mixed up. Name each person."
                         : "Rebuild the sequence without the mnemonic pictures. Take the route in your mind."}
                     </Text>
                     {sequence.map((_, i) => (
@@ -457,15 +445,6 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                               label={`Person ${i + 1} name`}
                               value={answers[i]}
                               onChangeText={(v) => update(i, v)}
-                            />
-                            <Field
-                              label={`Person ${i + 1} meeting position`}
-                              value={orders[i]}
-                              onChangeText={(v) =>
-                                setOrders((a) =>
-                                  a.map((x, n) => (n === i ? v : x)),
-                                )
-                              }
                             />
                           </>
                         ) : game === "cards" ? (
@@ -507,10 +486,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                       </Card>
                     ))}
                     <Button
-                      disabled={
-                        answers.some((a) => !a.trim()) ||
-                        (game === "names" && orders.some((a) => !a.trim()))
-                      }
+                      disabled={answers.some((a) => !a.trim())}
                       onPress={() => setPhase("result")}
                     >
                       Check my recall
@@ -537,14 +513,11 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                       >
                         <Text style={s.label}>
                           {i + 1}. {expected(i)}
-                          {game === "names"
-                            ? ` · met #${faceOrder[i] + 1}`
-                            : ""}
                         </Text>
                         <Text style={s.small}>
                           {correct(i)
                             ? "Remembered"
-                            : `Your answer: ${answers[i] || "—"}${game === "names" ? ` · #${orders[i]}` : ""}`}
+                            : `Your answer: ${answers[i] || "—"}`}
                         </Text>
                       </View>
                     ))}
@@ -552,7 +525,6 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                       onPress={() => {
                         setStep(0);
                         setAnswers(Array(sequence.length).fill(""));
-                        setOrders(Array(sequence.length).fill(""));
                         setPhase("study");
                       }}
                     >

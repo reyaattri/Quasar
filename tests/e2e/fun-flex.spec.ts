@@ -44,7 +44,7 @@ test("Fun and Flex card sequence stays fixed and scores exact order", async ({
     page.getByText("1 / 52 · LOOK → LINK → PLACE", { exact: true }),
   ).toBeVisible();
 });
-test("Names require both face association and meeting order", async ({
+test("Names recall only asks for names, without meeting positions", async ({
   page,
 }) => {
   await explore(page);
@@ -75,9 +75,7 @@ test("Names require both face association and meeting order", async ({
     await page
       .getByLabel(`Person ${i + 1} name`, { exact: true })
       .fill(person.name);
-    await page
-      .getByLabel(`Person ${i + 1} meeting position`, { exact: true })
-      .fill(String(seen.indexOf(person.name) + 1));
+    await expect(page.getByLabel(`Person ${i + 1} meeting position`, { exact: true })).toHaveCount(0);
   }
   await page.getByRole("button", { name: "Check my recall" }).click();
   await expect(page.getByText("6 / 6", { exact: true })).toBeVisible();

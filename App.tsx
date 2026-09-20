@@ -1,3 +1,4 @@
+import { WelcomeScene } from "./src/components/WelcomeScene";
 import { ToolkitIcon } from "./src/components/ToolkitIcon";
 import { ExploreMemoryArt } from "./src/components/MemoryActivityArt";
 import { vocabularyCues } from "./src/data/vocabularyCues";
@@ -479,6 +480,7 @@ function Quasar() {
             )}
           </View>
         </View>
+        <WelcomeScene />
         <View style={[a.hero, wide && { flexDirection: "row" }]}>
           <View style={{ flex: 1, gap: 15, padding: 24 }}>
             <Tag color="#D4DFB9">CONTINUE LEARNING</Tag>
@@ -1340,17 +1342,7 @@ function Quasar() {
               {!p.onboarded && page !== "settings" ? (
                 onboarding === 0 ? (
                   <View style={{ gap: 24 }}>
-                    <View style={a.welcomeArt}>
-                      <Image
-                        source={art.market[p.profile.style]}
-                        style={{ width: "100%", height: 250 }}
-                        resizeMode="contain"
-                      />
-                      <View style={a.welcomeStamp}>
-                        <Icon name="spark" size={24} />
-                        <Text style={s.small}>MADE TO STICK</Text>
-                      </View>
-                    </View>
+                    <WelcomeScene />
                     {heading(
                       "WELCOME TO QUASAR",
                       "Learn it once. Remember it longer.",

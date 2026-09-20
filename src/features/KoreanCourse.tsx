@@ -66,10 +66,10 @@ const letters = [
 ];
 const storyBeats = [
   {
-    title: "The starting corner · ㄱ",
+    title: "The toy gun · ㄱ",
     action:
-      "Nari skids around a sharp stone corner, scattering noodles. Trace the hard corner as ㄱ. The picture helps with shape; listen to the Korean audio for its sound.",
-    recall: "stone corner · ㄱ",
+      "Nari lifts a toy water gun. Its barrel runs across the top and its grip drops at the right: ㄱ. Gun supplies the g reminder. The picture helps with shape; listen to the Korean audio for its sound.",
+    recall: "gun corner · ㄱ",
     art: "corner",
   },
   {
@@ -129,7 +129,7 @@ const storyBeats = [
     art: "champion",
   },
   {
-    title: "The door collision · ㅋ",
+    title: "The extra rail · ㅋ",
     action:
       "Nari charges back toward the snake, misses, and hits the old ㄱ corner so hard that it splits into two rails: ㅋ, the stronger k sound.",
     recall: "split corner · ㅋ",
@@ -174,10 +174,16 @@ const scenes = [
   },
 ];
 
-function TracePad({ paths }: { paths: string[] }) {
+function TracePad({
+  paths,
+  recall = false,
+}: {
+  paths: string[];
+  recall?: boolean;
+}) {
   const [strokes, setStrokes] = useState<string[]>([]),
     [draft, setDraft] = useState(""),
-    [guide, setGuide] = useState(true);
+    [guide, setGuide] = useState(!recall);
   const width = useRef(280),
     current = useRef("");
   const responder = PanResponder.create({
@@ -254,12 +260,15 @@ function TracePad({ paths }: { paths: string[] }) {
         </Svg>
       </View>
       <Text style={s.small}>
-        Follow the shown strokes in order. This is a practice canvas; it does
-        not grade handwriting.
+        {recall
+          ? "Draw from memory, then check your shape. This canvas does not automatically grade handwriting."
+          : "Follow the shown strokes in order. This canvas does not grade handwriting."}
       </Text>
-      <Button secondary onPress={() => setGuide(!guide)}>
-        {guide ? "Hide guide & draw from memory" : "Show tracing guide"}
-      </Button>
+      {!recall && (
+        <Button secondary onPress={() => setGuide(!guide)}>
+          {guide ? "Hide guide & draw from memory" : "Show tracing guide"}
+        </Button>
+      )}
       <Button
         secondary
         onPress={() => {
@@ -492,7 +501,7 @@ function StoryBeatSketch({ index }: { index: number }) {
       accessibilityLabel={storyBeats[index].title + " illustrated memory scene"}
     >
       <AtlasArt
-        source={require("../../assets/korean-story-v3.png")}
+        source={require("../../assets/korean-shape-story.png")}
         sourceWidth={1448}
         sourceHeight={1086}
         columns={4}
@@ -507,7 +516,7 @@ function StoryBeatSketch({ index }: { index: number }) {
 
 export function KoreanCourse() {
   const [mode, setMode] = useState<
-      "story" | "letters" | "conversation" | "recall"
+      "story" | "letters" | "conversation" | "recall" | "reading"
     >("story"),
     [index, setIndex] = useState(0),
     [answer, setAnswer] = useState<string | null>(null);
@@ -648,12 +657,18 @@ export function KoreanCourse() {
               : "I’m ready for the next exchange"}
           </Button>
         </Card>
-      ) : (
+      ) : mode === "reading" ? (
         <ReadingSteps
           onDone={() => {
             setReadingDone(true);
             setMode("conversation");
             setIndex(0);
+          }}
+        />
+      ) : (
+        <DrawingRecall
+          onDone={() => {
+            setMode("reading");
           }}
         />
       )}
@@ -673,11 +688,55 @@ export function KoreanCourse() {
   );
 }
 
+function DrawingRecall({ onDone }: { onDone: () => void }) {
+  const [step, setStep] = useState(0);
+  const [checked, setChecked] = useState(false);
+  const item = letters[step];
+  return (
+    <Card style={{ gap: 16 }}>
+      <Tag>
+        DRAW FROM MEMORY · {step + 1} / {letters.length}
+      </Tag>
+      <Text style={s.h2}>Draw {item.name} from memory.</Text>
+      <Text style={s.body}>
+        Remember its shape and sound. No picture or tracing guide this time.
+      </Text>
+      <TracePad key={step} paths={[]} recall />
+      {checked && (
+        <>
+          <Text style={{ fontSize: 64, textAlign: "center" }}>
+            {item.letter}
+          </Text>
+          <Text style={s.body}>
+            Compare your drawing: {item.sound}. Check each stroke and its
+            direction.
+          </Text>
+        </>
+      )}
+      <Button
+        onPress={() => {
+          if (!checked) setChecked(true);
+          else if (step === letters.length - 1) onDone();
+          else {
+            setStep(step + 1);
+            setChecked(false);
+          }
+        }}
+      >
+        {!checked
+          ? "Check my drawing"
+          : step === letters.length - 1
+            ? "Build words from these letters"
+            : "Next recall"}
+      </Button>
+    </Card>
+  );
+}
 function ReadingSteps({ onDone }: { onDone: () => void }) {
   const [step, setStep] = useState(0),
     [answer, setAnswer] = useState<number | null>(null),
     [round, setRound] = useState(0);
-  const [hint, setHint] = useState(true);
+  const [hint, setHint] = useState(false);
   const q = readingPractice[step],
     correct = answer === q.answer;
   return (
@@ -721,7 +780,7 @@ function ReadingSteps({ onDone }: { onDone: () => void }) {
               setStep(0);
             } else setStep(step + 1);
             setAnswer(null);
-            setHint(true);
+            setHint(false);
           }}
         >
           {step === readingPractice.length - 1
