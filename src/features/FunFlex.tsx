@@ -1,6 +1,6 @@
 import { ActivityStoryArt } from "../components/ActivityStoryArt";
 import React, { useState } from "react";
-import { View, Pressable, Modal, ScrollView, Linking } from "react-native";
+import { View, Pressable, Modal, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, Button, Card, Tag, Field, C, s } from "../components/ui";
 import { Portrait } from "../components/Portrait";
@@ -192,21 +192,6 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                       </View>
                     )}
                     <Button onPress={begin}>Start practice</Button>
-                    <Button
-                      secondary
-                      small
-                      onPress={() =>
-                        Linking.openURL(
-                          game === "phrase"
-                            ? "https://ssd.eff.org/module/creating-strong-passwords"
-                            : game === "names"
-                              ? "https://artofmemory.com/wiki/Memorizing_Names_and_Faces/"
-                              : "https://artofmemory.com/resources/Learn_the_Art_of_Memory.pdf",
-                        )
-                      }
-                    >
-                      About the method
-                    </Button>
                   </>
                 ) : phase === "study" ? (
                   <>

@@ -8,22 +8,18 @@ async function onboard(page: Page) {
     await page.getByRole("button", { name: "Next lesson" }).click();
   await page.getByRole("button", { name: "Let’s make it stick" }).click();
 }
-test("custom shopping palace handles eight items, local recall and reload", async ({
+test("memory world opens directly into the saved illustrated route", async ({
   page,
 }) => {
   await onboard(page);
   await page
     .getByRole("button", { name: "Explore memory worlds", exact: true })
     .click();
-  await page
-    .getByLabel("Your shopping items")
-    .fill("milk\nbread\nrice\napples\nlemons\neggs\noats\nsoap\ntea");
-  await page.getByRole("button", { name: "Build my shopping palace" }).click();
-  await expect(page.getByText(/Use up to 8 items/)).toBeVisible();
-  await page
-    .getByLabel("Your shopping items")
-    .fill("milk\nbread\nrice\napples\nlemons\neggs\noats\nsoap");
-  await page.getByRole("button", { name: "Build my shopping palace" }).click();
+  await expect(
+    page.getByText("YOUR ROUTE IS READY", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Your shopping items")).toHaveCount(0);
+  await page.getByRole("button", { name: "Enter world", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Inspect memory", exact: true }),
   ).toBeVisible();
@@ -34,18 +30,11 @@ test("custom shopping palace handles eight items, local recall and reload", asyn
   await page
     .getByRole("button", { name: "Hide cue & recall", exact: true })
     .click();
-  await page.getByLabel("Which shopping item lives here?").fill("milk");
+  await page.getByLabel("Which two digits live here?").fill("14");
   await page.getByRole("button", { name: "Check memory", exact: true }).click();
   await expect(
     page.getByText("That belongs here. Well remembered."),
   ).toBeVisible();
-  await page.reload();
-  await page
-    .getByRole("button", { name: "Explore memory worlds", exact: true })
-    .click();
-  await expect(page.getByLabel("Your shopping items")).toHaveValue(
-    "milk\nbread\nrice\napples\nlemons\neggs\noats\nsoap",
-  );
 });
 test("SAT requires five recalls before each contextual question and resumes saved progress", async ({
   page,

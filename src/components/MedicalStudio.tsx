@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Linking, Modal, Platform, SafeAreaView, View } from "react-native";
+import { Linking, Platform, View } from "react-native";
 import Svg, { Path, Rect } from "react-native-svg";
 import { Button, C, Card, s, Tag, Text } from "./ui";
 
@@ -68,7 +68,6 @@ function LessonQR({ value }: { value: string }) {
 
 export function MedicalStudio({ concept }: { concept: number }) {
   const [chosen, setChosen] = useState(Math.max(0, Math.min(2, concept))),
-    [open, setOpen] = useState(false),
     [reveal, setReveal] = useState(false),
     [error, setError] = useState("");
   const item = structures[chosen];
@@ -78,8 +77,8 @@ export function MedicalStudio({ concept }: { concept: number }) {
   return (
     <>
       <Card style={{ backgroundColor: C.sage, borderRadius: 30, gap: 14 }}>
-        <Tag>REAL STRUCTURE · RCSB PDB</Tag>
-        <Text style={s.h2}>From memory picture to molecule.</Text>
+        <Tag>LIVE MOLECULAR EXPLORER · RCSB PDB</Tag>
+        <Text style={s.h2}>Touch the real structure.</Text>
         <Text style={s.body}>{item.copy}</Text>
         <View style={{ gap: 8 }}>
           {structures.map((structure, index) => (
@@ -93,19 +92,39 @@ export function MedicalStudio({ concept }: { concept: number }) {
             </Button>
           ))}
         </View>
-        <Button
-          onPress={() => {
-            setError("");
-            if (Platform.OS === "web") setOpen(true);
-            else if (origin)
-              Linking.openURL(url).catch(() =>
-                setError("The molecular viewer could not open."),
-              );
-          }}
-          disabled={Platform.OS !== "web" && !origin}
-        >
-          Open {item.title} in 3D
-        </Button>
+        {Platform.OS === "web" ? (
+          <View
+            style={{
+              height: 520,
+              overflow: "hidden",
+              borderRadius: 24,
+              borderWidth: 2,
+              borderColor: C.ink,
+              backgroundColor: "#111A18",
+            }}
+          >
+            {React.createElement("iframe", {
+              key: route,
+              title: `${item.title} molecular explorer`,
+              src: route,
+              allowFullScreen: true,
+              style: { width: "100%", height: "100%", border: 0 },
+            })}
+          </View>
+        ) : (
+          <Button
+            onPress={() => {
+              setError("");
+              if (origin)
+                Linking.openURL(url).catch(() =>
+                  setError("The molecular viewer could not open."),
+                );
+            }}
+            disabled={!origin}
+          >
+            Open the live 3D explorer
+          </Button>
+        )}
         <Button secondary onPress={() => Linking.openURL(item.source)}>
           Read the experimental record ↗
         </Button>
@@ -128,26 +147,6 @@ export function MedicalStudio({ concept }: { concept: number }) {
           whole living cell, and colors are viewer choices.
         </Text>
       </Card>
-      <Modal
-        visible={open}
-        animationType="slide"
-        onRequestClose={() => setOpen(false)}
-      >
-        <SafeAreaView style={{ flex: 1, backgroundColor: C.sage }}>
-          <View style={{ padding: 12 }}>
-            <Button secondary onPress={() => setOpen(false)}>
-              Back to biology lesson
-            </Button>
-          </View>
-          {Platform.OS === "web" &&
-            React.createElement("iframe", {
-              title: `${item.title} molecular explorer`,
-              src: route,
-              allowFullScreen: true,
-              style: { width: "100%", flex: 1, border: 0, background: C.sage },
-            })}
-        </SafeAreaView>
-      </Modal>
     </>
   );
 }

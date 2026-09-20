@@ -176,7 +176,6 @@ export function MedicineLesson({
     [orderFeedback, setOrderFeedback] = useState("");
   const [actOpen, setActOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const [studioOpen, setStudioOpen] = useState(false);
   const start = (i: number) => {
     setSelected(i);
     setIndex(0);
@@ -186,7 +185,6 @@ export function MedicineLesson({
     setOrder([]);
     setOrderFeedback("");
     setShowDetails(false);
-    setStudioOpen(false);
   };
   if (selected === null)
     return (
@@ -198,6 +196,7 @@ export function MedicineLesson({
           speak. Each lesson combines accurate explanations, restrained memory
           cartoons, an interactive mini lab and a field challenge.
         </Text>
+        <MedicalStudio concept={0} />
         {medicalModules.map((lesson, i) => (
           <Card
             key={lesson.id}
@@ -456,10 +455,7 @@ export function MedicineLesson({
       <Button secondary onPress={() => Linking.openURL(lesson.source)}>
         Open the free biology reference ↗
       </Button>
-      <Button secondary onPress={() => setStudioOpen(!studioOpen)}>
-        {studioOpen ? "Close molecular explorer" : "Open molecular explorer"}
-      </Button>
-      {studioOpen && <MedicalStudio concept={selected} />}
+      <MedicalStudio concept={selected} />
       <Text style={s.small}>
         Original memory metaphors and educational practice. Not a diagnostic
         tool.

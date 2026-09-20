@@ -6,7 +6,7 @@ import { EncounterMotion } from "../components/EncounterMotion";
 import { RoomMemoryPicture } from "../components/RoomInterior";
 import { PalaceGame } from "../components/PalaceGame";
 import { PixelButton } from "../components/PixelButton";
-import { parseShoppingList, shoppingJourney } from "../lib/shoppingPalace";
+import { shoppingJourney } from "../lib/shoppingPalace";
 import { Text } from "../components/ui";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -114,10 +114,6 @@ export function MemoryPalace({
     "Hidden terrace",
     "Courtyard fountain",
   ].slice(0, journey.items.length);
-  const [shoppingText, setShoppingText] = useState(
-    (value.customItems ?? []).join("\n"),
-  );
-  const [shoppingError, setShoppingError] = useState("");
   const [entered, setEntered] = useState(false);
   const [showCue, setShowCue] = useState(false);
   const [inRoom, setInRoom] = useState(false);
@@ -175,7 +171,7 @@ export function MemoryPalace({
     Object.assign(item, landmarkPeg(value.world, value.stop, anchor));
   if (value.hooks?.[cueKey]) item.story = value.hooks[cueKey];
   const previewPeg =
-    journey.id === 'pi' && plant > 0
+    journey.id === "pi" && plant > 0
       ? landmarkPeg(value.world, value.stop, plant)
       : contextualCue(
           journey.items[value.stop] ?? journey.items[0],
@@ -251,62 +247,25 @@ export function MemoryPalace({
             </Card>
           </Pressable>
         ))}
-        <Text style={s.h2}>What will you remember?</Text>
-        <Card style={{ backgroundColor: C.peach }}>
-          <Tag>MAKE IT YOURS</Tag>
-          <Text style={s.h2}>What’s on your shopping list?</Text>
-          <Field
-            label="Your shopping items"
-            value={shoppingText}
-            onChangeText={setShoppingText}
-            multiline
-            placeholder="Milk\nTomatoes\n2 loaves of bread"
-          />
-          <Text style={s.small}>
-            One item per line or separated by commas. Up to 8 items. Your list
-            stays on this device unless you back up your profile.
+        <View
+          style={{
+            backgroundColor: world.ink,
+            borderRadius: 24,
+            padding: 18,
+            gap: 6,
+            transform: [{ rotate: "-1deg" }],
+          }}
+        >
+          <Text style={[s.label, { color: C.yellow }]}>
+            YOUR ROUTE IS READY
           </Text>
-          {!!shoppingError && (
-            <Text accessibilityLiveRegion="polite" style={s.label}>
-              {shoppingError}
-            </Text>
-          )}
-          <Button
-            onPress={() => {
-              try {
-                const customItems = parseShoppingList(shoppingText);
-                onSave({
-                  ...newPalace(),
-                  world: value.world,
-                  journey: -1,
-                  customItems,
-                });
-                setShoppingError("");
-                setEntered(true);
-              } catch (error) {
-                setShoppingError((error as Error).message);
-              }
-            }}
-          >
-            Build my shopping palace
-          </Button>
-        </Card>
-        {journeys.map((j, i) => (
-          <Button
-            key={j.id}
-            secondary={value.journey !== i}
-            onPress={() => {
-              onSave({ ...newPalace(), world: value.world, journey: i });
-            }}
-          >
-            {j.name}
-          </Button>
-        ))}
-        <Text style={s.small}>
-          One active route is saved. Changing the learning activity starts a
-          fresh route. Changing worlds starts a fresh route so the locations
-          stay consistent.
-        </Text>
+          <Text style={[s.h2, { color: C.white }]}>
+            Explore {world.name}
+          </Text>
+          <Text style={[s.small, { color: C.white }]}>
+            {journey.items.length} stops · begin at {world.places[0]}
+          </Text>
+        </View>
         <PixelButton
           kind="start"
           width={180}

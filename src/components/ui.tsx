@@ -161,7 +161,7 @@ export function Field({
   placeholder = "",
   multiline = false,
   secureTextEntry = false,
-  keyboardType = 'default',
+  keyboardType = "default",
 }: {
   label: string;
   value: string;
@@ -169,7 +169,7 @@ export function Field({
   placeholder?: string;
   multiline?: boolean;
   secureTextEntry?: boolean;
-  keyboardType?: 'default' | 'number-pad';
+  keyboardType?: "default" | "number-pad";
 }) {
   return (
     <View style={{ gap: 7 }}>
@@ -249,9 +249,14 @@ export const s = StyleSheet.create({
     backgroundColor: C.white,
     borderWidth: 1,
     borderColor: C.line,
-    borderRadius: 22,
+    borderRadius: 26,
     padding: 22,
     gap: 14,
+    shadowColor: C.ink,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.07,
+    shadowRadius: 12,
+    elevation: 2,
   },
   button: {
     backgroundColor: C.green,
@@ -272,10 +277,12 @@ export const s = StyleSheet.create({
     fontWeight: "600",
   },
   tag: {
-    borderRadius: 8,
-    paddingHorizontal: 9,
-    paddingVertical: 5,
+    borderRadius: 999,
+    paddingHorizontal: 11,
+    paddingVertical: 6,
     alignSelf: "flex-start",
+    borderWidth: 1,
+    borderColor: "rgba(41,59,48,0.08)",
   },
   tagText: {
     fontFamily: "QuasarGrotesk",
