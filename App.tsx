@@ -1,3 +1,4 @@
+import { ProgressMobile } from "./src/components/ProgressMobile";
 import { WelcomeScene } from "./src/components/WelcomeScene";
 import { ToolkitIcon } from "./src/components/ToolkitIcon";
 import { ExploreMemoryArt } from "./src/components/MemoryActivityArt";
@@ -480,7 +481,6 @@ function Quasar() {
             )}
           </View>
         </View>
-        <WelcomeScene />
         <View style={[a.hero, wide && { flexDirection: "row" }]}>
           <View style={{ flex: 1, gap: 15, padding: 24 }}>
             <Tag color="#D4DFB9">CONTINUE LEARNING</Tag>
@@ -898,23 +898,17 @@ function Quasar() {
       <View style={{ gap: 25 }}>
         {heading(
           "YOUR PROGRESS",
-          "See what you remember.",
-          "Track your practice, recall accuracy, and upcoming reviews.",
+          "Your growing collection.",
+          "Every return makes a memory a little easier to find.",
         )}
-        <View style={a.statsRow}>
-          {[
-            [String(mastered), "mastered"],
-            [accuracy + "%", "recall accuracy"],
-            [String(streak(p)), "day streak"],
-          ].map(([v, l]) => (
-            <View style={a.stat} key={l}>
-              <Text style={a.statNumber}>{v}</Text>
-              <Text style={s.small}>{l}</Text>
-            </View>
-          ))}
-        </View>
+        <ProgressMobile
+          mastered={mastered}
+          accuracy={p.reviews.length ? accuracy : null}
+          streak={streak(p)}
+        />
         <Card>
-          <Text style={s.h3}>Practice this week</Text>
+          <Tag>THE LAST SEVEN DAYS</Tag>
+          <Text style={s.h3}>A little rhythm goes a long way.</Text>
           <View style={[s.between, { paddingVertical: 10 }]}>
             {days.map((d) => {
               const active = p.reviews.some(

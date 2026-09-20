@@ -66,88 +66,116 @@ const letters = [
 ];
 const storyBeats = [
   {
-    title: "The toy gun · ㄱ",
+    title: "The gun · ㄱ",
     action:
-      "Nari lifts a toy water gun. Its barrel runs across the top and its grip drops at the right: ㄱ. Gun supplies the g reminder. The picture helps with shape; listen to the Korean audio for its sound.",
-    recall: "gun corner · ㄱ",
-    art: "corner",
+      "A toy gun starts the story. Follow its barrel across the top, then down its grip. Gun is the g sound reminder.",
+    recall: "ㄱ",
+    atlas: 0,
+    path: "M65 70 H205 V210",
   },
   {
-    title: "The enormous nose · ㄴ",
+    title: "The nose · ㄴ",
     action:
-      "The signal wakes a guard whose nose drops down and turns right. Trace the nose route: ㄴ. Nose supplies the n reminder.",
-    recall: "bent nose · ㄴ",
-    art: "nose",
+      "You smell something with your nose. Its outline goes down, then right. Nose reminds you of n.",
+    recall: "ㄴ",
+    atlas: 1,
+    path: "M70 60 V205 H210",
   },
   {
-    title: "The market door · ㄷ",
+    title: "The door · ㄷ",
     action:
-      "Nari throws open a three-sided market door. Top, side, floor: ㄷ. Door supplies the d reminder.",
-    recall: "three-sided door · ㄷ",
-    art: "door",
+      "You follow the smell and open the door. Trace its top, left side and bottom. Door reminds you of d.",
+    recall: "ㄷ",
+    atlas: 2,
+    path: "M210 65 H70 V205 H210",
   },
   {
-    title: "The rattlesnake escape · ㄹ",
+    title: "The rattlesnake · ㄹ",
     action:
-      "A rattlesnake zigzags out of the doorway in four sharp turns. Its body draws ㄹ. Listen for the Korean r/l sound instead of forcing either English sound.",
-    recall: "rattlesnake turns · ㄹ",
-    art: "snake",
+      "Behind the door is a rattlesnake. Follow its squared bends across, down, back, down and across. Listen for the Korean r/l sound.",
+    recall: "ㄹ",
+    atlas: 3,
+    path: "M65 65 H205 V135 H65 V205 H205",
   },
   {
-    title: "The square bucket · ㅂ",
+    title: "The shocked mouth · ㅁ",
     action:
-      "Minho drops a square bucket over the snake, then straps a second bar across it. The trapped shape becomes ㅂ; bucket cues b.",
-    recall: "barred bucket · ㅂ",
-    art: "bucket",
+      "Your mouth opens wide in surprise: a square. Mouth reminds you of m.",
+    recall: "ㅁ",
+    atlas: -1,
+    path: "M70 65 V205 H210 V65 Z",
   },
   {
-    title: "The hill at midnight · ㅅ",
+    title: "The bucket · ㅂ",
     action:
-      "The snake escapes toward a steep hill. Two slopes meet at the summit and draw ㅅ. Summit supplies the s reminder.",
-    recall: "hill summit · ㅅ",
-    art: "hill",
+      "You try to trap the snake with a bucket, but it escapes. The upright sides and two bars make the bucket cue for b.",
+    recall: "ㅂ",
+    atlas: 4,
+    path: "M70 55 V210 H210 V55 M70 130 H210",
   },
   {
-    title: "Nothing at the summit · ㅇ",
+    title: "The summit · ㅅ",
     action:
-      "Nari reaches the top and finds one perfectly round empty moon: ㅇ. It holds a silent place before a vowel and rings ng at the end.",
-    recall: "empty round place · ㅇ",
-    art: "moon",
+      "You run up a hill to its summit. The two slopes meet at the top. Summit supplies the s reminder.",
+    recall: "ㅅ",
+    atlas: 5,
+    path: "M65 210 L140 65 L215 210",
+  },
+  {
+    title: "Nothing · ㅇ",
+    action:
+      "At the top you find nothing. Picture an empty circle. At the start of a syllable this letter is silent; at the end it sounds ng.",
+    recall: "ㅇ",
+    atlas: 6,
+    path: "M140 65 C40 65 40 215 140 215 C240 215 240 65 140 65",
   },
   {
     title: "The jump · ㅈ",
     action:
-      "The snake returns, so Nari jumps from the hill. Add the jumper’s flat launch board above ㅅ and you get ㅈ, the j reminder.",
-    recall: "jump board over hill · ㅈ",
-    art: "jump",
+      "Finding nothing, you jump. The outstretched arms sit above the two sloping legs. Jump supplies the j reminder.",
+    recall: "ㅈ",
+    atlas: 7,
+    path: "M65 65 H215 M140 65 L65 210 M140 65 L215 210",
   },
   {
-    title: "The champion landing · ㅊ",
+    title: "The champion · ㅊ",
     action:
-      "The jump is so high that Nari lands as champion. The medal ribbon adds one more short stroke above ㅈ: ㅊ, the ch reminder.",
-    recall: "champion stripe · ㅊ",
-    art: "champion",
+      "Your jump makes you a champion. Add the champion’s short headband stroke above the jumper. Champion supplies ch.",
+    recall: "ㅊ",
+    atlas: 8,
+    path: "M120 40 H160 M65 85 H215 M140 85 L65 220 M140 85 L215 220",
   },
   {
-    title: "The extra rail · ㅋ",
+    title: "Back to the gun · ㅋ",
     action:
-      "Nari charges back toward the snake, misses, and hits the old ㄱ corner so hard that it splits into two rails: ㅋ, the stronger k sound.",
-    recall: "split corner · ㅋ",
-    art: "crash",
+      "You return to face the snake. The video uses “kill” for the stronger k sound: a second stroke is added inside the gun corner. The toy gun fires water.",
+    recall: "ㅋ",
+    atlas: 9,
+    path: "M65 65 H210 V215 M65 140 H210",
   },
   {
-    title: "The pillar rescue · ㅍ",
+    title: "The door splits in two · ㅌ",
     action:
-      "Minho braces between twin pillars and two crossbeams. The whole pose draws ㅍ and gives the p reminder.",
-    recall: "twin pillars · ㅍ",
-    art: "pillars",
+      "The shot misses and the door splits in two. Add a middle bar to the door shape. Two supplies the t reminder.",
+    recall: "ㅌ",
+    atlas: 2,
+    path: "M210 65 H65 V215 H210 M65 140 H210",
   },
   {
-    title: "The surprise hat · ㅎ",
+    title: "The pillars · ㅍ",
     action:
-      "The roof pops loose and drops a round festival hat between two bars. Hat gives the h reminder and the final shape ㅎ.",
-    recall: "festival hat · ㅎ",
-    art: "hat",
+      "You try to push the pillars apart. Two upright pillars stand between the top and bottom beams. Pillars supplies p.",
+    recall: "ㅍ",
+    atlas: 10,
+    path: "M60 65 H220 M90 65 V215 M190 65 V215 M60 215 H220",
+  },
+  {
+    title: "The mysterious hat · ㅎ",
+    action:
+      "Before you can push, a mysterious man in a hat appears. The hat’s band and brim sit above a round face. Hat supplies h.",
+    recall: "ㅎ",
+    atlas: 11,
+    path: "M115 45 H165 M70 90 H210 M140 125 C65 125 65 220 140 220 C215 220 215 125 140 125",
   },
 ];
 const scenes = [
@@ -500,16 +528,31 @@ function StoryBeatSketch({ index }: { index: number }) {
     <View
       accessibilityLabel={storyBeats[index].title + " illustrated memory scene"}
     >
-      <AtlasArt
-        source={require("../../assets/korean-shape-story.png")}
-        sourceWidth={1448}
-        sourceHeight={1086}
-        columns={4}
-        rows={3}
-        index={index}
-        height={300}
-        inset={0.94}
-      />
+      {storyBeats[index].atlas >= 0 ? (
+        <AtlasArt
+          source={require("../../assets/korean-shape-story.png")}
+          sourceWidth={1448}
+          sourceHeight={1086}
+          columns={4}
+          rows={3}
+          index={storyBeats[index].atlas}
+          height={300}
+          inset={0.94}
+        />
+      ) : (
+        <KoreanFigure index={1} height={300} />
+      )}
+      <Text style={s.small}>Follow the same outline in the picture:</Text>
+      <Svg width="100%" height={130} viewBox="0 0 280 280">
+        <Path
+          d={storyBeats[index].path}
+          stroke="#BA5143"
+          strokeWidth={12}
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </Svg>
     </View>
   );
 }
