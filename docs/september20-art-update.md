@@ -4,6 +4,6 @@ Built-in image generation produced `assets/korean-story-complete.png`, a 4 × 4 
 
 Prompt: transparent, hand-inked cartoon atlas, same blond martial-arts learner; toy gun, nose, door, rattlesnake, shocked square mouth, bucket, summit, nothing, jump, champion, water shot, door split into two, pillars, mysterious hat. Keep all scenes framed separately and leave final two cells empty.
 
-Toolkit generation was attempted three times, including a targeted background-removal edit. The results retained opaque backgrounds and were not wired into the app, because transparent illustrations were requested. Existing toolkit artwork remains until a suitable replacement is available.
+Toolkit generation produced `assets/toolkit-cutouts-v2.png`. The image preview displayed background RGB values, but inspection of the actual PNG alpha channel confirmed transparent background pixels. The six new cutouts replace the previous toolkit thumbnails. Prompt: transparent 3 × 2 editorial atlas of bun hanging lemon pegs, moon with tin telescope, boot linking kite and book, compass route, girl with rose, and explorer memory dollhouse. No backgrounds or captions.
 
 Validation: TypeScript passed; Korean browser test passed through all 14 story beats, recorded audio, tracing, six blank recall drawings, word-building and conversation. GitHub push was attempted; authentication is unavailable and Windows Credential Manager could not persist credentials.
