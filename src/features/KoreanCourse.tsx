@@ -528,20 +528,16 @@ function StoryBeatSketch({ index }: { index: number }) {
     <View
       accessibilityLabel={storyBeats[index].title + " illustrated memory scene"}
     >
-      {storyBeats[index].atlas >= 0 ? (
-        <AtlasArt
-          source={require("../../assets/korean-shape-story.png")}
-          sourceWidth={1448}
-          sourceHeight={1086}
-          columns={4}
-          rows={3}
-          index={storyBeats[index].atlas}
-          height={300}
-          inset={0.94}
-        />
-      ) : (
-        <KoreanFigure index={1} height={300} />
-      )}
+      <AtlasArt
+        source={require("../../assets/korean-story-complete.png")}
+        sourceWidth={1266}
+        sourceHeight={1243}
+        columns={4}
+        rows={4}
+        index={index}
+        height={300}
+        inset={0.94}
+      />
       <Text style={s.small}>Follow the same outline in the picture:</Text>
       <Svg width="100%" height={130} viewBox="0 0 280 280">
         <Path

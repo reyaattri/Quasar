@@ -50,7 +50,7 @@ test("Korean tracing and conversations never require microphone success", async 
   await onboard(page);
   await page.getByRole("button", { name: "Explore", exact: true }).click();
   await page.getByRole("button", { name: "Open Korean practice" }).click();
-  for (let i = 0; i < 11; i++) {
+  for (let i = 0; i < 13; i++) {
     await page.getByRole("button", { name: "What happens next?" }).click();
   }
   await page
@@ -94,8 +94,23 @@ test("Korean tracing and conversations never require microphone success", async 
     }
   }
   await page.getByRole("button", { name: "Build a syllable" }).click();
+  for (let i = 0; i < 6; i++) {
+    await expect(
+      page
+        .getByLabel("Finger tracing canvas")
+        .locator('path[stroke="#C8CEB8"]'),
+    ).toHaveCount(0);
+    await page
+      .getByRole("button", { name: "Check my drawing", exact: true })
+      .click();
+    await page
+      .getByRole("button", {
+        name: i === 5 ? "Build words from these letters" : "Next recall",
+        exact: true,
+      })
+      .click();
+  }
   for (const [i, q] of readingPractice.entries()) {
-    await page.getByRole("button", { name: "Hide the hint & answer" }).click();
     await page
       .getByRole("button", { name: q.choices[(q.answer + 1) % 3], exact: true })
       .click();
@@ -116,9 +131,7 @@ test("Korean tracing and conversations never require microphone success", async 
       .getByRole("button", { name: "I’m ready for the next exchange" })
       .click();
   await page.getByRole("button", { name: "Recall what you learned" }).click();
-  await expect(
-    page.getByText("Which vowel has its short arm pointing right?"),
-  ).toBeVisible();
+  await expect(page.getByText("Draw nieun from memory.")).toBeVisible();
 });
 test("RNA pairs bases, explains directions, and provides real structure", async ({
   page,
