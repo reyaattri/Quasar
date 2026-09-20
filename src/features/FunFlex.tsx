@@ -255,45 +255,44 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                               </View>
                               <CardMemoryArt card={card} step={step} />
                             </View>
-                            <Tag>{cardPlace(step)}</Tag>
-                            <Text style={s.h2}>
-                              {card.icon} {card.object}
-                            </Text>
-                            {[
-                              [
-                                "1 · RANK BECOMES",
-                                `${card.rank} → ${card.object}. ${card.rank === "4" ? "The mast and triangular sail suggest the shape of 4." : "Keep this same rank-object pair each time you practise."}`,
-                              ],
-                              [
-                                "2 · FIND THE SUIT CLUE",
-                                `${card.suit} → ${card.suitCue}`,
-                              ],
-                              ["3 · ADDRESS", cardPlace(step)],
-                              [
-                                "4 · REPLAY THE STORY",
-                                `${card.hook}. Stage this whole incident at the ${cardPlace(step).toLowerCase()}. Make the movement enormous and add its sound. Now look away: which object gives the rank, and which detail gives the suit? Say ${card.name}, then move to the next address.`,
-                              ],
-                            ].map(([label, value], cueIndex) => (
-                              <View
-                                key={label}
-                                style={{
-                                  padding: 12,
-                                  borderRadius: 14,
-                                  backgroundColor:
-                                    cueIndex === 3 ? C.yellow : C.sage,
-                                }}
-                              >
-                                <Text style={s.label}>{label}</Text>
-                                <Text style={cueIndex === 3 ? s.h3 : s.body}>
-                                  {value}
+                            <Text style={s.h2}>{card.object}</Text>
+                            <View
+                              style={{
+                                gap: 16,
+                                borderLeftWidth: 3,
+                                borderLeftColor: C.green,
+                                paddingLeft: 18,
+                              }}
+                            >
+                              <Text style={s.label}>
+                                How to remember this card
+                              </Text>
+                              <Text style={s.body}>
+                                <Text
+                                  style={{ color: C.ink, fontWeight: "700" }}
+                                >
+                                  {card.rank} ·{" "}
                                 </Text>
-                              </View>
-                            ))}
-                            <Text style={s.small}>
-                              Close your eyes and retrieve: address → story →
-                              suit clue → card. Keep each card’s story unchanged
-                              between practices.
-                            </Text>
+                                {card.rank === "5"
+                                  ? "Five fingers make a glove."
+                                  : card.rank === "4"
+                                    ? "The mast and sail suggest the shape of 4."
+                                    : `Use the ${card.object} as your fixed picture for ${card.rank}.`}
+                              </Text>
+                              <Text style={s.body}>
+                                <Text
+                                  style={{ color: C.ink, fontWeight: "700" }}
+                                >
+                                  {card.suit} ·{" "}
+                                </Text>
+                                {card.suitCue.charAt(0).toUpperCase() +
+                                  card.suitCue.slice(1)}
+                                .
+                              </Text>
+                              <Text style={s.small}>
+                                Your place: {cardPlace(step)}.
+                              </Text>
+                            </View>
                           </>
                         );
                       })()

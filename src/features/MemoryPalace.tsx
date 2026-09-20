@@ -632,11 +632,7 @@ export function MemoryPalace({
                         </View>
                       ) : sceneFact ? (
                         <FactImage fact={sceneFact} style="storybook" />
-                      ) : (
-                        <Text style={{ fontSize: 56, textAlign: "center" }}>
-                          {item.symbol}
-                        </Text>
-                      )}
+                      ) : null}
                       <Text style={s.h2}>{item.object}</Text>
                       <Text style={s.body}>{item.story}</Text>
                       {journey.id === "pi" ? (

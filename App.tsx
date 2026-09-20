@@ -903,37 +903,27 @@ function Quasar() {
         )}
         <ProgressMobile
           mastered={mastered}
+          total={allFacts.length}
           accuracy={p.reviews.length ? accuracy : null}
           streak={streak(p)}
+          days={days.map((d) => {
+            const reviews = p.reviews.filter(
+              (r) => localDay(new Date(r.at)) === localDay(d),
+            );
+            return {
+              label: d.toLocaleDateString(undefined, { weekday: "narrow" }),
+              date: d.toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+              }),
+              count: reviews.length,
+              correct: reviews.filter((r) => r.correct).length,
+            };
+          })}
+          due={due.length}
+          onReview={() => nav(due.length ? "review" : "library")}
         />
-        <Card>
-          <Tag>THE LAST SEVEN DAYS</Tag>
-          <Text style={s.h3}>A little rhythm goes a long way.</Text>
-          <View style={[s.between, { paddingVertical: 10 }]}>
-            {days.map((d) => {
-              const active = p.reviews.some(
-                (r) => localDay(new Date(r.at)) === localDay(d),
-              );
-              return (
-                <View
-                  key={d.toISOString()}
-                  style={{ gap: 9, alignItems: "center" }}
-                >
-                  <View style={[a.day, active && { backgroundColor: C.green }]}>
-                    <Icon
-                      name={active ? "check" : "leaf"}
-                      size={20}
-                      color={active ? C.white : C.muted}
-                    />
-                  </View>
-                  <Text style={s.small}>
-                    {d.toLocaleDateString(undefined, { weekday: "narrow" })}
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
-        </Card>
+        <Text style={s.h2}>Inside your collection</Text>
         {scenes.map((sc) => (
           <Card key={sc.id}>
             <View style={s.between}>

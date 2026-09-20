@@ -13,7 +13,7 @@ import Svg, { Path, Circle, Rect, Defs, Pattern } from "react-native-svg";
 export const C = {
   paper: "#FBF8EF",
   ink: "#293B30",
-  muted: "#71776A",
+  muted: "#596355",
   green: "#294D3B",
   sage: "#E6EBD9",
   yellow: "#F2CB6C",
@@ -222,8 +222,8 @@ export const s = StyleSheet.create({
   },
   body: {
     fontFamily: "QuasarGrotesk",
-    fontSize: 15,
-    lineHeight: 23,
+    fontSize: 16,
+    lineHeight: 25,
     color: C.muted,
   },
   small: {

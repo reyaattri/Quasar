@@ -196,7 +196,6 @@ export function MedicineLesson({
           speak. Each lesson combines accurate explanations, restrained memory
           cartoons, an interactive mini lab and a field challenge.
         </Text>
-        <MedicalStudio concept={0} />
         {medicalModules.map((lesson, i) => (
           <Card
             key={lesson.id}
@@ -223,6 +222,7 @@ export function MedicineLesson({
             </Button>
           </Card>
         ))}
+        <MedicalStudio concept={0} />
         <Button secondary onPress={() => setActOpen(!actOpen)}>
           {actOpen
             ? "Close the molecular detail lab"
