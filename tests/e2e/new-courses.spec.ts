@@ -50,51 +50,29 @@ test("Korean tracing and conversations never require microphone success", async 
   await onboard(page);
   await page.getByRole("button", { name: "Explore", exact: true }).click();
   await page.getByRole("button", { name: "Open Korean practice" }).click();
-  for (let i = 0; i < 13; i++) {
-    await page.getByRole("button", { name: "What happens next?" }).click();
-  }
-  await page
-    .getByRole("button", { name: "Act II · attach the Korean sounds" })
-    .click();
-  const audioResponse = page.waitForResponse(
-    (r) => r.url().includes(".ogg") && r.ok(),
-  );
-  await page
-    .getByRole("button", { name: "Listen to the Korean example" })
-    .click();
-  const recording = await audioResponse;
-  expect((await recording.body()).length).toBeGreaterThan(1000);
-  await expect(
-    page.getByText("Listen first, then repeat at your own pace."),
-  ).toBeVisible();
+  await expect(page.getByText(/ACT II/)).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Letter workshop" })).toHaveCount(0);
+  await page.getByRole("button", { name: "What happens next?" }).click();
+  const audioResponse = page.waitForResponse(r => r.url().includes(".ogg") && r.ok());
+  await page.getByRole("button", { name: "Listen to the Korean example" }).click();
+  expect((await (await audioResponse).body()).length).toBeGreaterThan(1000);
+  await expect(page.getByText("Listen first, then repeat at your own pace.")).toBeVisible();
   const canvas = page.getByLabel("Finger tracing canvas");
   await canvas.scrollIntoViewIfNeeded();
   const box = await canvas.boundingBox();
-  await page.mouse.move(box!.x + 80, box!.y + 40);
+  await page.mouse.move(box!.x + 40, box!.y + 40);
   await page.mouse.down();
-  await page.mouse.move(box!.x + 80, box!.y + 180, { steps: 12 });
-  await page.mouse.move(box!.x + 200, box!.y + 180, { steps: 12 });
+  await page.mouse.move(box!.x + 40, box!.y + 180, { steps: 12 });
   await page.mouse.up();
   await expect(canvas.locator('path[stroke="#294D3B"]')).toHaveCount(2);
-  await page
-    .getByRole("button", { name: "Hide guide & draw from memory" })
-    .click();
-  await page.screenshot({ path: "docs/korean-tracing-mobile.png" });
-  for (let i = 0; i < 5; i++) {
-    await page.getByRole("button", { name: "Next letter" }).click();
-    if (i === 3) {
-      await page.getByTestId("korean-figure-art").screenshot({
-        path: "docs/korean-letter-5-art.png",
-      });
-    }
-    if (i === 4) {
-      await page.getByTestId("korean-figure-art").screenshot({
-        path: "docs/korean-letter-6-art.png",
-      });
-    }
+  await page.getByLabel("The nose · ㄴ illustrated memory scene").screenshot({ path: "docs/korean-webtoon-art.png" });
+  await page.getByText("The nose · ㄴ", { exact: true }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: "docs/korean-webtoon-mobile.png" });
+  for (let i = 1; i < 13; i++) {
+    await page.getByRole("button", { name: "What happens next?" }).click();
   }
-  await page.getByRole("button", { name: "Build a syllable" }).click();
-  for (let i = 0; i < 6; i++) {
+  await page.getByRole("button", { name: "Draw the story from memory" }).click();
+  for (let i = 0; i < 14; i++) {
     await expect(
       page
         .getByLabel("Finger tracing canvas")
@@ -105,7 +83,7 @@ test("Korean tracing and conversations never require microphone success", async 
       .click();
     await page
       .getByRole("button", {
-        name: i === 5 ? "Build words from these letters" : "Next recall",
+        name: i === 13 ? "Build words from these letters" : "Next recall",
         exact: true,
       })
       .click();
@@ -131,7 +109,7 @@ test("Korean tracing and conversations never require microphone success", async 
       .getByRole("button", { name: "I’m ready for the next exchange" })
       .click();
   await page.getByRole("button", { name: "Recall what you learned" }).click();
-  await expect(page.getByText("Draw nieun from memory.")).toBeVisible();
+  await expect(page.getByText("Draw the letter for the gun.")).toBeVisible();
 });
 test("RNA pairs bases, explains directions, and provides real structure", async ({
   page,

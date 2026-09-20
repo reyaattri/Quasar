@@ -1,0 +1,15 @@
+# Korean story update
+
+Removed the separate Act II sound workshop. Pronunciation and tracing now live in the picture story; the story leads directly to blank drawing recall. Recall covers only the 14 story consonants. A short vowel key supports subsequent reading questions.
+
+Artwork: `assets/korean-webtoon-story.png` (1247 × 1261). Generated with the built-in image generation tool. Korean webtoon characters with hanbok-inspired clothing replace the previous atlas. Individual framing rectangles and clipped, aspect-preserving viewports prevent neighbouring scenes showing through. Deterministic letter diagrams remain separate from the illustrative mnemonic.
+
+Existing speaker recordings remain available. Other syllables use an installed Korean device voice; when unavailable, the app explains how to enable it rather than using an English voice.
+
+## Generation prompt
+
+Use case: illustration-story. Create one transparent PNG sprite sheet for a Korean alphabet memory story, exactly 4 columns by 4 rows of equal square cells. 14 distinct drawings in reading order; last two cells empty. Each complete drawing centered within its own cell with generous 15% clear margins on EVERY side, no overlap, no borders, no lettering, no text. Genuine transparent background. Modern Korean webtoon illustration, expressive Korean young adult protagonist with black hair, friendly rounded clean ink lines, warm soft cel shading, understated hanbok-inspired green jacket and everyday trousers; supporting elderly Korean man in traditional gat hat. Funny exaggerated acting, polished professional educational character cutouts. Keep same protagonist throughout but distinct actions. Row1: (1) protagonist holding large L-corner toy water pistol pointing left; (2) startled protagonist with comically long angular nose; (3) protagonist opening a Korean wooden door; (4) startled rattlesnake with body bent into angular zigzag like ㄹ. Row2: (5) close view protagonist shocked with exaggerated square open mouth; (6) protagonist capturing snake under bucket; (7) protagonist running up small triangular grassy hill; (8) protagonist looking through EMPTY circular ring with puzzled face. Row3: (9) protagonist jumping arms out legs apart; (10) protagonist celebrating jump with headband and small gold medal; (11) protagonist firing TWO parallel streams of water from toy pistol; (12) Korean wooden door split into two panels, protagonist surprised. Row4: (13) protagonist pushing two wooden pillars apart with top and bottom beam; (14) elderly Korean man with round face wearing traditional black gat, mysterious warm grin; (15) completely blank transparent; (16) completely blank transparent. No full scenes or backgrounds, only essential props. Full heads hands feet and props visible and separated within cells.
+
+## Validation
+
+TypeScript validation and the Korean end-to-end learning test cover removed Act II, pronunciation audio loading, tracing, fourteen blank recall prompts, reading retries, and conversation progression.

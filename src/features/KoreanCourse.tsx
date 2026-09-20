@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Image, PanResponder, View, Linking } from "react-native";
-import Svg, { Path, Circle, Text as SvgText, Rect } from "react-native-svg";
+import { PanResponder, View, Linking } from "react-native";
+import Svg, { Path, Circle, Text as SvgText, Rect, Image as SvgImage, Defs, ClipPath } from "react-native-svg";
 import * as Speech from "expo-speech";
 import {
   RecordingPresets,
@@ -10,60 +10,9 @@ import {
   useAudioRecorder,
 } from "expo-audio";
 import { Button, C, Card, s, Tag, Text } from "../components/ui";
-import { AtlasArt } from "../components/StudyShelf";
 import { readingPractice } from "../data/koreanPractice";
 import { koreanAudio } from "../data/koreanAudio";
 
-const letters = [
-  {
-    letter: "ㄴ",
-    say: "나",
-    name: "nieun",
-    sound: "n",
-    hook: "A cartoon nose bends down, then sticks out to the right: ㄴ. Nose starts with n. Listen to 나: n followed by a. The English nose is only the hook, not a Korean word.",
-    paths: ["M80 60 L80 185 L205 185"],
-  },
-  {
-    letter: "ㅁ",
-    say: "마",
-    name: "mieum",
-    sound: "m",
-    hook: "The hungry character opens a ridiculous square mouth: ㅁ. Mouth starts with m. To make the sound, close your lips and hum m, then open for a: 마.",
-    paths: ["M75 65 L75 195", "M75 65 L205 65 L205 195", "M75 195 L205 195"],
-  },
-  {
-    letter: "ㅏ",
-    say: "아",
-    name: "a",
-    sound: "a, approximately ah",
-    hook: "A tall singer opens one arm to the right and sings ah. The short stroke points right.",
-    paths: ["M125 45 L125 220", "M125 125 L200 125"],
-  },
-  {
-    letter: "ㅓ",
-    say: "어",
-    name: "eo",
-    sound: "eo; listen to 어",
-    hook: "The singer changes sides: the short arm points left. Listen to the vowel; English “uh” is only a rough reminder.",
-    paths: ["M70 125 L145 125", "M145 45 L145 220"],
-  },
-  {
-    letter: "ㅣ",
-    say: "이",
-    name: "i",
-    sound: "i, approximately ee",
-    hook: "A single tall elevator goes straight down while its passengers squeal ee. One stroke, no side arm.",
-    paths: ["M140 45 L140 220"],
-  },
-  {
-    letter: "ㅇ",
-    say: "아",
-    name: "ieung",
-    sound: "silent at the start of a syllable; ng at the end",
-    hook: "An empty ring saves a seat before a vowel: it is silent there. At the bottom of a syllable it rings ng. Same shape, different job depending on position.",
-    paths: ["M140 60 C45 60 45 205 140 205 C235 205 235 60 140 60"],
-  },
-];
 const storyBeats = [
   {
     title: "The gun · ㄱ",
@@ -485,60 +434,27 @@ function Host({ index }: { index: number }) {
   );
 }
 
-function KoreanFigure({
-  index,
-  height = 285,
-}: {
-  index: number;
-  height?: number;
-}) {
-  if (index < 4) {
-    return (
-      <AtlasArt
-        source={require("../../assets/korean-actions-transparent.png")}
-        columns={3}
-        rows={2}
-        index={index}
-        height={height}
-        inset={0.94}
-      />
-    );
-  }
-  const source =
-    index === 4
-      ? require("../../assets/korean-elevator.png")
-      : require("../../assets/korean-gong.png");
-  return (
-    <View
-      testID="korean-figure-art"
-      style={{ height, overflow: "hidden", alignItems: "center" }}
-    >
-      <Image
-        accessible={false}
-        source={source}
-        resizeMode="contain"
-        style={{ width: "94%", height: height + 24, marginTop: -18 }}
-      />
-    </View>
-  );
-}
-
 function StoryBeatSketch({ index }: { index: number }) {
+  // Artwork has hand-composed gutters, not mathematically equal atlas cells.
+  const frames = [
+    [0, 0, 320, 306], [326, 0, 302, 306], [630, 0, 315, 306], [949, 0, 298, 306],
+    [0, 308, 320, 299], [326, 308, 302, 299], [630, 308, 315, 299], [949, 308, 298, 299],
+    [0, 610, 320, 300], [326, 610, 302, 300], [630, 610, 315, 300], [949, 610, 298, 300],
+    [0, 913, 323, 348], [325, 913, 306, 348],
+  ];
+  const [x, y, width, height] = frames[index];
   return (
     <View
       accessibilityLabel={storyBeats[index].title + " illustrated memory scene"}
+      style={{ width: "100%", minWidth: 0, gap: 12 }}
     >
-      <AtlasArt
-        source={require("../../assets/korean-story-complete.png")}
-        sourceWidth={1266}
-        sourceHeight={1243}
-        columns={4}
-        rows={4}
-        index={index}
-        height={300}
-        inset={0.94}
-      />
-      <Text style={s.small}>Follow the same outline in the picture:</Text>
+      <View style={{ padding: 12, width: "100%", overflow: "hidden" }}>
+        <Svg width="100%" height={260} viewBox={`${x} ${y} ${width} ${height}`} preserveAspectRatio="xMidYMid meet" style={{ overflow: "hidden" }}>
+          <Defs><ClipPath id={`story-frame-${index}`}><Rect x={x} y={y} width={width} height={height} /></ClipPath></Defs>
+          <SvgImage href={require("../../assets/korean-webtoon-story.png")} x={0} y={0} width={1247} height={1261} clipPath={`url(#story-frame-${index})`} />
+        </Svg>
+      </View>
+      <Text style={[s.small, { textAlign: "center" }]}>Picture the scene. Learn this letter shape.</Text>
       <Svg width="100%" height={130} viewBox="0 0 280 280">
         <Path
           d={storyBeats[index].path}
@@ -555,21 +471,18 @@ function StoryBeatSketch({ index }: { index: number }) {
 
 export function KoreanCourse() {
   const [mode, setMode] = useState<
-      "story" | "letters" | "conversation" | "recall" | "reading"
+      "story" | "conversation" | "recall" | "reading"
     >("story"),
-    [index, setIndex] = useState(0),
-    [answer, setAnswer] = useState<string | null>(null);
+    [index, setIndex] = useState(0);
   const [readingDone, setReadingDone] = useState(false);
-  const item = letters[index % letters.length],
-    scene = scenes[index % scenes.length];
+  const scene = scenes[index % scenes.length];
   return (
     <View style={{ gap: 18 }}>
       <Tag color={C.peach}>THE KOREAN NEIGHBOURHOOD</Tag>
       <Text style={s.title}>See it. Trace it. Say it.</Text>
       <Text style={s.body}>
-        First watch one ridiculous visual story. Then replay it with Korean
-        sounds, trace each shape, and immediately read real syllable blocks.
-        English cues start the memory; the Korean audio corrects the sound.
+        Follow the picture story, hear each Korean sound, and trace its shape.
+        Then put the pictures away and draw what you remember.
       </Text>
       <View style={{ gap: 10 }}>
         <Button
@@ -580,15 +493,6 @@ export function KoreanCourse() {
           }}
         >
           Replay the picture story
-        </Button>
-        <Button
-          secondary
-          onPress={() => {
-            setMode("letters");
-            setIndex(0);
-          }}
-        >
-          Letter workshop
         </Button>
         <Button
           secondary
@@ -604,13 +508,19 @@ export function KoreanCourse() {
         </Button>
       </View>
       {mode === "story" ? (
-        <Card style={{ gap: 16, backgroundColor: C.peach }}>
+        <Card style={{ gap: 16, backgroundColor: C.paper, minWidth: 0, padding: 18 }}>
           <Tag>
-            ACT I · PICTURE FIRST · {index + 1} OF {storyBeats.length}
+            PICTURE STORY · {index + 1} OF {storyBeats.length}
           </Tag>
           <StoryBeatSketch index={index} />
-          <Text style={s.h2}>{storyBeats[index].title}</Text>
-          <Text style={s.body}>{storyBeats[index].action}</Text>
+          <Text style={[s.h2, { flexShrink: 1 }]}>{storyBeats[index].title}</Text>
+          <Text style={[s.body, { flexShrink: 1 }]}>{storyBeats[index].action}</Text>
+          <VoicePractice
+            key={`story-audio-${index}`}
+            phrase={["가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하"][index]}
+            listeningOnly
+          />
+          <TracePad key={`story-trace-${index}`} paths={[storyBeats[index].path]} />
           <View
             style={{
               alignSelf: "flex-start",
@@ -625,51 +535,14 @@ export function KoreanCourse() {
           <Button
             onPress={() => {
               if (index === storyBeats.length - 1) {
-                setMode("letters");
+                setMode("recall");
                 setIndex(0);
               } else setIndex(index + 1);
             }}
           >
             {index === storyBeats.length - 1
-              ? "Act II · attach the Korean sounds"
+              ? "Draw the story from memory"
               : "What happens next?"}
-          </Button>
-        </Card>
-      ) : mode === "letters" ? (
-        <Card style={{ gap: 16 }}>
-          <Tag>
-            ACT II · SOUND PASS · LETTER {index + 1} OF {letters.length}
-          </Tag>
-          <Text style={{ fontSize: 72, textAlign: "center", color: C.ink }}>
-            {item.letter}
-          </Text>
-          <Text style={s.h2}>
-            {item.name} · {item.sound}
-          </Text>
-          <KoreanFigure index={index} />
-          <Text style={s.body}>{item.hook}</Text>
-          <TracePad key={index} paths={item.paths} />
-          <VoicePractice
-            key={`voice-${index}`}
-            phrase={item.say}
-            listeningOnly
-          />
-          <Text style={s.small}>
-            First listen and read. For ㄴ and ㅁ, hear the consonant joined to
-            a: 나 and 마. For ㅇ, hear 아: the initial ring is silent.
-          </Text>
-          <Button
-            onPress={() => {
-              if (index === letters.length - 1) {
-                setMode("recall");
-                setAnswer(null);
-              } else {
-                setIndex(index + 1);
-                setAnswer(null);
-              }
-            }}
-          >
-            {index === letters.length - 1 ? "Build a syllable" : "Next letter"}
           </Button>
         </Card>
       ) : mode === "conversation" ? (
@@ -687,7 +560,6 @@ export function KoreanCourse() {
             onPress={() => {
               if (index === 2) {
                 setMode("recall");
-                setAnswer(null);
               } else setIndex(index + 1);
             }}
           >
@@ -730,13 +602,13 @@ export function KoreanCourse() {
 function DrawingRecall({ onDone }: { onDone: () => void }) {
   const [step, setStep] = useState(0);
   const [checked, setChecked] = useState(false);
-  const item = letters[step];
+  const item = storyBeats[step];
   return (
     <Card style={{ gap: 16 }}>
       <Tag>
-        DRAW FROM MEMORY · {step + 1} / {letters.length}
+        DRAW FROM MEMORY · {step + 1} / {storyBeats.length}
       </Tag>
-      <Text style={s.h2}>Draw {item.name} from memory.</Text>
+      <Text style={s.h2}>Draw the letter for {item.title.split(" · ")[0].toLowerCase()}.</Text>
       <Text style={s.body}>
         Remember its shape and sound. No picture or tracing guide this time.
       </Text>
@@ -744,18 +616,17 @@ function DrawingRecall({ onDone }: { onDone: () => void }) {
       {checked && (
         <>
           <Text style={{ fontSize: 64, textAlign: "center" }}>
-            {item.letter}
+            {item.recall}
           </Text>
           <Text style={s.body}>
-            Compare your drawing: {item.sound}. Check each stroke and its
-            direction.
+            {item.action} Compare the shape with your drawing.
           </Text>
         </>
       )}
       <Button
         onPress={() => {
           if (!checked) setChecked(true);
-          else if (step === letters.length - 1) onDone();
+          else if (step === storyBeats.length - 1) onDone();
           else {
             setStep(step + 1);
             setChecked(false);
@@ -764,7 +635,7 @@ function DrawingRecall({ onDone }: { onDone: () => void }) {
       >
         {!checked
           ? "Check my drawing"
-          : step === letters.length - 1
+          : step === storyBeats.length - 1
             ? "Build words from these letters"
             : "Next recall"}
       </Button>
@@ -780,6 +651,7 @@ function ReadingSteps({ onDone }: { onDone: () => void }) {
     correct = answer === q.answer;
   return (
     <Card style={{ gap: 16, backgroundColor: C.sage }}>
+      <Text style={s.body}>A quick reading key: ㅏ sounds like “ah”, ㅓ is eo, and ㅣ sounds like “ee”. Put a consonant beside a vowel: ㄴ + ㅏ = 나. An initial ㅇ is silent, so 아 starts with the vowel sound. Listen before choosing.</Text>
       <Tag>
         READING ROUND {round + 1} · QUESTION {step + 1} OF{" "}
         {readingPractice.length}
