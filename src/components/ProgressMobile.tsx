@@ -29,11 +29,7 @@ export function ProgressMobile({
   return (
     <View style={{ gap: 24 }}>
       <View style={styles.cover}>
-        <Image accessible={false} source={require("../../assets/journal-flowers.png")} resizeMode="contain" style={{ width: "100%", height: 95, marginBottom: 8 }} />
-        <View style={[s.between, { marginBottom: 20 }]}>
-          <Text style={styles.eyebrow}>QUASAR / FIELD JOURNAL</Text>
-          <Text style={styles.eyebrow}>01</Text>
-        </View>
+        <Image accessible={false} source={require("../../assets/journal-flowers.png")} resizeMode="contain" style={{ width: "100%", height: 62, marginBottom: 4 }} />
         <Text style={styles.coverTitle}>
           Little by little,{"\n"}it stays with you.
         </Text>
