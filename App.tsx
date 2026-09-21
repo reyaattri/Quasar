@@ -1,5 +1,6 @@
 import { ProgressMobile } from "./src/components/ProgressMobile";
 import { WelcomeScene } from "./src/components/WelcomeScene";
+import { QuasarMark } from "./src/components/QuasarMark";
 import { ToolkitIcon } from "./src/components/ToolkitIcon";
 import { ToolkitConversation } from "./src/features/ToolkitConversation";
 import { ExploreMemoryArt } from "./src/components/MemoryActivityArt";
@@ -1283,15 +1284,10 @@ function Quasar() {
               ) : null}
               {!p.onboarded && page !== "settings" ? (
                 onboarding === 0 ? (
-                  <View style={{ gap: 24 }}>
+                  <View style={{ gap: 18 }}>
                     <WelcomeScene />
-                    {heading(
-                      "WELCOME TO QUASAR",
-                      "Learn it once. Remember it longer.",
-                      "Turn what you need to know into something you can picture. Learn through illustrated stories, then practice recalling and applying the ideas.",
-                    )}
                     <Text style={s.label}>What are you curious about?</Text>
-                    <View style={s.row}>
+                    <View style={[s.row, { flexWrap: "wrap" }]}>
                       {[
                         "SAT vocabulary",
                         "Memory skills",
@@ -1330,9 +1326,6 @@ function Quasar() {
                     >
                       Let’s get curious
                     </Button>
-                    <Text style={[s.small, { textAlign: "center" }]}>
-                      No account needed. Start with six tiny memory lessons.
-                    </Text>
                   </View>
                 ) : onboarding === 1 ? (
                   <View style={{ gap: 20 }}>
@@ -1727,9 +1720,7 @@ function Quasar() {
 function Brand() {
   return (
     <View style={[s.row, { gap: 8 }]}>
-      <View style={{ transform: [{ rotate: "12deg" }] }}>
-        <Icon name="spark" size={33} />
-      </View>
+      <QuasarMark size={37} />
       <Text
         style={{
           fontFamily: serif,
@@ -1741,16 +1732,6 @@ function Brand() {
       >
         quasar
       </Text>
-      <View
-        style={{
-          width: 5,
-          height: 5,
-          borderRadius: 3,
-          backgroundColor: C.ink,
-          marginLeft: -5,
-          marginTop: 12,
-        }}
-      />
     </View>
   );
 }

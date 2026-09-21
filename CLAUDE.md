@@ -1,0 +1,31 @@
+# Quasar handoff
+
+This repository is the complete Expo/React Native source for Quasar. Start with `README.md`, then `App.tsx`, `src/features/`, and `src/data/`. The public web preview is https://quasar-memory-garden.reyaattri4.chatgpt.site/. The same source builds the mobile app; `android/`, `ios/`, `dist/`, and `node_modules/` are generated and intentionally excluded from Git.
+
+## Product intent
+
+Quasar teaches through a clear explanation, a distinctive visual mnemonic, hidden-cue recall, and application. Keep the visual style varied by subject and world. A cue must depict the exact object or relationship the learner needs to remember. Avoid generic repeated mascots, decorative emojis, text walls, and copy borrowed from Sketchy, Brilliant, Teuida, or other references. Preserve the user's selected SAT artwork and existing world imagery unless a new request changes them.
+
+The landing is intentionally a single moonlit memory-garden illustration above only the controls required to enter. `src/components/WelcomeScene.tsx` uses `assets/welcome-garden.png`. The logo has no punctuation dot: `src/components/QuasarMark.tsx` matches `assets/icon.svg`; `assets/icon.png` is generated from that SVG with `node scripts/render-icon.cjs`.
+
+## Local setup and checks
+
+Use Node 22+ and `npm ci`. `npm run web` serves the browser app; `npm start` starts Expo; `npm run android` generates/builds Android on a configured machine. No secrets are needed to experience the bundled lessons. After code changes, run `npm run typecheck`, relevant tests, and `EXPO_NO_TELEMETRY=1 npm run export:web`. End-to-end tests use Chrome and port 8081 (`playwright.config.ts`). Do not commit generated `dist/`, `android/`, or local credentials.
+
+## Main implementation
+
+- `App.tsx`: shell, responsive navigation, onboarding, home, review, progress, and feature entry points.
+- `src/components/`: code-native UI, interactive palace rooms and objects, shared graphics, progress, welcome art, and logo.
+- `src/features/`: lesson and game flows. Keep content-specific logic with the feature rather than expanding `App.tsx` unnecessarily.
+- `src/data/`: bundled curriculum, mnemonic cues, world/room mappings, art coordinates, and toolkit scripts. This is the first place to edit lesson wording.
+- `src/lib/`: persistence, FSRS-style scheduling, and optional integrations.
+- `assets/`: original generated illustrations, user-provided image assets, procedural audio, fonts, and the app icon. `docs/ARTWORK.md` and related art records describe provenance.
+- `supabase/`: optional schema, seed, and generation function. See `docs/SETUP.md`; never place server secrets in `EXPO_PUBLIC_*`.
+
+## Deployment and accounts
+
+`.openai/hosting.json` identifies the existing Sites project; preserve its `project_id`. Build with `npm run export:web` and deploy that exact committed source. The public URL above is the web preview, not an Android/iOS store release. `origin` points to `https://github.com/reyaattri/Quasar.git`; push authenticated commits there. GitHub, Supabase, RevenueCat, Expo/EAS, and app-store accounts are separate. Public app access does not configure paid features or account backups. See `docs/RELEASE-CHECKLIST.md` for those remaining steps.
+
+## Working safely
+
+Run `git status` before committing. `docs/*.png` includes intentional mobile QA captures; commit them only when they represent the current app. Do not overwrite user-supplied source art. Keep `.env`, signing keys, tokens, and generated native/build directories out of Git. Any new reference-inspired educational content should be original and scientifically checked. The memory app should explain the real relationship first, then use humor to make that relationship stick.

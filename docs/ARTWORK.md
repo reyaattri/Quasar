@@ -1,5 +1,13 @@
 # Artwork provenance and prompts
 
+## Current welcome and brand
+
+`assets/welcome-garden.png` is an original generated illustration for the image-led landing, made with the built-in image generation tool. The final prompt was:
+
+> Create a polished editorial illustration for a whimsical memory-learning mobile app landing hero, single image, portrait 4:5 composition. An open forest-green storybook doorway at bottom foreground leads along a glowing winding path through a tiny impossible greenhouse-at-night: a curious warm-yellow lantern, a giant playful apple balancing in a tree, a paper boat drifting on a little stream, floating cream blossoms and subtle golden stars, an inviting small human explorer in a mustard coat viewed from behind. A cohesive evocative scene, not separate cards or collage. Tactile cut-paper and risograph print texture mixed with hand-painted gouache, sophisticated illustrated children's book art, charming but not generic AI fantasy. Palette deep pine green, butter yellow, terracotta, pale sage, cream. Strong focal silhouette, rich detail in center, spacious dark green edges for responsive cropping. Absolutely no text, letters, numerals, icons, logos, captions, speech bubbles, UI, or border. No space suit. Original artwork.
+
+It appears only on the welcome screen. `assets/icon.svg` is an original code-drawn Quasar mark with two orbital arcs and a hollow four-point flare, with no punctuation dot. `scripts/render-icon.cjs` renders its matching `assets/icon.png` for Expo; `src/components/QuasarMark.tsx` draws the same geometry in the app header. `docs/readme-wordmark.svg` animates a brief text reveal in the repository README.
+
 Original learning illustrations were produced with the built-in image generation tool during this project. The pixel-button sheet was supplied by the user. No Gemini, Flux or Replicate execution is claimed for bundled images. The server includes a separately configurable Flux.2 integration.
 
 The user explicitly selected the exact watercolor computing scene. assets/cs-storybook.png is a direct copy of that attached image, unchanged. The anonymous figures in the original approved scene remain part of that image; named guide context has been removed.

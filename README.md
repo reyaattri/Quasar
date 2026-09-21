@@ -1,73 +1,57 @@
-# Quasar
+![Quasar animated wordmark](docs/readme-wordmark.svg)
 
-An Expo / React Native mnemonic learning app. Learn a technique, explore an illustrated scene, recall the idea, and apply it in context.
+**See it live:** [quasar-memory-garden.reyaattri4.chatgpt.site](https://quasar-memory-garden.reyaattri4.chatgpt.site/)
 
-## Run locally
+Quasar is an illustrated memory-learning app built with Expo and React Native. Learners turn an idea into a distinct scene, recall it without the picture, and use it in a question or activity. The web link is a playable preview of the same app source used for Android and iOS.
 
-Requires Node 22+ and npm.
+## Try it
+
+Open the public link and choose a starting subject. The guided Memory Toolkit introduces six named techniques with an example and a recall turn. Explore also includes SAT vocabulary, three enterable memory worlds, biology, calculus, Korean, Pi, and short memory games. Progress is saved locally on the device or browser.
+
+![Quasar mobile welcome](docs/welcome-refreshed-mobile.png)
+
+## Run the whole app locally
+
+Use Node 22 or newer and npm. Every bundled illustration, audio file, font, lesson, and test is in this repository; no account key is needed for the local learning experience.
 
 ```sh
+git clone https://github.com/reyaattri/Quasar.git
+cd Quasar
 npm ci
-npm run web             # browser preview
-npm start               # Metro for a native development client
-npm run android         # generates/builds Android and installs on an emulator
+npm run web
 ```
 
-The learning experience works without API keys. Data stays on the device until you sign in and choose **Back up progress**. No fake purchases or invented progress are used.
+For a native development build, run `npm start` or `npm run android` after installing the appropriate Expo/Android toolchain. Expo generates the native `android/` and `ios/` directories; they are intentionally ignored by Git.
 
-## Included
-
-- Subject selection, six optional personalization questions, six original technique lessons.
-- One illustrated SAT hotspot scene plus focused vocabulary, memory-world and medical activities.
-- Storybook and Doodle styles for the SAT scene, with varied watercolor, ink, pixel and vector artwork elsewhere.
-- Mnemonic details with focused cue imagery, three-option recall, current mastery, and per-scene written application reflections.
-- Ten SAT flashcards, genuine ts-fsrs scheduling, persistence, due reviews, streaks and accuracy.
-- Ten original ink-cartoon SAT vocabulary cards with sound/meaning hooks in two five-word batches, each followed by an original digital-SAT-style context question. These are not official 2026 exam questions.
-- Three illustrated memory worlds: Japanese dojo, Egyptian ruins and neon rooftops. Each full-world map has six literal, enterable locations; room labels, environment art and anchors agree. A tapped anchor opens a separate world-specific comic object cue, followed by hidden and ordered recall.
-- Personal shopping-palace builder for up to eight items, with individual action cues and ordered recall.
-- Two advanced illustrated medical stories (complement and B-cell maturation), a physician-authored source case, a rotatable 3D studio, a sourced 23-structure cardiovascular model, an animated circulation route, an interactive PPG physiology lab, and compatible-device room placement.
-- User-supplied pixel START/BACK/NEXT button artwork with press animations.
-- Pi uses the major system to encode 12 decimal digits as six consonant-sound objects. The guided pair path teaches room → landmark → action → object → digits before ordered recall.
-- Fun & Flex includes interactive card-order, names-and-faces, linked-pair and fictional-passphrase practice. Card practice supports 6, 12 or all 52 cards.
-- Original optional music, reduced-motion support, animated character artwork and openly licensed Space Grotesk typography. Memory lessons also appear on the home screen.
-- Named guide lore and computer-science curriculum have been removed. Math and Chemistry remain future curriculum.
-- Supabase email/password auth integration, private account backups, RLS-protected schema, curriculum seed and private image storage.
-- RevenueCat native SDK offerings, purchases, restore, entitlement checks and subscription management. Missing configuration disables payment rather than simulating success.
-- Optional PostHog events, disabled by default; no profile fields or written answers in analytics.
-- Supabase Edge Function for Claude-generated personalized mnemonics and optional Flux.2 illustrations through Replicate. Server verifies RevenueCat entitlement and enforces a daily quota.
-
-## What is not yet account-verified
-
-No Expo, Supabase, RevenueCat, Apple, Google Play, Claude or Replicate project credentials were provided. Therefore live account sync, generation, and real sandbox purchases still require deployment/configuration and device testing. See [setup](docs/SETUP.md) and [release checklist](docs/RELEASE-CHECKLIST.md). Academic eligibility and competition submission are owner actions; nothing has been submitted.
-
-The app contains a focused SAT vocabulary MVP, **not** a complete SAT exam preparation curriculum. Application answers are self-assessed against examples, not inaccurately advertised as AI-graded.
-
-## Checks
+## Verify a change
 
 ```sh
 npm run typecheck
 npm test
-npm run test:e2e       # Chrome required locally; starts/reuses Metro
+npm run test:e2e
 npm run export:web
-npm run seed:sql
 ```
 
-[Validation record](docs/VALIDATION.md) identifies exactly what was tested and what still needs real accounts/device access.
+The browser tests use Chrome and start or reuse a Metro server on port 8081. `EXPO_NO_TELEMETRY=1` avoids Expo writing telemetry settings outside restricted workspaces. The web export is written to ignored `dist/`.
 
 ## Project map
 
-- `App.tsx` — mobile shell, navigation, onboarding, screens, learning flow.
-- `src/components/Scene.tsx` — reusable scene and focused fact illustration.
-- `src/components/RoomInterior.tsx` — distinct room interiors for all three worlds.
-- `src/features/FunFlex.tsx` — cards, faces, pairs and story-chain recall games.
-- `src/data/content.ts` — reviewed local curriculum; `art.ts` maps bundled styles.
-- `src/lib/progress.ts` — FSRS scheduling, mastery, streaks, serialization.
-- `src/lib/services.ts` — persistence, Supabase, RevenueCat, PostHog integrations.
-- `supabase/` — migration, seed, authenticated generation function.
-- `tests/` — learning logic and end-to-end mobile viewport coverage.
+| Path | Purpose |
+| --- | --- |
+| `App.tsx` | Navigation, onboarding, shared shell, and screen composition |
+| `src/components/` | Reusable illustrations, world rooms, the Quasar mark, and interface elements |
+| `src/features/` | SAT, toolkit, memory palace, biology, calculus, Korean, Pi, and games |
+| `src/data/` | Lesson text, cues, rooms, and artwork mappings |
+| `src/lib/` | Local progress, scheduling, and optional service integrations |
+| `assets/` | Bundled original and user-provided art, music, fonts, and app icon |
+| `supabase/` | Optional account backup and personalized-generation backend |
+| `tests/` | Data and mobile-viewport browser tests |
+| `.openai/hosting.json` | Existing Sites project configuration for the web preview |
 
-[Design decisions](docs/DESIGN.md) · [Artwork provenance](docs/ARTWORK.md) · [Demo script](docs/DEMO.md)
+The full development handoff is in [CLAUDE.md](CLAUDE.md), with account setup in [docs/SETUP.md](docs/SETUP.md), art provenance in [docs/ARTWORK.md](docs/ARTWORK.md), and validation notes in [docs/VALIDATION.md](docs/VALIDATION.md).
 
-## Repository and secrets
+## Optional connected features
 
-The intended repository is `reyaattri/quasar`. A local Git repository is initialized. Never commit `.env`, service-role keys, RevenueCat secret keys, signing keys, or account credentials. Native directories are generated from Expo configuration; `npx expo prebuild --platform android` recreates the Android Studio project.
+The core lessons work offline after loading. Supabase sign-in and backups, RevenueCat purchases, and server-generated personalized mnemonics need credentials and account configuration. Their absence does not turn on fake purchases or fabricate cloud sync. See [setup](docs/SETUP.md) and the [release checklist](docs/RELEASE-CHECKLIST.md) before a store release.
+
+Artwork and learning copy are bundled for this project. SAT context practice is original and is not an official College Board question bank. Biology and medical activities are educational, not clinical guidance.
