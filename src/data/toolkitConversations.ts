@@ -1,8 +1,9 @@
 export const toolkitConversations = [
   {
-    title: "The baker’s impossible order", host: "Mara · the baker", method: "Rhyme pegs",
+    title: "The baker’s impossible order", host: "Mara · the baker", method: "Peg system · number rhymes",
+    definition: "Give each number a familiar image, then attach an item to it. The number keeps its place in the list.",
     hello: "I need lemons first and strawberries second. But my shopping note just went into the oven. Can we make a better one?",
-    reveal: "One rhymes with bun. Two rhymes with shoe. My bun is bursting with sour lemons; my shoe is squishing strawberries. Each number now has a familiar place to hang an item.",
+    reveal: "One is a bun bursting with lemons. Two is a shoe squishing strawberries. Bun and shoe stay the same; the groceries can change.",
     question: "The list is gone. What belongs in second place?",
     choices: ["Lemons", "Strawberries", "The bun"], answer: 1,
     retry: "Start with the number: two → shoe. Which fruit was squishing inside it?",
@@ -10,9 +11,10 @@ export const toolkitConversations = [
     transfer: "Try it with your own two-item list. Later, recall the second item before the first: the peg still gives you its position.",
   },
   {
-    title: "The moon’s tin workshop", host: "Lune · the watchmaker", method: "Sound-to-number code",
+    title: "The moon’s tin workshop", host: "Lune · the watchmaker", method: "Major System · number sounds",
+    definition: "Turn digits into consonant sounds, then add vowels to make a word you can picture.",
     hello: "Numbers slip out of my head. Pictures tend to stay for tea. Let’s turn 12 into something we can see.",
-    reveal: "In the Major System, t or d stands for 1, and n stands for 2. Add a vowel and 12 becomes tin. My enormous tin rattles whenever I polish it. Vowels do not count; consonant sounds do.",
+    reveal: "T is 1 and N is 2, so 12 becomes tin. Imagine Lune polishing a tin bigger than herself. Vowels help make the word but carry no digit.",
     question: "My friend moon has m = 3 and n = 2. Which number hides in moon?",
     choices: ["12", "23", "32"], answer: 2,
     retry: "Say moon slowly: m comes first, n comes last. Read their digits in that order.",
@@ -20,7 +22,8 @@ export const toolkitConversations = [
     transfer: "Start with tin = 12 and moon = 32. Recall the number from the image, then build the image from the number.",
   },
   {
-    title: "A very windy delivery", host: "Pip · the courier", method: "Story links",
+    title: "A very windy delivery", host: "Pip · the courier", method: "Link method · story chain",
+    definition: "Make each item act on the next one. One picture then leads you to the following picture.",
     hello: "A shoe, a kite, a book. Three separate things? That sounds like three chances to forget. Let’s make one thing lead to the next.",
     reveal: "The shoe kicks the kite into the wind. The kite hooks a book and carries it away, pages fluttering. Each object does something to the next one.",
     question: "The shoe has launched the kite. What does the kite pick up?",
@@ -30,7 +33,8 @@ export const toolkitConversations = [
     transfer: "Add a fourth item by making the book act on it. Then replay the chain from the shoe without looking.",
   },
   {
-    title: "The explorer’s four little words", host: "Ada · the explorer", method: "Acrostics",
+    title: "The explorer’s four little words", host: "Ada · the explorer", method: "Acrostic · initial letters",
+    definition: "Make a sentence whose first letters prompt the items in order.",
     hello: "I remember a sentence better than four loose directions. Mine is: New Explorers Seek Wonders.",
     reveal: "New → North. Explorers → East. Seek → South. Wonders → West. The first letters keep the clockwise order, starting at north.",
     question: "What does Seek help you recover?",
@@ -40,7 +44,8 @@ export const toolkitConversations = [
     transfer: "Make a short sentence from the initials of a list you already understand. Check that no item has slipped out of order.",
   },
   {
-    title: "Rose brought her own introduction", host: "Rose · your new neighbour", method: "Name associations",
+    title: "Rose brought her own introduction", host: "Rose · your new neighbour", method: "Name association",
+    definition: "Connect a name to a vivid sound or image, then link it to the person you met.",
     hello: "Hi, I’m Rose. Imagine me trying to get this enormous rose through your doorway. The flower is practically introducing me.",
     reveal: "Hear the name, picture its meaning, and connect the picture to this meeting. Say “Nice to meet you, Rose.” Saying it checks that you heard it correctly.",
     question: "Your neighbour returns without her flower. What is her name?",
@@ -50,7 +55,8 @@ export const toolkitConversations = [
     transfer: "For a less familiar name, ask how to pronounce it and make your own sound link. Use their actual name in conversation.",
   },
   {
-    title: "The house that kept the groceries", host: "Jun · the gardener", method: "Memory palace",
+    title: "The house that kept the groceries", host: "Jun · the gardener", method: "Method of loci · memory palace",
+    definition: "Place one striking image at each fixed stop on a familiar route. Walk it again to recall the order.",
     hello: "Come in. Mind the apple blocking my front door. The milk has taken my chair, and a loaf is sunbathing on the windowsill.",
     reveal: "Walk the same route: door → chair → window. Each fixed place holds one item: apple → milk → bread. The route gives you the order.",
     question: "You have passed the door. What is waiting on the chair?",
@@ -60,4 +66,3 @@ export const toolkitConversations = [
     transfer: "Choose three places in your own home. Put one item at each, then mentally walk the route again later without the pictures.",
   },
 ];
-

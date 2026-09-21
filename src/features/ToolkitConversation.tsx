@@ -23,7 +23,11 @@ export function ToolkitConversation({ index }: { index: number }) {
   const correct = answer === lesson.answer;
   return (
     <View style={{ gap: 18, minWidth: 0 }}>
-      <Text style={s.h2}>{lesson.title}</Text>
+      <View style={{ gap: 6 }}>
+        <Text style={[s.small, { color: C.green, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }]}>{lesson.method}</Text>
+        <Text style={s.h2}>{lesson.title}</Text>
+        <Text style={s.body}>{lesson.definition}</Text>
+      </View>
       <Animated.View style={{ opacity: fade, gap: 16 }}>
         {(stage < 2 || peek || correct) && (
           <View accessibilityLabel={`${lesson.title} illustration`}>

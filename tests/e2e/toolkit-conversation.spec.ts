@@ -5,10 +5,13 @@ test.use({ reducedMotion: "reduce" });
 test("toolkit conversations teach, hide cues, and allow a supported retry", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto("/");
+  await page.screenshot({ path: "docs/welcome-refreshed-mobile.png" });
   await page.getByRole("button", { name: "Let’s get curious" }).click();
   await page.getByRole("button", { name: "Build my memory toolkit" }).click();
   for (const [index, lesson] of toolkitConversations.entries()) {
     await expect(page.getByText(lesson.title, { exact: true })).toBeVisible();
+    await expect(page.getByText(lesson.method, { exact: true })).toBeVisible();
+    await expect(page.getByText(lesson.definition, { exact: true })).toBeVisible();
     const image = page.getByLabel(`${lesson.title} illustration`);
     await expect(image).toBeVisible();
     if (index === 0) {
