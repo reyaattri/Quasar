@@ -1,6 +1,7 @@
 import { ProgressMobile } from "./src/components/ProgressMobile";
 import { WelcomeScene } from "./src/components/WelcomeScene";
 import { ToolkitIcon } from "./src/components/ToolkitIcon";
+import { ToolkitConversation } from "./src/features/ToolkitConversation";
 import { ExploreMemoryArt } from "./src/components/MemoryActivityArt";
 import { vocabularyCues } from "./src/data/vocabularyCues";
 import { FunFlex } from "./src/features/FunFlex";
@@ -378,7 +379,6 @@ function Quasar() {
     </View>
   );
   const courseBody = () => {
-    const l = lessons[lesson];
     return (
       <View style={{ gap: 22 }}>
         <View style={s.between}>
@@ -394,15 +394,7 @@ function Quasar() {
             }}
           />
         </View>
-        <View style={a.lessonIcon}>
-          <Icon name={l.icon} size={55} />
-        </View>
-        {heading(l.type, l.title, l.body)}
-        <Card style={{ backgroundColor: C.sage, borderWidth: 0 }}>
-          <Text style={s.label}>Picture this</Text>
-          <Text style={[s.body, { color: C.ink }]}>{l.example}</Text>
-        </Card>
-        <Text style={s.body}>{l.challenge}</Text>
+        <ToolkitConversation key={lesson} index={lesson} />
         <View style={s.row}>
           {lesson > 0 && (
             <Button secondary onPress={() => setLesson(lesson - 1)}>
@@ -616,15 +608,12 @@ function Quasar() {
               <View style={{ flex: 1 }}>
                 <Text style={s.h3}>{item.title}</Text>
                 <Text style={s.small}>
-                  Lesson {index + 1} · Learn & practise →
+                  {item.type}
                 </Text>
               </View>
             </Pressable>
           ))}
         </View>
-        <Text style={[s.small, { textAlign: "center" }]}>
-          Learn the story. Recall the idea. Apply what you know.
-        </Text>
       </View>
     );
   };
@@ -722,7 +711,7 @@ function Quasar() {
         {heading(
           scene.subject,
           scene.title,
-          "Tap a numbered object. Give the idea a picture, then try recalling it.",
+          undefined,
         )}
 
         <Scene

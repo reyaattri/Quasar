@@ -200,9 +200,7 @@ export function PiCourse({
             <Card>
               <Text style={s.h2}>What just happened here?</Text>
               <Text style={s.body}>
-                Picture the person, the object and the silly action. Say the
-                object’s consonant sounds, then the two digits. Keep the
-                location in the story.
+                Which object was here, and which two digits does it encode?
               </Text>
             </Card>
           )}

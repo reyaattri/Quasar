@@ -291,9 +291,8 @@ export function MedicineLesson({
         ) : (
           <>
             <Text style={s.body}>
-              Tap the six concept titles in the order you visited them. This is
-              your memory route, not a claim that every biological process
-              follows one strict timeline.
+              Rebuild your six-stop memory route. This is the learning order,
+              not a biological timeline.
             </Text>
             <Card style={{ backgroundColor: C.sage }}>
               <Text style={s.label}>{order.length}/6 PLACED</Text>

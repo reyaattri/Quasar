@@ -26,7 +26,6 @@ export function ProgressMobile({
   const circumference = 2 * Math.PI * 79;
   const peak = Math.max(1, ...days.map((d) => d.count));
   const selectedDay = days[selected];
-  const weekCount = days.reduce((sum, d) => sum + d.count, 0);
   return (
     <View style={{ gap: 24 }}>
       <View style={styles.cover}>
@@ -123,10 +122,9 @@ export function ProgressMobile({
             <Text style={s.label}>YOUR PRACTICE RHYTHM</Text>
             <Text style={[s.h2, { marginTop: 6 }]}>A week in memory.</Text>
           </View>
-          <Text style={{ fontSize: 38, color: C.green }}>{weekCount}</Text>
         </View>
         <Text style={s.small}>
-          Vocabulary reviews in the last seven days. Tap a day.
+          Vocabulary reviews over seven days.
         </Text>
         <View
           style={{

@@ -454,7 +454,6 @@ function StoryBeatSketch({ index }: { index: number }) {
           <SvgImage href={require("../../assets/korean-webtoon-story.png")} x={0} y={0} width={1247} height={1261} clipPath={`url(#story-frame-${index})`} />
         </Svg>
       </View>
-      <Text style={[s.small, { textAlign: "center" }]}>Picture the scene. Learn this letter shape.</Text>
       <Svg width="100%" height={130} viewBox="0 0 280 280">
         <Path
           d={storyBeats[index].path}
@@ -521,17 +520,6 @@ export function KoreanCourse() {
             listeningOnly
           />
           <TracePad key={`story-trace-${index}`} paths={[storyBeats[index].path]} />
-          <View
-            style={{
-              alignSelf: "flex-start",
-              backgroundColor: C.paper,
-              borderRadius: 18,
-              paddingHorizontal: 14,
-              paddingVertical: 10,
-            }}
-          >
-            <Text style={s.label}>{storyBeats[index].recall}</Text>
-          </View>
           <Button
             onPress={() => {
               if (index === storyBeats.length - 1) {
@@ -591,10 +579,6 @@ export function KoreanCourse() {
       >
         Continue with King Sejong Institute ↗
       </Button>
-      <Text style={s.small}>
-        Listen first, copy the mouth movement and rhythm, then record yourself
-        when speaking unlocks.
-      </Text>
     </View>
   );
 }
