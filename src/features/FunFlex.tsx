@@ -385,7 +385,6 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                             and what did it make happen next?
                           </Text>
                         </Card>
-                        <Tag>Fictional practice · not a usable password</Tag>
                       </>
                     )}
                     <Button

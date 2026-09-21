@@ -1,6 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { AtlasArt } from "./StudyShelf";
+import Svg, { Defs, ClipPath, Rect, Image } from "react-native-svg";
 import { deck } from "../data/funGames";
 const sources = {
   spades: require("../../assets/card-stories-spades.png"),
@@ -71,6 +72,12 @@ export function ExploreMemoryArt({
     ],
   } as const;
   const [group, index, label] = artwork[kind];
+  if (kind === "phrase") return <View accessibilityLabel={label} style={{ width: "100%", padding: 10 }}>
+    <Svg width="100%" height={205} viewBox="310 910 323 344" preserveAspectRatio="xMidYMid meet">
+      <Defs><ClipPath id="secret-story-thumbnail"><Rect x={310} y={910} width={323} height={344} /></ClipPath></Defs>
+      <Image href={sources.diamonds} width={1254} height={1254} clipPath="url(#secret-story-thumbnail)" />
+    </Svg>
+  </View>;
   return (
     <GeneratedMemoryArt
       group={group}

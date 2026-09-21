@@ -636,7 +636,7 @@ function Quasar() {
       </Card>
       <FunFlex onWorlds={() => nav("flex")} />
       <Card style={{ backgroundColor: C.peach, gap: 14, borderRadius: 28 }}>
-        <Tag>NEW · THE CALCULUS WORKSHOP</Tag>
+        <Tag>CALCULUS WORKSHOP</Tag>
         <ExploreMemoryArt kind="calculus" />
         <Text style={s.h2}>Slopes, crumbs, and the bigger picture.</Text>
         <Text style={s.body}>
@@ -646,7 +646,7 @@ function Quasar() {
         <Button onPress={() => nav("math")}>Open calculus lessons</Button>
       </Card>
       <Card style={{ backgroundColor: C.sage, gap: 14, borderRadius: 28 }}>
-        <Tag>NEW · KOREAN NEIGHBOURHOOD</Tag>
+        <Tag>KOREAN NEIGHBOURHOOD</Tag>
         <Image
           source={require("./assets/korean-explore-transparent.png")}
           resizeMode="contain"
@@ -678,8 +678,8 @@ function Quasar() {
           height={190}
         />
         <Text style={s.body}>
-          Meet the peg baker, the moon astronomer and a traveler who gives every
-          idea an address.
+          Meet a forgetful baker, a moon-shaped watchmaker and a gardener whose
+          house remembers the shopping. Try each method together.
         </Text>
         <Button
           onPress={() => {
@@ -932,37 +932,6 @@ function Quasar() {
             </Button>
           </Card>
         ))}
-        <Text style={s.h2}>Next to revisit</Text>
-        {due.length === 0 ? (
-          <Text style={s.body}>Nothing is due right now. Nice work.</Text>
-        ) : (
-          due.map((id) => (
-            <View key={id} style={s.between}>
-              <Text style={s.label}>
-                {allFacts.find((f) => f.id === id)?.word}
-              </Text>
-              <Tag>Ready now</Tag>
-            </View>
-          ))
-        )}
-        {Object.entries(p.cards)
-          .filter(([, c]) => new Date(c.due) > new Date())
-          .slice(0, 6)
-          .map(([id, c]) => (
-            <View key={id} style={s.between}>
-              <Text style={s.label}>
-                {allFacts.find((f) => f.id === id)?.word}
-              </Text>
-              <Text style={s.small}>
-                {new Date(c.due).toLocaleString(undefined, {
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "2-digit",
-                })}
-              </Text>
-            </View>
-          ))}
       </View>
     );
   };

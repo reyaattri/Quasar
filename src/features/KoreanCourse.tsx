@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { PanResponder, View, Linking } from "react-native";
+import { Image, PanResponder, View, Linking } from "react-native";
 import Svg, { Path, Circle, Text as SvgText, Rect, Image as SvgImage, Defs, ClipPath } from "react-native-svg";
 import * as Speech from "expo-speech";
 import {
@@ -71,9 +71,9 @@ const storyBeats = [
     path: "M65 210 L140 65 L215 210",
   },
   {
-    title: "Nothing · ㅇ",
+    title: "The moon at the summit · ㅇ",
     action:
-      "At the top you find nothing. Picture an empty circle. At the start of a syllable this letter is silent; at the end it sounds ng.",
+      "At the summit, you stop and quietly watch the round moon: ㅇ. No sound at the start of a syllable; ng at the end. In 아, the moon stays silent and the vowel does the talking.",
     recall: "ㅇ",
     atlas: 6,
     path: "M140 65 C40 65 40 215 140 215 C240 215 240 65 140 65",
@@ -448,12 +448,12 @@ function StoryBeatSketch({ index }: { index: number }) {
       accessibilityLabel={storyBeats[index].title + " illustrated memory scene"}
       style={{ width: "100%", minWidth: 0, gap: 12 }}
     >
-      <View style={{ padding: 12, width: "100%", overflow: "hidden" }}>
+      {index === 7 ? <Image source={require("../../assets/korean-summit-moon.png")} resizeMode="contain" style={{ width: "100%", height: 300 }} /> : <View style={{ padding: 12, width: "100%", overflow: "hidden" }}>
         <Svg width="100%" height={260} viewBox={`${x} ${y} ${width} ${height}`} preserveAspectRatio="xMidYMid meet" style={{ overflow: "hidden" }}>
           <Defs><ClipPath id={`story-frame-${index}`}><Rect x={x} y={y} width={width} height={height} /></ClipPath></Defs>
           <SvgImage href={require("../../assets/korean-webtoon-story.png")} x={0} y={0} width={1247} height={1261} clipPath={`url(#story-frame-${index})`} />
         </Svg>
-      </View>
+      </View>}
       <Svg width="100%" height={130} viewBox="0 0 280 280">
         <Path
           d={storyBeats[index].path}

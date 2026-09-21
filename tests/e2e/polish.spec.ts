@@ -1,0 +1,20 @@
+import { test, expect } from "@playwright/test";
+test.use({ viewport: { width: 393, height: 852 }, deviceScaleFactor: 3, reducedMotion: "reduce" });
+test("progress journal and secret story artwork fit the mobile frame", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Let’s get curious" }).click();
+  await page.getByRole("button", { name: "Build my memory toolkit" }).click();
+  for(let i=0;i<5;i++) await page.getByRole("button", { name: "Next lesson" }).click();
+  await page.getByRole("button", { name: "Let’s make it stick" }).click();
+  await page.getByRole("button", { name: "Progress", exact: true }).click();
+  await expect(page.getByText("Next to revisit", { exact: true })).toHaveCount(0);
+  await page.waitForFunction(() => Array.from(document.images).every(i => i.complete));
+  await page.screenshot({ path: "docs/next-gen-progress-1179x2556.png" });
+  await page.getByRole("button", { name: "Explore", exact: true }).click();
+  const illustration = page.getByLabel("An otter starts a chain of impossible events");
+  await illustration.locator("image").evaluate(async e => { const i = new window.Image(); i.src = e.getAttribute("href") || e.getAttribute("xlink:href")!; await i.decode(); });
+  await illustration.screenshot({ path: "docs/secret-story-framing.png" });
+  await page.getByRole("button", { name: "Play A story with a secret" }).click();
+  await expect(page.getByText("Fictional practice · not a usable password")).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+});

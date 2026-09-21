@@ -246,6 +246,7 @@ export const s = StyleSheet.create({
     gap: 12,
   },
   card: {
+    minWidth: 0,
     backgroundColor: C.white,
     borderWidth: 1,
     borderColor: C.line,
@@ -271,6 +272,9 @@ export const s = StyleSheet.create({
   },
   secondary: { backgroundColor: C.white, borderWidth: 1, borderColor: C.line },
   buttonText: {
+    flexShrink: 1,
+    textAlign: "center",
+    lineHeight: 20,
     color: C.white,
     fontFamily: "QuasarGrotesk",
     fontSize: 14,

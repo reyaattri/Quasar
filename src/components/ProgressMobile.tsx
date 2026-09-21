@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Pressable, StyleSheet } from "react-native";
+import { View, Pressable, StyleSheet, Image } from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
 import { C, Text, s, Button } from "./ui";
 
@@ -29,6 +29,7 @@ export function ProgressMobile({
   return (
     <View style={{ gap: 24 }}>
       <View style={styles.cover}>
+        <Image accessible={false} source={require("../../assets/journal-flowers.png")} resizeMode="contain" style={{ width: "100%", height: 95, marginBottom: 8 }} />
         <View style={[s.between, { marginBottom: 20 }]}>
           <Text style={styles.eyebrow}>QUASAR / FIELD JOURNAL</Text>
           <Text style={styles.eyebrow}>01</Text>
@@ -74,7 +75,7 @@ export function ProgressMobile({
           </Svg>
           <View
             pointerEvents="none"
-            style={{ position: "absolute", top: 56, alignItems: "center" }}
+            style={{ position: "absolute", top: 54, width: 142, alignItems: "center" }}
           >
             <Text style={{ fontSize: 60, lineHeight: 68, color: C.paper }}>
               {mastered}
@@ -82,8 +83,8 @@ export function ProgressMobile({
             <Text style={{ fontSize: 13, color: "#DCE6D7" }}>
               of {total} memories
             </Text>
-            <Text style={{ fontSize: 11, color: "#BBCBB8", marginTop: 5 }}>
-              VOCABULARY MASTERED
+            <Text style={{ fontSize: 11, lineHeight: 15, color: "#BBCBB8", marginTop: 5, textAlign: "center" }}>
+              mastered
             </Text>
           </View>
         </View>
