@@ -1284,10 +1284,15 @@ function Quasar() {
               ) : null}
               {!p.onboarded && page !== "settings" ? (
                 onboarding === 0 ? (
-                  <View style={{ gap: 18 }}>
+                  <View style={{ gap: 24 }}>
                     <WelcomeScene />
+                    {heading(
+                      "WELCOME TO QUASAR",
+                      "Learn it once. Remember it longer.",
+                      "Turn what you need to know into something you can picture. Learn through illustrated stories, then practice recalling and applying the ideas.",
+                    )}
                     <Text style={s.label}>What are you curious about?</Text>
-                    <View style={[s.row, { flexWrap: "wrap" }]}>
+                    <View style={s.row}>
                       {[
                         "SAT vocabulary",
                         "Memory skills",
@@ -1326,6 +1331,9 @@ function Quasar() {
                     >
                       Let’s get curious
                     </Button>
+                    <Text style={[s.small, { textAlign: "center" }]}>
+                      No account needed. Start with six tiny memory lessons.
+                    </Text>
                   </View>
                 ) : onboarding === 1 ? (
                   <View style={{ gap: 20 }}>

@@ -5,13 +5,9 @@ test.use({ reducedMotion: "reduce" });
 test("toolkit conversations teach, hide cues, and allow a supported retry", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto("/");
-  const welcomeArt = page.getByLabel("An explorer enters a moonlit memory garden through green doors");
-  await expect(welcomeArt).toBeVisible();
+  await expect(page.getByText("YOUR FIRST MEMORY WALK")).toBeVisible();
   await expect(page.getByLabel("Quasar logo")).toBeVisible();
-  await welcomeArt.locator("img").evaluate(async element => { await (element as HTMLImageElement).decode(); });
   await page.screenshot({ path: "docs/welcome-refreshed-mobile.png" });
-  await expect(page.getByText("YOUR FIRST MEMORY WALK")).toHaveCount(0);
-  await expect(page.getByText("Learn it once. Remember it longer.")).toHaveCount(0);
   await page.getByRole("button", { name: "Let’s get curious" }).click();
   await page.getByRole("button", { name: "Build my memory toolkit" }).click();
   for (const [index, lesson] of toolkitConversations.entries()) {

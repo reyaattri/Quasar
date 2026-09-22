@@ -6,7 +6,7 @@ This repository is the complete Expo/React Native source for Quasar. Start with 
 
 Quasar teaches through a clear explanation, a distinctive visual mnemonic, hidden-cue recall, and application. Keep the visual style varied by subject and world. A cue must depict the exact object or relationship the learner needs to remember. Avoid generic repeated mascots, decorative emojis, text walls, and copy borrowed from Sketchy, Brilliant, Teuida, or other references. Preserve the user's selected SAT artwork and existing world imagery unless a new request changes them.
 
-The landing is intentionally a single moonlit memory-garden illustration above only the controls required to enter. `src/components/WelcomeScene.tsx` uses `assets/welcome-garden.png`. The logo has no punctuation dot: `src/components/QuasarMark.tsx` matches `assets/icon.svg`; `assets/icon.png` is generated from that SVG with `node scripts/render-icon.cjs`.
+The landing currently uses the earlier three-stop memory-walk panel in `src/components/WelcomeScene.tsx`, with its heading, explanation, and subject chooser in `App.tsx`. The later moonlit garden experiment remains at `assets/welcome-garden.png` for provenance but is not shown. The logo has no punctuation dot: `src/components/QuasarMark.tsx` matches `assets/icon.svg`; `assets/icon.png` is generated from that SVG with `node scripts/render-icon.cjs`.
 
 ## Local setup and checks
 
