@@ -19,7 +19,7 @@
 - [ ] Deploy Supabase schema and confirm real email signup, login, logout, and backup on two devices.
 - [ ] Configure RevenueCat store products, current offering and quasar_pro entitlement.
 - [ ] Deploy and test the delete-account Edge Function with a disposable account.
-- [ ] Make the GitHub repository public for the Next Gen submission path.
+- [x] Make the GitHub repository public for the Next Gen submission path.
 - [ ] Publish privacy and terms pages; enter their URLs in app configuration.
 - [ ] Build and install on Android/iOS; inspect safe areas, keyboard, back button and accessibility.
 - [ ] Complete an actual sandbox purchase and verify active entitlement from CustomerInfo.
