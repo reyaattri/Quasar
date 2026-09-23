@@ -33,6 +33,7 @@ const r = spawnSync(
     "--test",
     path.join(out, "tests/progress.test.js"),
     "tests/database.test.cjs",
+    "tests/release.test.cjs",
   ],
   { stdio: "inherit" },
 );

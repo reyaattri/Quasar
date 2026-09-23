@@ -9,6 +9,8 @@
 - [x] Storybook and Doodle selectors work; default computing artwork is the user’s exact file.
 - [x] Database migration and seed execute in local PostgreSQL-compatible PGlite.
 - [x] RLS prevents cross-account reads/writes; public curriculum is read-only; generation quota is enforced.
+- [x] Account deletion UI and authenticated deletion function are included.
+- [x] Public privacy, terms, and support pages are included in the web export.
 - [x] Android native project generation succeeds.
 
 ## Required before a production claim
@@ -16,6 +18,8 @@
 - [ ] Create and configure Expo/EAS project and final package identifiers.
 - [ ] Deploy Supabase schema and confirm real email signup, login, logout, and backup on two devices.
 - [ ] Configure RevenueCat store products, current offering and quasar_pro entitlement.
+- [ ] Deploy and test the delete-account Edge Function with a disposable account.
+- [ ] Make the GitHub repository public for the Next Gen submission path.
 - [ ] Publish privacy and terms pages; enter their URLs in app configuration.
 - [ ] Build and install on Android/iOS; inspect safe areas, keyboard, back button and accessibility.
 - [ ] Complete an actual sandbox purchase and verify active entitlement from CustomerInfo.

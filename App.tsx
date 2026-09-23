@@ -1,6 +1,5 @@
 import { ProgressMobile } from "./src/components/ProgressMobile";
 import { WelcomeScene } from "./src/components/WelcomeScene";
-import { QuasarMark } from "./src/components/QuasarMark";
 import { ToolkitIcon } from "./src/components/ToolkitIcon";
 import { ToolkitConversation } from "./src/features/ToolkitConversation";
 import { ExploreMemoryArt } from "./src/components/MemoryActivityArt";
@@ -83,6 +82,7 @@ import {
   identifyPurchases,
   track,
   generatePersonalized,
+  deleteAccount,
 } from "./src/lib/services";
 type Page =
   | "home"
@@ -146,6 +146,7 @@ function Quasar() {
   const [pro, setPro] = useState(false);
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [personalStory, setPersonalStory] = useState("");
   const [personalImage, setPersonalImage] = useState<string | undefined>();
   const [, setClock] = useState(0);
@@ -992,6 +993,40 @@ function Quasar() {
             >
               Sign out
             </Button>
+            {confirmDelete ? (
+              <View style={{ gap: 10 }}>
+                <Text style={[s.body, { color: C.red }]}>This permanently deletes your Quasar account and cloud learning data. Store subscriptions must still be cancelled through the App Store or Google Play.</Text>
+                <Button
+                  disabled={busy}
+                  onPress={async () => {
+                    setBusy(true);
+                    try {
+                      const formerUserId = userId;
+                      await deleteAccount();
+                      if (formerUserId) await AsyncStorage.removeItem(storageKey + "." + formerUserId);
+                      await identifyPurchases(null);
+                      storageReady.current = true;
+                      setP(initialProgress());
+                      setConfirmDelete(false);
+                      setOnboarding(0);
+                      nav("home");
+                      setNotice("Your account and cloud learning data were deleted.");
+                    } catch (e) {
+                      setNotice(message(e));
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                >
+                  Permanently delete account
+                </Button>
+                <Button secondary onPress={() => setConfirmDelete(false)}>Keep my account</Button>
+              </View>
+            ) : (
+              <Pressable accessibilityRole="button" onPress={() => setConfirmDelete(true)}>
+                <Text style={[s.link, { color: C.red, textAlign: "center" }]}>Delete account and cloud data</Text>
+              </Pressable>
+            )}
           </>
         ) : (
           <>
@@ -1086,6 +1121,19 @@ function Quasar() {
       <Text style={s.small}>
         Quasar 1.0 · Original illustrations and educational content.
       </Text>
+      <View style={[s.row, { justifyContent: "center", flexWrap: "wrap" }]}>
+        <Pressable accessibilityRole="link" onPress={() => Linking.openURL(process.env.EXPO_PUBLIC_PRIVACY_URL ?? "https://quasar-memory-garden.reyaattri4.chatgpt.site/privacy.html")}>
+          <Text style={s.link}>Privacy</Text>
+        </Pressable>
+        <Text style={s.small}>·</Text>
+        <Pressable accessibilityRole="link" onPress={() => Linking.openURL(process.env.EXPO_PUBLIC_TERMS_URL ?? "https://quasar-memory-garden.reyaattri4.chatgpt.site/terms.html")}>
+          <Text style={s.link}>Terms</Text>
+        </Pressable>
+        <Text style={s.small}>·</Text>
+        <Pressable accessibilityRole="link" onPress={() => Linking.openURL("https://quasar-memory-garden.reyaattri4.chatgpt.site/support.html")}>
+          <Text style={s.link}>Support</Text>
+        </Pressable>
+      </View>
     </View>
   );
   const paywall = () => (
@@ -1722,7 +1770,23 @@ function Quasar() {
 function Brand() {
   return (
     <View style={[s.row, { gap: 8 }]}>
-      <QuasarMark size={37} />
+        <View
+          accessible
+          accessibilityRole="image"
+          accessibilityLabel="Quasar logo"
+          style={{
+            width: 38,
+            height: 38,
+            borderRadius: 19,
+            borderWidth: 1.5,
+            borderColor: C.green,
+            alignItems: "center",
+            justifyContent: "center",
+            transform: [{ rotate: "10deg" }],
+          }}
+        >
+          <Icon name="spark" size={25} color={C.green} />
+        </View>
       <Text
         style={{
           fontFamily: serif,

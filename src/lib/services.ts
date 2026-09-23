@@ -147,3 +147,13 @@ export async function generatePersonalized(factId: string, p: Progress) {
   if (error) throw error;
   return data as { story: string; imageUrl?: string };
 }
+
+export async function deleteAccount() {
+  if (!supabase)
+    throw new Error("Account deletion needs the connected Supabase service.");
+  const { error } = await supabase.functions.invoke("delete-account", {
+    body: { confirmation: "DELETE" },
+  });
+  if (error) throw error;
+  await supabase.auth.signOut();
+}

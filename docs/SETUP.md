@@ -18,6 +18,15 @@ Apply supabase/migrations/202609100001_initial.sql and supabase/seed.sql in the 
 
 The app saves guest and signed-in profiles under separate local keys. A new account initially adopts the current guest study state if it has no local or cloud state. Existing account state is loaded on sign-in. Cloud backups are explicitly initiated in Settings; this MVP does not attempt multi-device concurrent merging. Signing out restores the guest profile.
 
+Deploy both authenticated Edge Functions before testing connected accounts:
+
+```sh
+supabase functions deploy generate-mnemonic
+supabase functions deploy delete-account
+```
+
+The delete function validates the current access token and confirmation value, then deletes the Supabase Auth user with the service role. Foreign-key cascades remove the learner's cloud rows. The app separately clears that account's device cache and signs RevenueCat back into its anonymous state. Verify this flow in a disposable test account before release.
+
 ## 3. RevenueCat
 
 Create Android/iOS apps in RevenueCat, connect the corresponding store, and add real subscription products. Attach them to entitlement quasar_pro, create an offering and mark it current.
