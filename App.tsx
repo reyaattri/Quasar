@@ -106,6 +106,26 @@ const tabs = [
   ["review", "cards", "Review"],
   ["progress", "chart", "Progress"],
 ] as const;
+
+if (Platform.OS === "web" && typeof document !== "undefined") {
+  const id = "quasar-font-face";
+  if (!document.getElementById(id)) {
+    const style = document.createElement("style");
+    style.id = id;
+    style.textContent = `
+      @font-face {
+        font-family: "QuasarGrotesk";
+        src: url("/fonts/SpaceGrotesk.ttf") format("truetype");
+        font-style: normal;
+        font-weight: 300 700;
+        font-display: block;
+      }
+      html, body, #root { font-family: "QuasarGrotesk", sans-serif; }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
     QuasarGrotesk: require("./assets/fonts/SpaceGrotesk.ttf"),
