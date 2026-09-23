@@ -1,5 +1,6 @@
 import { ProgressMobile } from "./src/components/ProgressMobile";
 import { WelcomeScene } from "./src/components/WelcomeScene";
+import { QuasarMark } from "./src/components/QuasarMark";
 import { ToolkitIcon } from "./src/components/ToolkitIcon";
 import { ToolkitConversation } from "./src/features/ToolkitConversation";
 import { ExploreMemoryArt } from "./src/components/MemoryActivityArt";
@@ -1336,31 +1337,21 @@ function Quasar() {
                     <WelcomeScene />
                     {heading(
                       "WELCOME TO QUASAR",
-                      "Remember through imagination.",
-                      "Quasar turns difficult ideas into visual stories and familiar places, then helps you bring them back without looking.",
+                      "Learn it once. Remember it longer.",
+                      "Turn what you need to know into something you can picture. Learn through illustrated stories, then practice recalling and applying the ideas.",
                     )}
-                    <Button
-                      icon="arrow"
-                      onPress={() => setOnboarding(1)}
-                    >
-                      Let’s get curious
-                    </Button>
-                    <Text style={[s.small, { textAlign: "center" }]}>
-                      No account needed. Your progress stays on this device.
-                    </Text>
-                  </View>
-                ) : onboarding === 1 ? (
-                  <View style={{ gap: 20 }}>
-                    {heading(
-                      "MAKE IT YOURS",
-                      "What would you like to remember?",
-                      "Choose at least one starting point. The details below are optional and help future stories feel familiar.",
-                    )}
-                    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
-                      {["SAT vocabulary", "Memory skills", "Biology foundations"].map((sub) => (
+                    <Text style={s.label}>What are you curious about?</Text>
+                    <View style={s.row}>
+                      {[
+                        "SAT vocabulary",
+                        "Memory skills",
+                        "Biology foundations",
+                      ].map((sub) => (
                         <Pressable
                           accessibilityRole="button"
-                          accessibilityState={{ selected: p.profile.subjects.includes(sub) }}
+                          accessibilityState={{
+                            selected: p.profile.subjects.includes(sub),
+                          }}
                           key={sub}
                           onPress={() =>
                             updateProfile(
@@ -1372,17 +1363,34 @@ function Quasar() {
                           }
                           style={[
                             a.styleChoice,
-                            { flexGrow: 1, minWidth: 145 },
                             p.profile.subjects.includes(sub) && {
                               backgroundColor: C.sage,
                               borderColor: C.green,
                             },
                           ]}
                         >
-                          <Text style={[s.label, { textAlign: "center" }]}>{sub}</Text>
+                          <Text style={s.label}>{sub}</Text>
                         </Pressable>
                       ))}
                     </View>
+                    <Button
+                      icon="arrow"
+                      disabled={!p.profile.subjects.length}
+                      onPress={() => setOnboarding(1)}
+                    >
+                      Let’s get curious
+                    </Button>
+                    <Text style={[s.small, { textAlign: "center" }]}>
+                      No account needed. Start with six tiny memory lessons.
+                    </Text>
+                  </View>
+                ) : onboarding === 1 ? (
+                  <View style={{ gap: 20 }}>
+                    {heading(
+                      "MAKE IT PERSONAL",
+                      "Familiar things stick.",
+                      "These optional details can help personalize your stories later. Make-believe answers work too.",
+                    )}
                     <Field
                       label="What should we call you?"
                       value={p.profile.name}
@@ -1419,7 +1427,6 @@ function Quasar() {
 
                     <Button
                       icon="arrow"
-                      disabled={!p.profile.subjects.length}
                       onPress={() => {
                         setOnboarding(2);
                         setLesson(p.lesson < 6 ? p.lesson : 0);
@@ -1770,23 +1777,7 @@ function Quasar() {
 function Brand() {
   return (
     <View style={[s.row, { gap: 8 }]}>
-        <View
-          accessible
-          accessibilityRole="image"
-          accessibilityLabel="Quasar logo"
-          style={{
-            width: 38,
-            height: 38,
-            borderRadius: 19,
-            borderWidth: 1.5,
-            borderColor: C.green,
-            alignItems: "center",
-            justifyContent: "center",
-            transform: [{ rotate: "10deg" }],
-          }}
-        >
-          <Icon name="spark" size={25} color={C.green} />
-        </View>
+      <QuasarMark size={37} />
       <Text
         style={{
           fontFamily: serif,

@@ -1,103 +1,64 @@
 import React, { useEffect, useRef } from "react";
-import { AccessibilityInfo, Animated, ImageBackground, Platform, View } from "react-native";
-import { C, Icon, Text } from "./ui";
+import { AccessibilityInfo, Animated, View } from "react-native";
+import Svg, { Circle, Path } from "react-native-svg";
+import { C, Text, s } from "./ui";
 
-const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
+const stops = [
+  { number: "01", title: "Door", clue: "An enormous apple" },
+  { number: "02", title: "Chair", clue: "Milk takes a seat" },
+  { number: "03", title: "Window", clue: "Bread waves hello" },
+];
 
 export function WelcomeScene() {
-  const reveal = useRef(new Animated.Value(0)).current;
-
+  const pulse = useRef(new Animated.Value(0)).current;
   useEffect(() => {
+    let animation: Animated.CompositeAnimation | undefined;
     let active = true;
     AccessibilityInfo.isReduceMotionEnabled().then((reduced) => {
-      if (!active) return;
-      if (reduced) {
-        reveal.setValue(1);
-        return;
-      }
-      Animated.timing(reveal, {
-        toValue: 1,
-        duration: 850,
-        useNativeDriver: Platform.OS !== "web",
-      }).start();
+      if (!active || reduced) return;
+      animation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulse, { toValue: 1, duration: 1500, useNativeDriver: true }),
+          Animated.timing(pulse, { toValue: 0, duration: 1500, useNativeDriver: true }),
+        ]),
+      );
+      animation.start();
     });
-    return () => {
-      active = false;
-      reveal.stopAnimation();
-    };
-  }, [reveal]);
-
+    return () => { active = false; animation?.stop(); };
+  }, [pulse]);
   return (
-    <Animated.View
-      accessibilityRole="image"
-      accessibilityLabel="An open garden gate leads into a moonlit memory world filled with books, paths, an enormous apple, and small discoveries"
-      style={{
-        opacity: reveal,
-        transform: [
-          {
-            translateY: reveal.interpolate({
-              inputRange: [0, 1],
-              outputRange: [14, 0],
-            }),
-          },
-        ],
-      }}
-    >
-      <View
-        style={{
-          borderRadius: 32,
-          overflow: "hidden",
-          backgroundColor: C.green,
-          borderWidth: 1,
-          borderColor: "#42634E",
-          shadowColor: "#172B21",
-          shadowOffset: { width: 0, height: 14 },
-          shadowOpacity: 0.2,
-          shadowRadius: 24,
-          elevation: 5,
-        }}
-      >
-        <AnimatedImageBackground
-          source={require("../../assets/welcome-garden.png")}
-          resizeMode="cover"
-          imageStyle={{ borderRadius: 31 }}
-          style={{ width: "100%", aspectRatio: 0.86, justifyContent: "space-between", padding: 18 }}
-        >
-          <View
-            style={{
-              alignSelf: "flex-start",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 8,
-              borderRadius: 999,
-              backgroundColor: "rgba(251,248,239,0.92)",
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-            }}
-          >
-            <Icon name="spark" size={15} color={C.green} />
-            <Text style={{ color: C.green, fontSize: 11, fontWeight: "700", letterSpacing: 1.1 }}>
-              A PLACE FOR WHAT YOU LEARN
-            </Text>
+    <View style={{ backgroundColor: "#254633", borderRadius: 30, padding: 22, overflow: "hidden", gap: 17 }}>
+      <Text style={{ color: "#E3EBCF", fontSize: 11, letterSpacing: 2, fontWeight: "700" }}>YOUR FIRST MEMORY WALK</Text>
+      <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
+        <Text style={{ color: C.paper, fontFamily: "QuasarGrotesk", fontSize: 28, lineHeight: 34, flex: 1 }}>
+          Give an idea{`\n`}somewhere to live.
+        </Text>
+        <Animated.View style={{ transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }] }}>
+          <View style={{ width: 39, height: 39, borderWidth: 1, borderColor: C.yellow, borderRadius: 20, justifyContent: "center", alignItems: "center" }}>
+            <View style={{ width: 11, height: 11, borderRadius: 6, backgroundColor: C.yellow }} />
           </View>
-          <View
-            style={{
-              backgroundColor: "rgba(24,48,36,0.9)",
-              borderRadius: 22,
-              paddingHorizontal: 17,
-              paddingVertical: 14,
-              gap: 4,
-            }}
-          >
-            <Text style={{ color: C.paper, fontSize: 23, lineHeight: 28, fontWeight: "600" }}>
-              Open the door. Keep the idea.
-            </Text>
-            <Text style={{ color: "#DFE9D7", fontSize: 13, lineHeight: 18 }}>
-              Stories, places, and pictures built for recall.
-            </Text>
-          </View>
-        </AnimatedImageBackground>
+        </Animated.View>
       </View>
-    </Animated.View>
+      <Text style={{ color: "#DBE6D6", fontSize: 14, lineHeight: 21 }}>
+        Three familiar places. Three impossible sights. Walk back through them when you want the list again.
+      </Text>
+      <View style={{ height: 34, marginHorizontal: 23 }} accessible={false}>
+        <Svg width="100%" height="100%" viewBox="0 0 300 34" preserveAspectRatio="none">
+          <Path d="M7 22 C65 0 102 30 150 14 S245 2 293 20" fill="none" stroke="#D8BA72" strokeWidth={2} strokeDasharray="4 7" />
+          <Circle cx={7} cy={22} r={5} fill="#F3CF7C" />
+          <Circle cx={150} cy={14} r={5} fill="#F3CF7C" />
+          <Circle cx={293} cy={20} r={5} fill="#F3CF7C" />
+        </Svg>
+      </View>
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        {stops.map((stop) => (
+          <View key={stop.number} style={{ flex: 1, minWidth: 0, backgroundColor: "#F8F5E9", borderRadius: 16, padding: 10, minHeight: 111, gap: 5 }}>
+            <Text style={{ color: "#AD7B36", fontSize: 11, fontWeight: "700" }}>{stop.number}</Text>
+            <Text style={[s.label, { fontSize: 14 }]}>{stop.title}</Text>
+            <Text style={[s.small, { fontSize: 11, lineHeight: 15 }]}>{stop.clue}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
   );
 }
