@@ -35,7 +35,7 @@ Official guidance requires a real RevenueCat-powered purchase or ads integration
 | Mobile app with a valid package ID | Expo app, Android package `com.reyaattri.quasar` | Ready |
 | RevenueCat SDK integrated | `react-native-purchases` and entitlement logic in `src/lib/services.ts` | Implemented |
 | Real purchase or RevenueCat Ads | Offering, purchase, restore, and `quasar_pro` checks | **Needs store products, RevenueCat keys, and sandbox verification** |
-| Public Next Gen source repository | This complete repository | **Owner must make the GitHub repository public before submission** |
+| Public Next Gen source repository | This complete repository | **Ready — repository is public** |
 | Demo video | `docs/quasar-demo.webm` | Ready; record a final build after purchase verification |
 | Icon and screenshots | `assets/icon.png` and mobile captures in `docs/` | Ready; refresh final store captures after release build |
 | Privacy, terms, and support | `public/privacy.html`, `public/terms.html`, `public/support.html` | Implemented in the web export |
