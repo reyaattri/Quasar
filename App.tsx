@@ -1,5 +1,6 @@
 import { ProgressMobile } from "./src/components/ProgressMobile";
 import { WelcomeScene } from "./src/components/WelcomeScene";
+import { Reveal, Pulse } from "./src/components/Reveal";
 import { QuasarMark } from "./src/components/QuasarMark";
 import { ToolkitIcon } from "./src/components/ToolkitIcon";
 import { ToolkitConversation } from "./src/features/ToolkitConversation";
@@ -496,53 +497,101 @@ function Quasar() {
             )}
           </View>
         </View>
-        <View style={[a.hero, wide && { flexDirection: "row" }]}>
-          <View style={{ flex: 1, gap: 15, padding: 24 }}>
-            <Tag color="#D4DFB9">CONTINUE LEARNING</Tag>
-            <Text style={[s.h2, { fontSize: 30, lineHeight: 35 }]}>
-              {cont.id === "market" ? "Your vocabulary sketchbook" : cont.title}
-            </Text>
-            <Text style={[s.body, { color: C.ink }]}>
-              {n
-                ? n +
-                  ` of ${deck.length} words recalled. Pick up where you left off.`
-                : "Learn five illustrated words, then use them in context."}
-            </Text>
-            <Button icon="arrow" onPress={() => openScene(cont.id)}>
-              {n ? "Continue learning" : "Start exploring"}
-            </Button>
-          </View>
-          <Image
-            source={
-              cont.id === "market"
-                ? require("./assets/vocabulary-sketchbook-transparent.png")
-                : art[cont.id as keyof typeof art][p.profile.style]
-            }
-            style={
-              wide
-                ? { width: "45%", height: "100%", minHeight: 255 }
-                : { width: "100%", height: 205 }
-            }
-            resizeMode={cont.id === "market" ? "contain" : "cover"}
-          />
-        </View>
-        <View style={a.statsRow}>
-          {[
-            [String(due.length), "ready to review", "cards"],
-            [
-              String(streak(p)) + " day" + (streak(p) === 1 ? "" : "s"),
-              "learning streak",
-              "flame",
-            ],
-            [String(mastered), "concepts recalled", "leaf"],
-          ].map(([num, label, icon]) => (
-            <View key={label} style={a.stat}>
-              <Icon name={icon} size={20} />
-              <Text style={a.statNumber}>{num}</Text>
-              <Text style={s.small}>{label}</Text>
+        <Reveal>
+          <View style={[a.hero, wide && { flexDirection: "row" }]}>
+            <View style={{ flex: 1, gap: 15, padding: 24 }}>
+              <Tag color="#D4DFB9">CONTINUE LEARNING</Tag>
+              <Text style={[s.h2, { fontSize: 30, lineHeight: 35 }]}>
+                {cont.id === "market" ? "Your vocabulary sketchbook" : cont.title}
+              </Text>
+              <Text style={[s.body, { color: C.ink }]}>
+                {n
+                  ? n +
+                    ` of ${deck.length} words recalled. Pick up where you left off.`
+                  : "Learn five illustrated words, then use them in context."}
+              </Text>
+              <Button icon="arrow" onPress={() => openScene(cont.id)}>
+                {n ? "Continue learning" : "Start exploring"}
+              </Button>
             </View>
-          ))}
-        </View>
+            <Image
+              source={
+                cont.id === "market"
+                  ? require("./assets/vocabulary-sketchbook-transparent.png")
+                  : art[cont.id as keyof typeof art][p.profile.style]
+              }
+              style={
+                wide
+                  ? { width: "45%", height: "100%", minHeight: 255 }
+                  : { width: "100%", height: 205 }
+              }
+              resizeMode={cont.id === "market" ? "contain" : "cover"}
+            />
+          </View>
+        </Reveal>
+        <Reveal delay={90}>
+          <View style={a.statsRow}>
+            {[
+              [
+                String(due.length),
+                due.length ? "ready to review" : "all caught up",
+                "cards",
+              ],
+              [
+                String(streak(p)) + " day" + (streak(p) === 1 ? "" : "s"),
+                "learning streak",
+                "flame",
+              ],
+              [String(mastered), "concepts recalled", "leaf"],
+            ].map(([num, label, icon]) => (
+              <View key={label} style={a.stat}>
+                <Icon name={icon} size={20} />
+                <Text style={a.statNumber}>{num}</Text>
+                <Text style={s.small}>{label}</Text>
+              </View>
+            ))}
+          </View>
+        </Reveal>
+        <Reveal delay={160}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={pro ? "Manage Quasar Plus" : "Explore Quasar Plus"}
+            onPress={() => nav("paywall")}
+          >
+            <Card
+              style={{
+                backgroundColor: C.green,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 16,
+              }}
+            >
+              <View
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  backgroundColor: "rgba(242,203,108,0.16)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Icon name="spark" size={22} color={C.yellow} />
+              </View>
+              <View style={{ flex: 1, gap: 3 }}>
+                <Text style={[s.h3, { color: C.paper }]}>
+                  {pro ? "Quasar Plus is active" : "Meet Quasar Plus"}
+                </Text>
+                <Text style={[s.small, { color: "#C8D3C0" }]}>
+                  {pro
+                    ? "Manage your membership and personalized stories."
+                    : "Personalized mnemonic stories built around your interests."}
+                </Text>
+              </View>
+              <Icon name="arrow" size={18} color={C.paper} />
+            </Card>
+          </Pressable>
+        </Reveal>
         <View style={s.section}>
           <Tag color={C.yellow}>A FRESH WAY TO LEARN</Tag>
           <Text style={s.h2}>Small sessions. Big imagination.</Text>
@@ -798,45 +847,62 @@ function Quasar() {
           "Bring a memory back just before it fades.",
         )}
         {!reviewStarted ? (
-          <>
-            <Card style={{ backgroundColor: C.sage }}>
-              <Icon name="cards" size={36} />
-              <Text style={s.h2}>
-                {due.length
-                  ? due.length + " memories are ready."
-                  : "You’re all caught up."}
-              </Text>
+          <Reveal>
+            <View style={{ gap: 24 }}>
+              <Card style={{ backgroundColor: C.sage }}>
+                <Icon name="cards" size={36} />
+                <Text style={s.h2}>
+                  {due.length
+                    ? due.length + " memories are ready."
+                    : "You’re all caught up."}
+                </Text>
+                <Text style={s.body}>
+                  {due.length
+                    ? "Your review timing is personalized with spaced repetition."
+                    : "Practise the vocabulary deck or try a memory challenge while your next review grows."}
+                </Text>
+                <Button disabled={!due.length} onPress={() => startReview(due)}>
+                  Start due reviews
+                </Button>
+              </Card>
+              <Button
+                secondary
+                onPress={() => startReview(allFacts.map((f) => f.id))}
+              >
+                Practice all 10 cards
+              </Button>
+              <Button secondary onPress={() => nav("library")}>
+                Discover a new memory challenge
+              </Button>
+            </View>
+          </Reveal>
+        ) : !f ? (
+          <Reveal>
+            <Card style={{ alignItems: "center", padding: 35 }}>
+              <Pulse>
+                <View
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 32,
+                    backgroundColor: C.sage,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Icon name="check" size={34} color={C.green} />
+                </View>
+              </Pulse>
+              <Text style={s.h2}>Review complete.</Text>
               <Text style={s.body}>
-                {due.length
-                  ? "Your review timing is personalized with spaced repetition."
-                  : "Practise the vocabulary deck or try a memory challenge while your next review grows."}
+                You reviewed {reviewQueue.length} cards. Your next reviews are
+                scheduled.
               </Text>
-              <Button disabled={!due.length} onPress={() => startReview(due)}>
-                Start due reviews
+              <Button onPress={() => setReviewStarted(false)}>
+                Back to review
               </Button>
             </Card>
-            <Button
-              secondary
-              onPress={() => startReview(allFacts.map((f) => f.id))}
-            >
-              Practice all 10 cards
-            </Button>
-            <Button secondary onPress={() => nav("library")}>
-              Discover a new memory challenge
-            </Button>
-          </>
-        ) : !f ? (
-          <Card style={{ alignItems: "center", padding: 35 }}>
-            <Icon name="check" size={50} />
-            <Text style={s.h2}>Review complete.</Text>
-            <Text style={s.body}>
-              You reviewed {reviewQueue.length} cards. Your next reviews are
-              scheduled.
-            </Text>
-            <Button onPress={() => setReviewStarted(false)}>
-              Back to review
-            </Button>
-          </Card>
+          </Reveal>
         ) : (
           <>
             <View style={s.between}>
@@ -850,6 +916,7 @@ function Quasar() {
                 <Text style={s.link}>End session</Text>
               </Pressable>
             </View>
+            <Reveal key={f.id}>
             <Card style={{ minHeight: 360, justifyContent: "center" }}>
               <Text style={a.eyebrow}>RECALL BEFORE REVEALING</Text>
               <Text style={[s.title, { textAlign: "center" }]}>{f.word}</Text>
@@ -886,6 +953,7 @@ function Quasar() {
                 </Button>
               )}
             </Card>
+            </Reveal>
             <Text style={s.small}>
               Be honest with yourself. “Need another look” brings this card back
               sooner.
@@ -913,47 +981,51 @@ function Quasar() {
           "Your growing collection.",
           "Every return makes a memory a little easier to find.",
         )}
-        <ProgressMobile
-          mastered={mastered}
-          total={allFacts.length}
-          accuracy={p.reviews.length ? accuracy : null}
-          streak={streak(p)}
-          days={days.map((d) => {
-            const reviews = p.reviews.filter(
-              (r) => localDay(new Date(r.at)) === localDay(d),
-            );
-            return {
-              label: d.toLocaleDateString(undefined, { weekday: "narrow" }),
-              date: d.toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-              }),
-              count: reviews.length,
-              correct: reviews.filter((r) => r.correct).length,
-            };
-          })}
-          due={due.length}
-          onReview={() => nav(due.length ? "review" : "library")}
-        />
+        <Reveal>
+          <ProgressMobile
+            mastered={mastered}
+            total={allFacts.length}
+            accuracy={p.reviews.length ? accuracy : null}
+            streak={streak(p)}
+            days={days.map((d) => {
+              const reviews = p.reviews.filter(
+                (r) => localDay(new Date(r.at)) === localDay(d),
+              );
+              return {
+                label: d.toLocaleDateString(undefined, { weekday: "narrow" }),
+                date: d.toLocaleDateString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                }),
+                count: reviews.length,
+                correct: reviews.filter((r) => r.correct).length,
+              };
+            })}
+            due={due.length}
+            onReview={() => nav(due.length ? "review" : "library")}
+          />
+        </Reveal>
         <Text style={s.h2}>Inside your collection</Text>
-        {scenes.map((sc) => (
-          <Card key={sc.id}>
-            <View style={s.between}>
-              <Text style={[s.h3, { flex: 1 }]}>{sc.title}</Text>
-              <Text style={s.label}>
-                {sc.facts.filter((f) => p.mastered[f.id]).length}/
-                {sc.facts.length}
+        {scenes.map((sc, i) => (
+          <Reveal key={sc.id} delay={60 + i * 60}>
+            <Card>
+              <View style={s.between}>
+                <Text style={[s.h3, { flex: 1 }]}>{sc.title}</Text>
+                <Text style={s.label}>
+                  {sc.facts.filter((f) => p.mastered[f.id]).length}/
+                  {sc.facts.length}
+                </Text>
+              </View>
+              <Text style={s.small}>
+                {p.applications[sc.id]
+                  ? "Application reflection completed"
+                  : "Application reflection still to come"}
               </Text>
-            </View>
-            <Text style={s.small}>
-              {p.applications[sc.id]
-                ? "Application reflection completed"
-                : "Application reflection still to come"}
-            </Text>
-            <Button secondary onPress={() => openScene(sc.id)}>
-              Open vocabulary deck
-            </Button>
-          </Card>
+              <Button secondary onPress={() => openScene(sc.id)}>
+                Open vocabulary deck
+              </Button>
+            </Card>
+          </Reveal>
         ))}
       </View>
     );
@@ -1159,57 +1231,148 @@ function Quasar() {
   );
   const paywall = () => (
     <View style={{ gap: 24 }}>
-      {heading(
-        "QUASAR PLUS",
-        "Make learning personal.",
-        "Support Quasar and unlock personalized mnemonic generation.",
-      )}
-      <Card style={{ backgroundColor: C.sage }}>
-        <Icon name="spark" size={48} />
-        <Text style={s.h2}>
-          {pro ? "Your Plus membership is active." : "Make the story yours."}
-        </Text>
-        {[
-          "Personalized stories built around your interests",
-          "Optional illustrations for personalized stories",
-          "Core scenes, reviews, and progress always available",
-        ].map((x) => (
-          <View key={x} style={s.row}>
-            <Icon name="check" size={18} />
-            <Text style={[s.body, { flex: 1, color: C.ink }]}>{x}</Text>
-          </View>
-        ))}
-      </Card>
-      {!purchaseReady ? (
-        <Card>
-          <Text style={s.h3}>Subscriptions are not available here yet.</Text>
-          <Text style={s.body}>
-            Keep exploring the complete learning demo. Purchases will open once
-            Quasar is connected to the app store.
-          </Text>
-        </Card>
-      ) : packages.length ? (
-        packages.map((pack) => (
-          <Card key={pack.identifier}>
-            <Text style={s.h3}>{pack.product.title}</Text>
-            <Text style={s.body}>{pack.product.description}</Text>
-            <Button
-              disabled={
-                busy ||
-                !process.env.EXPO_PUBLIC_PRIVACY_URL ||
-                !process.env.EXPO_PUBLIC_TERMS_URL
-              }
-              onPress={() => pay(pack)}
+      <Reveal>
+        <View
+          style={{
+            backgroundColor: "#254633",
+            borderRadius: 30,
+            padding: 26,
+            overflow: "hidden",
+            gap: 16,
+          }}
+        >
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              top: -70,
+              right: -70,
+              width: 190,
+              height: 190,
+              borderRadius: 999,
+              backgroundColor: "rgba(242,203,108,0.09)",
+            }}
+          />
+          <View style={s.between}>
+            <Text
+              style={{
+                color: "#E3EBCF",
+                fontSize: 11,
+                letterSpacing: 2,
+                fontWeight: "700",
+              }}
             >
-              {pack.product.priceString} · {pack.packageType.toLowerCase()}
-            </Button>
-          </Card>
-        ))
-      ) : (
-        <Text style={s.body}>
-          No subscription offers are available. Please try again later.
-        </Text>
-      )}
+              QUASAR PLUS
+            </Text>
+            <Pulse>
+              <View
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  borderWidth: 1,
+                  borderColor: C.yellow,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Icon name="spark" size={22} color={C.yellow} />
+              </View>
+            </Pulse>
+          </View>
+          <Text
+            style={{
+              color: C.paper,
+              fontFamily: "QuasarGrotesk",
+              fontSize: 30,
+              lineHeight: 36,
+            }}
+          >
+            {pro ? "Your Plus membership\nis active." : "Make the story\nyours."}
+          </Text>
+          <Text style={{ color: "#DBE6D6", fontSize: 15, lineHeight: 22 }}>
+            {pro
+              ? "Thank you for supporting Quasar. Personalized stories are unlocked."
+              : "Support Quasar and unlock personalized mnemonic generation, built around what you already know."}
+          </Text>
+        </View>
+      </Reveal>
+      <Reveal delay={90}>
+        <View style={[s.row, { flexWrap: "wrap" }]}>
+          {[
+            ["spark", "Personalized stories", "Built around your interests"],
+            ["leaf", "Optional illustrations", "For your personalized stories"],
+            ["check", "Core content stays free", "Scenes, review and progress"],
+          ].map(([icon, title, body]) => (
+            <View key={title} style={{ flex: 1, minWidth: 150 }}>
+              <Card style={{ gap: 8, padding: 16 }}>
+                <Icon name={icon} size={20} />
+                <Text style={[s.label, { fontSize: 13 }]}>{title}</Text>
+                <Text style={[s.small, { fontSize: 11, lineHeight: 15 }]}>
+                  {body}
+                </Text>
+              </Card>
+            </View>
+          ))}
+        </View>
+      </Reveal>
+      <Reveal delay={160}>
+        {!purchaseReady ? (
+          <View
+            style={{
+              borderWidth: 1,
+              borderColor: C.line,
+              borderStyle: "dashed",
+              borderRadius: 26,
+              padding: 22,
+              gap: 10,
+              alignItems: "flex-start",
+            }}
+          >
+            <Icon name="clock" size={22} />
+            <Text style={s.h3}>Purchases open once Plus is connected.</Text>
+            <Text style={s.body}>
+              Keep exploring the complete learning demo. This screen will show
+              real pricing the moment Quasar is connected to the app store.
+            </Text>
+          </View>
+        ) : packages.length ? (
+          <View style={{ gap: 12 }}>
+            {packages.map((pack) => {
+              const featured = pack.packageType === "ANNUAL";
+              return (
+                <Card
+                  key={pack.identifier}
+                  style={
+                    featured
+                      ? { backgroundColor: C.sage, borderColor: C.green }
+                      : undefined
+                  }
+                >
+                  {featured && <Tag color={C.yellow}>BEST VALUE</Tag>}
+                  <Text style={s.h3}>{pack.product.title}</Text>
+                  <Text style={s.body}>{pack.product.description}</Text>
+                  <Button
+                    secondary={!featured}
+                    disabled={
+                      busy ||
+                      !process.env.EXPO_PUBLIC_PRIVACY_URL ||
+                      !process.env.EXPO_PUBLIC_TERMS_URL
+                    }
+                    onPress={() => pay(pack)}
+                  >
+                    {pack.product.priceString} · {pack.packageType.toLowerCase()}
+                  </Button>
+                </Card>
+              );
+            })}
+          </View>
+        ) : (
+          <Text style={s.body}>
+            No subscription offers are available. Please try again later.
+          </Text>
+        )}
+      </Reveal>
       <Button secondary disabled={busy || !purchaseReady} onPress={() => pay()}>
         Restore purchases
       </Button>
@@ -1355,54 +1518,67 @@ function Quasar() {
                 onboarding === 0 ? (
                   <View style={{ gap: 24 }}>
                     <WelcomeScene />
-                    {heading(
-                      "WELCOME TO QUASAR",
-                      "Learn it once. Remember it longer.",
-                      "Turn what you need to know into something you can picture. Learn through illustrated stories, then practice recalling and applying the ideas.",
-                    )}
-                    <Text style={s.label}>What are you curious about?</Text>
-                    <View style={s.row}>
-                      {[
-                        "SAT vocabulary",
-                        "Memory skills",
-                        "Biology foundations",
-                      ].map((sub) => (
-                        <Pressable
-                          accessibilityRole="button"
-                          accessibilityState={{
-                            selected: p.profile.subjects.includes(sub),
-                          }}
-                          key={sub}
-                          onPress={() =>
-                            updateProfile(
-                              "subjects",
-                              p.profile.subjects.includes(sub)
-                                ? p.profile.subjects.filter((x) => x !== sub)
-                                : [...p.profile.subjects, sub],
-                            )
-                          }
-                          style={[
-                            a.styleChoice,
-                            p.profile.subjects.includes(sub) && {
-                              backgroundColor: C.sage,
-                              borderColor: C.green,
-                            },
-                          ]}
+                    <Reveal delay={80}>
+                      {heading(
+                        "WELCOME TO QUASAR",
+                        "Learn it once. Remember it longer.",
+                        "Turn what you need to know into something you can picture. Learn through illustrated stories, then practice recalling and applying the ideas.",
+                      )}
+                    </Reveal>
+                    <Reveal delay={150}>
+                      <Text style={s.label}>What are you curious about?</Text>
+                    </Reveal>
+                    <Reveal delay={200}>
+                      <View style={s.row}>
+                        {[
+                          "SAT vocabulary",
+                          "Memory skills",
+                          "Biology foundations",
+                        ].map((sub) => {
+                          const active = p.profile.subjects.includes(sub);
+                          return (
+                            <Pressable
+                              accessibilityRole="button"
+                              accessibilityState={{ selected: active }}
+                              key={sub}
+                              onPress={() =>
+                                updateProfile(
+                                  "subjects",
+                                  active
+                                    ? p.profile.subjects.filter((x) => x !== sub)
+                                    : [...p.profile.subjects, sub],
+                                )
+                              }
+                              style={({ pressed }) => [
+                                a.styleChoice,
+                                active && {
+                                  backgroundColor: C.sage,
+                                  borderColor: C.green,
+                                },
+                                pressed && { opacity: 0.8, transform: [{ scale: 0.97 }] },
+                              ]}
+                            >
+                              {active && <Icon name="check" size={15} color={C.green} />}
+                              <Text style={s.label}>{sub}</Text>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    </Reveal>
+                    <Reveal delay={260}>
+                      <View style={{ gap: 24 }}>
+                        <Button
+                          icon="arrow"
+                          disabled={!p.profile.subjects.length}
+                          onPress={() => setOnboarding(1)}
                         >
-                          <Text style={s.label}>{sub}</Text>
-                        </Pressable>
-                      ))}
-                    </View>
-                    <Button
-                      icon="arrow"
-                      disabled={!p.profile.subjects.length}
-                      onPress={() => setOnboarding(1)}
-                    >
-                      Let’s get curious
-                    </Button>
-                    <Text style={[s.small, { textAlign: "center" }]}>
-                      No account needed. Start with six tiny memory lessons.
-                    </Text>
+                          Let’s get curious
+                        </Button>
+                        <Text style={[s.small, { textAlign: "center" }]}>
+                          No account needed. Start with six tiny memory lessons.
+                        </Text>
+                      </View>
+                    </Reveal>
                   </View>
                 ) : onboarding === 1 ? (
                   <View style={{ gap: 20 }}>

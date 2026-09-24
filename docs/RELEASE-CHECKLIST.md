@@ -12,6 +12,7 @@
 - [x] Account deletion UI and authenticated deletion function are included.
 - [x] Public privacy, terms, and support pages are included in the web export.
 - [x] Android native project generation succeeds.
+- [x] Repository includes an open-source `LICENSE` (MIT) at the root, required for the Next Gen Award submission.
 
 ## Required before a production claim
 

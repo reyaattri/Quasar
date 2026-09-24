@@ -1,11 +1,11 @@
-# Next Gen readiness — 20 September 2026
+# Next Gen readiness — 23 September 2026
 
-Official references: https://www.shipaton.com/next-gen and https://revenuecat-shipaton-2026.devpost.com/rules (sections 3, 4 and 6). Deadline: 30 September 2026, 11:45 pm PDT. Check the live rules before submitting.
+Official references: https://www.shipaton.com/next-gen and https://revenuecat-shipaton-2026.devpost.com/rules (sections 3, 4 and 6). Deadline: 30 September 2026, 11:45 pm PDT — **7 days from this update**. Check the live rules before submitting.
 
 ## Required before submission
 
 - Confirm active student status, age 13+, qualifying Devpost academic email, residence eligibility, and guardian consent when applicable.
-- Publish the complete source, assets, setup instructions and an open-source license. GitHub authentication is currently unresolved. Decide on a code license; third-party media retains its original license.
+- [x] Publish the complete source, assets, setup instructions and an open-source license. `LICENSE` (MIT) is now included at the repository root and referenced from `package.json` and `README.md`. Third-party media (illustrations, audio, fonts) keeps its own provenance in `docs/ARTWORK.md` and is not relicensed by the MIT grant.
 - Verify RevenueCat monetization on Android/iOS. The native SDK and entitlement handling exist, but configured offerings and an actual sandbox purchase/restore have not been demonstrated.
 - Produce a public YouTube/Vimeo demonstration under two minutes showing the target-device app, plus a feature description.
 - Include a 1024 × 1024 icon and a frameless 1179 × 2556 screenshot.
