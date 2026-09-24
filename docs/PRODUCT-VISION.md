@@ -1,0 +1,104 @@
+# Quasar product vision
+
+**Learn it once. Remember it longer.**
+
+Quasar turns what a student is learning into a connected, personal memory universe. Learners explore it through illustrated stories and walkable worlds, teach the ideas back, apply them to unfamiliar problems, and come back at exactly the points where their understanding breaks.
+
+Quasar shouldn't become a generic AI study planner with a few memory games attached. Every creative experience in the app has to lead somewhere: to recalling, explaining or applying the idea without help.
+
+## The six pillars
+
+| Pillar | The student's question | Status in this repository |
+| --- | --- | --- |
+| **Today** | What should I study, and why? | **Built for biology.** A rule-based planner ranks tasks with the priority formula below, fits them to 5, 15 or 30 minutes, respects prerequisites, takes an optional exam date into account, explains every pick and lets the student swap any task. |
+| **Memory Worlds** | How do I make this unforgettable? | **Built.** Walkable dojo, ruins and neon palaces with stable room anchors; illustrated biology, SAT, calculus, Korean and π courses. *Planned:* worlds generated from uploaded material, and persistent characters shared across subjects. |
+| **Teach-Back** | Can I explain it without help? | **Built (typed).** The lesson is hidden and the student writes an explanation. Quasar checks it against three authored key ideas, asks a *why* question about the first missing one instead of revealing it, allows one retry, then asks a follow-up question to defend it. *Planned:* AI-graded explanations, voice, and diagram reconstruction. |
+| **Case Lab** | Can I use it to solve a problem? | **Partial.** Each biology lesson ends with an original two-attempt field case, and every attempt is logged. The Why Ladder's final rung is an unfamiliar application question. *Planned:* multi-step simulations. |
+| **Memory Debugger** | Why do I keep getting this wrong? | **Built.** Error Memory surfaces any concept missed twice, names the exact wrong answer the student keeps choosing next to what's true, offers alternative explanations (saving the one that helped) and schedules a re-check. It only resolves after a later correct answer given without help. |
+| **Ready** | What can I genuinely remember and use? | **Built.** Separate meters for factual recall, conceptual understanding and unfamiliar problem-solving, computed only from the learner's own answers, alongside open and repaired mistakes. No score prediction. |
+
+The Why Ladder (the "Why Engine") runs across all three biology lessons: *What happens → Why → How it works → What if it fails → Use it somewhere new.* Quasar records the rung where understanding breaks.
+
+## The learning journey
+
+1. **Start without friction.** No account needed: pick a subject and begin.
+2. **Make it memorable.** Illustrated scenes, memory palaces and strange, specific cues.
+3. **Explain it yourself.** Teach-Back and the Why Ladder.
+4. **Apply it.** Field cases and new-situation questions.
+5. **Repair, recall, retain.** Error Memory, FSRS-scheduled review, and a Today plan that brings back what's slipping.
+
+## How Today decides
+
+Each concept gets a priority score:
+
+```
+P = 100 × (0.25·K + 0.25·R + 0.20·E + 0.20·I + 0.10·U)
+```
+
+| Factor | Meaning | How it's measured today |
+| --- | --- | --- |
+| K: knowledge gap | Recent evidence the concept isn't mastered | 1 when there's an unresolved recurring error; otherwise 1 minus the share of the last three attempts answered correctly without help; 0.5 when the concept hasn't been tried yet |
+| R: review urgency | Due for retrieval practice | FSRS due date; grows as it becomes overdue |
+| E: exam proximity | Time left before the exam | `1 − days/30` once an exam is set |
+| I: importance | Course relevance | Authored per concept |
+| U: prerequisite value | Unlocks later topics | Higher for earlier lessons |
+
+These weights are starting assumptions, not tuned parameters. On top of the score:
+- One slot is reserved for a due review.
+- A plan holds at most two tasks of the same type.
+- No Case or Why task appears before the lesson's concepts have been tested.
+- Every task shows why it was chosen.
+
+Implementation: `src/lib/planner.ts`, tested in `tests/learning.test.ts`.
+
+## Design principles
+
+- **Accuracy before memorability.** An inaccurate mnemonic makes misinformation memorable. The real explanation always sits next to the cue.
+- **Honest measurement.** Answers given with a hint don't count as mastered. Keyword checks are labelled as keyword checks, not AI grading. Empty states say "not tested yet" instead of inventing numbers.
+- **Independence over dependence.** Hints come as questions first. Asking for the full answer is always possible, but it's recorded as help.
+- **Welcoming, not punishing.** A missed day doesn't erase progress; Today simply rebuilds a plan that fits the time available.
+- **Speed.** Reviews and plans are computed on the device and are ready instantly; nothing blocks a study session while waiting on a network.
+
+## Roadmap
+
+**Phase 1: prove the core loop (in this repository).** Frictionless onboarding, memory worlds, biology lessons, Teach-Back, the Why Ladder, Error Memory, Today and Ready.
+
+**Phase 2: adaptive learning.**
+- Upload and source grounding: PDFs, slides and notes turned into concepts, each linked to its source.
+- AI-graded Teach-Back against explicit rubrics.
+- Alternative mnemonics compared over delayed tests.
+- More field cases.
+
+**Phase 3: depth and exam preparation.**
+- Foundation, exam-depth and advanced-reasoning modes.
+- Syllabus-aligned tracks.
+- Recovery Mode for learners who fall behind.
+- A fuller Ready dashboard with delayed-retention results.
+
+**Phase 4: the wider universe.**
+- Connected worlds across subjects and personal memory palaces.
+- Art Style Studio: storybook and doodle styles exist today; pixel, animated and 3D are planned.
+- A Memory Garden that grows with demonstrated mastery, plus optional social sharing.
+- *Quasar Originals*, short illustrated story episodes such as *The Secrets of Cell City*.
+
+## How we'll know it works
+
+Planned validation:
+1. Student interviews.
+2. A small pilot.
+3. A comparison between an ordinary study method, Quasar without memory worlds, and full Quasar.
+
+Measures:
+- unaided recall after 7 and 30 days
+- performance on unfamiliar questions
+- recurring-mistake rates
+- study time
+- retention
+- willingness to pay
+
+The goal is to learn whether each part improves learning, not just whether it looks appealing.
+
+## Business model
+
+- **Free:** the core lessons, memory worlds, reviews, Teach-Back, the Why Ladder, Error Memory and Ready. Learning is never paywalled.
+- **Quasar Plus:** personalized mnemonic stories and illustrations generated from the learner's own interests, verified server-side through RevenueCat's `quasar_pro` entitlement. Prices come from the store, and willingness to pay is something to test, not assume.

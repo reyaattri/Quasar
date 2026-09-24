@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+test.use({ reducedMotion: "reduce" });
 test("new learner completes course, recalls a scene, reflects, and persists mastery", async ({
   page,
 }) => {
@@ -12,6 +13,7 @@ test("new learner completes course, recalls a scene, reflects, and persists mast
   await expect(
     page.getByRole("heading", { name: "Hello, Sam." }),
   ).toBeVisible();
+  await page.waitForFunction(() => Array.from(document.images).every((i) => i.complete));
   await page.screenshot({ path: "docs/home-mobile.png", fullPage: true });
   await page.getByRole("button", { name: "Start exploring" }).click();
   await expect(
@@ -33,7 +35,7 @@ test("new learner completes course, recalls a scene, reflects, and persists mast
   await page.getByRole("button", { name: "Open settings" }).click();
   await page.getByRole("button", { name: "Explore Quasar Plus" }).click();
   await expect(
-    page.getByText("Subscriptions are not available here yet."),
+    page.getByText("Purchases open once Plus is connected."),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Restore purchases" }),

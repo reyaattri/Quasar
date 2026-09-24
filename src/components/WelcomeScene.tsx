@@ -81,7 +81,16 @@ export function WelcomeScene() {
             </Text>
           </MotiView>
           {count > 1 && (
-            <View style={{ flexDirection: "row", gap: 6 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 6,
+                backgroundColor: "rgba(27,46,32,0.72)",
+                borderRadius: 999,
+                paddingHorizontal: 10,
+                paddingVertical: 8,
+              }}
+            >
               {HERO.captions.map((c, i) => (
                 <View
                   key={c}

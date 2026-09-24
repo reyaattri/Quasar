@@ -13,6 +13,8 @@
 - [x] Public privacy, terms, and support pages are included in the web export.
 - [x] Android native project generation succeeds.
 - [x] Repository includes an open-source `LICENSE` (MIT) at the root, required for the Next Gen Award submission.
+- [x] The biology learning loop runs end to end in the web build at phone size: Today plan → lesson recall → Error Memory → Teach-Back → Why Ladder → field case → Ready. State survives reload. Unit tests cover the planner, Error Memory, Ready and the rubric.
+- [x] Production web export builds with Reanimated 4 and Moti.
 
 ## Required before a production claim
 
@@ -32,6 +34,9 @@
 - [ ] Verify Claude and Replicate live outputs for accuracy and character consistency.
 - [ ] Review public repository contents and third-party dependency licenses.
 - [ ] Confirm current competition rules and academic-email eligibility with the organizer.
-- [ ] Record/review a demo of at most two minutes, then submit through the owner’s account.
+- [ ] Verify Reanimated/Moti motion and reduced-motion behaviour on a physical Android or iOS device.
+- [ ] Have someone with biology expertise review the new Teach-Back key ideas and Why Ladder questions in `src/data/biologyUnderstanding.ts`.
+- [ ] Generate the new landing hero from `docs/HERO-IMAGE-PROMPT.md` and swap it in.
+- [ ] Record/review a demo of at most two minutes (script in `docs/DEMO.md`), then submit through the owner’s account.
 
 No sandbox transaction, academic-email verification, store release or competition submission is asserted complete without evidence.
