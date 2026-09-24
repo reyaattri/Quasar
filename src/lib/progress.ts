@@ -20,6 +20,16 @@ export type Review = {
   stability: number;
   difficulty: number;
 };
+export type Attempt = {
+  conceptId: string;
+  mode: "recall" | "teach" | "why" | "case";
+  correct: boolean;
+  hinted: boolean;
+  at: string;
+  chose?: string;
+  truth?: string;
+  rung?: number;
+};
 export type Progress = {
   version: 1;
   onboarded: boolean;
@@ -40,6 +50,9 @@ export type Progress = {
     phase: "learn" | "context" | "done";
     batches: number[];
   };
+  attempts?: Attempt[];
+  exam?: { label: string; date: string } | null;
+  cues?: Record<string, number>;
 };
 export const initialProgress = (): Progress => ({
   version: 1,
@@ -63,7 +76,7 @@ export const initialProgress = (): Progress => ({
   lastScene: "market",
   analytics: false,
 });
-const scheduler = fsrs({ request_retention: 0.9, enable_fuzz: false });
+export const scheduler = fsrs({ request_retention: 0.9, enable_fuzz: false });
 export function recordReview(
   state: Progress,
   factId: string,
@@ -121,7 +134,9 @@ export function localDay(d: Date) {
   ].join("-");
 }
 export function streak(p: Progress, now = new Date()) {
-  const days = new Set(p.reviews.map((r) => localDay(new Date(r.at))));
+  const days = new Set(
+    [...p.reviews, ...(p.attempts ?? [])].map((r) => localDay(new Date(r.at))),
+  );
   const day = new Date(now);
   if (!days.has(localDay(day))) day.setDate(day.getDate() - 1);
   let n = 0;

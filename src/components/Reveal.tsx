@@ -1,10 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import { AccessibilityInfo, Animated, type ViewStyle } from "react-native";
+import React from "react";
+import { Pressable, View, type ViewStyle, type PressableProps } from "react-native";
+import { MotiView } from "moti";
+import { useReducedMotion } from "react-native-reanimated";
 
-/**
- * Staggered entrance: fades and lifts children in on mount. Delay is in ms.
- * No-ops (renders at rest) when the OS reduce-motion setting is on.
- */
 export function Reveal({
   children,
   delay = 0,
@@ -14,55 +12,20 @@ export function Reveal({
   delay?: number;
   style?: ViewStyle;
 }) {
-  const value = useRef(new Animated.Value(0)).current;
-  const [reduced, setReduced] = useState(false);
-  useEffect(() => {
-    let active = true;
-    AccessibilityInfo.isReduceMotionEnabled().then((r) => {
-      if (!active) return;
-      if (r) {
-        setReduced(true);
-        value.setValue(1);
-        return;
-      }
-      Animated.timing(value, {
-        toValue: 1,
-        duration: 480,
-        delay,
-        useNativeDriver: true,
-      }).start();
-    });
-    return () => {
-      active = false;
-    };
-  }, [value, delay]);
-  if (reduced) return <>{children}</>;
+  const reduced = useReducedMotion();
+  if (reduced) return <View style={style}>{children}</View>;
   return (
-    <Animated.View
-      style={[
-        style,
-        {
-          opacity: value,
-          transform: [
-            {
-              translateY: value.interpolate({
-                inputRange: [0, 1],
-                outputRange: [14, 0],
-              }),
-            },
-          ],
-        },
-      ]}
+    <MotiView
+      style={style}
+      from={{ opacity: 0, translateY: 14 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{ type: "timing", duration: 480, delay }}
     >
       {children}
-    </Animated.View>
+    </MotiView>
   );
 }
 
-/**
- * Gentle continuous scale pulse, for a small highlight icon/badge.
- * No-ops (renders at rest) when the OS reduce-motion setting is on.
- */
 export function Pulse({
   children,
   style,
@@ -70,37 +33,78 @@ export function Pulse({
   children: React.ReactNode;
   style?: ViewStyle;
 }) {
-  const value = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    let animation: Animated.CompositeAnimation | undefined;
-    let active = true;
-    AccessibilityInfo.isReduceMotionEnabled().then((reduced) => {
-      if (!active || reduced) return;
-      animation = Animated.loop(
-        Animated.sequence([
-          Animated.timing(value, { toValue: 1, duration: 1500, useNativeDriver: true }),
-          Animated.timing(value, { toValue: 0, duration: 1500, useNativeDriver: true }),
-        ]),
-      );
-      animation.start();
-    });
-    return () => {
-      active = false;
-      animation?.stop();
-    };
-  }, [value]);
+  const reduced = useReducedMotion();
+  if (reduced) return <View style={style}>{children}</View>;
   return (
-    <Animated.View
-      style={[
-        style,
-        {
-          transform: [
-            { scale: value.interpolate({ inputRange: [0, 1], outputRange: [1, 1.1] }) },
-          ],
-        },
-      ]}
+    <MotiView
+      style={style}
+      from={{ scale: 1 }}
+      animate={{ scale: 1.1 }}
+      transition={{ type: "timing", duration: 1500, loop: true }}
     >
       {children}
-    </Animated.View>
+    </MotiView>
+  );
+}
+
+export function PressableScale({
+  children,
+  style,
+  ...props
+}: Omit<PressableProps, "style" | "children"> & {
+  children: React.ReactNode;
+  style?: ViewStyle | (ViewStyle | false | undefined)[];
+}) {
+  const reduced = useReducedMotion();
+  const [pressed, setPressed] = React.useState(false);
+  return (
+    <Pressable
+      {...props}
+      onPressIn={(e) => {
+        setPressed(true);
+        props.onPressIn?.(e);
+      }}
+      onPressOut={(e) => {
+        setPressed(false);
+        props.onPressOut?.(e);
+      }}
+    >
+      <MotiView
+        style={style}
+        animate={{ scale: pressed && !reduced ? 0.97 : 1 }}
+        transition={{ type: "spring", damping: 18, stiffness: 260 }}
+      >
+        {children}
+      </MotiView>
+    </Pressable>
+  );
+}
+
+export function Meter({
+  value,
+  color,
+  track,
+  height = 8,
+}: {
+  value: number;
+  color: string;
+  track: string;
+  height?: number;
+}) {
+  const reduced = useReducedMotion();
+  const pct = Math.max(0, Math.min(1, value)) * 100;
+  return (
+    <View
+      accessibilityRole="progressbar"
+      accessibilityValue={{ min: 0, max: 100, now: Math.round(pct) }}
+      style={{ height, borderRadius: height, backgroundColor: track, overflow: "hidden" }}
+    >
+      <MotiView
+        style={{ height, borderRadius: height, backgroundColor: color }}
+        from={{ width: "0%" }}
+        animate={{ width: `${pct}%` }}
+        transition={reduced ? { type: "timing", duration: 0 } : { type: "timing", duration: 700 }}
+      />
+    </View>
   );
 }

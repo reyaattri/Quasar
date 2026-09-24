@@ -7,6 +7,9 @@ import { MedicalStudio } from "../components/MedicalStudio";
 import { SuccessBurst } from "../components/SuccessBurst";
 import { medicalModules, type MedicalModule } from "../data/medicalLessons";
 import { TranscriptionAct } from "./TranscriptionAct";
+import { caseId, conceptId } from "../lib/learning";
+import type { Attempt } from "../lib/progress";
+type Log = (a: Omit<Attempt, "at">) => void;
 const sheets = [
   require("../../assets/bio-cells-world.png"),
   require("../../assets/bio-dna-detectives.png"),
@@ -161,14 +164,20 @@ function Picture({
 export function MedicineLesson({
   recalled,
   onRecall,
+  onAttempt,
+  onNext,
+  start: entry,
 }: {
   recalled: number[];
   onRecall: (index: number, correct: boolean) => void;
+  onAttempt: Log;
+  onNext: (kind: "teach" | "why", module: number) => void;
+  start?: { module: number; phase: "cards" | "case" };
 }) {
-  const [selected, setSelected] = useState<number | null>(null),
+  const [selected, setSelected] = useState<number | null>(entry?.module ?? null),
     [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<"cards" | "scene" | "recall" | "case">(
-    "cards",
+    entry?.phase ?? "cards",
   );
   const [testing, setTesting] = useState(false),
     [answer, setAnswer] = useState<number | null>(null);
@@ -245,6 +254,17 @@ export function MedicineLesson({
         <PatientCase
           key={lesson.id}
           lesson={lesson}
+          onTry={(correct, second, chose) =>
+            onAttempt({
+              conceptId: caseId(selected),
+              mode: "case",
+              correct,
+              hinted: second,
+              chose: correct ? undefined : chose,
+              truth: lesson.case.choices[lesson.case.answer],
+            })
+          }
+          onNext={(kind) => onNext(kind, selected)}
           onBack={() => {
             setPhase("scene");
             setOrder([]);
@@ -421,7 +441,16 @@ export function MedicineLesson({
                 disabled={answer !== null}
                 onPress={() => {
                   setAnswer(i);
-                  onRecall(100 + selected * 10 + index, i === card.answer);
+                  const correct = i === card.answer;
+                  onRecall(100 + selected * 10 + index, correct);
+                  onAttempt({
+                    conceptId: conceptId(selected, index),
+                    mode: "recall",
+                    correct,
+                    hinted: false,
+                    chose: correct ? undefined : choice,
+                    truth: card.choices[card.answer],
+                  });
                 }}
               >
                 {choice}
@@ -465,9 +494,13 @@ export function MedicineLesson({
 function PatientCase({
   lesson,
   onBack,
+  onTry,
+  onNext,
 }: {
   lesson: MedicalModule;
   onBack: () => void;
+  onTry: (correct: boolean, second: boolean, chose: string) => void;
+  onNext: (kind: "teach" | "why") => void;
 }) {
   const [answer, setAnswer] = useState<number | null>(null),
     [attempts, setAttempts] = useState(0);
@@ -495,6 +528,7 @@ function PatientCase({
             onPress={() => {
               setAnswer(i);
               setAttempts((n) => n + 1);
+              onTry(i === c.answer, attempts >= 1, choice);
             }}
           >
             {choice}
@@ -519,7 +553,15 @@ function PatientCase({
                   Read the source ↗
                 </Button>
               )}
-              <Button onPress={onBack}>Revisit the lesson scene</Button>
+              <Button icon="arrow" onPress={() => onNext("teach")}>
+                Teach it back
+              </Button>
+              <Button secondary onPress={() => onNext("why")}>
+                Climb the Why Ladder
+              </Button>
+              <Button secondary onPress={onBack}>
+                Revisit the lesson scene
+              </Button>
             </>
           ) : (
             <>
