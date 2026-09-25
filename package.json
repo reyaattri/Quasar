@@ -13,7 +13,8 @@
     "test": "node scripts/test.cjs",
     "export:web": "expo export --platform web",
     "seed:sql": "node scripts/seed.cjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "setup:live": "node scripts/setup-live.mjs"
   },
   "dependencies": {
     "@expo/metro-runtime": "~57.0.15",

@@ -55,5 +55,29 @@ test("database schema seeds and row-level security isolates accounts", async () 
       .rows[0].ok,
     false,
   );
+
+  // AI gateway: per-task quotas, service-role only, and a request log readable only by its owner.
+  await db.exec(
+    fs.readFileSync("supabase/migrations/202609250001_ai_gateway.sql", "utf8"),
+  );
+  const quota = async (uid, task) =>
+    (await db.query("select consume_ai_quota($1,$2) as ok", [uid, task])).rows[0].ok;
+  for (let i = 0; i < 5; i++) assert.equal(await quota(alice, "quiz"), true);
+  assert.equal(await quota(alice, "quiz"), false, "quiz stops at 5 a day");
+  assert.equal(await quota(alice, "tutor"), true, "limits are per task");
+  assert.equal(await quota(bob, "quiz"), true, "limits are per learner");
+  assert.equal(await quota(alice, "unknown"), false, "unknown tasks get nothing");
+  await db.query(
+    "insert into ai_requests(user_id,task,model,status,input_tokens,output_tokens) values($1,'quiz','claude-opus-5','ok',900,700),($2,'tutor','claude-opus-5','ok',300,200)",
+    [alice, bob],
+  );
+  await db.exec(`set role authenticated;set request.jwt.claim.sub='${alice}';`);
+  assert.equal((await db.query("select * from ai_requests")).rows.length, 1);
+  assert.equal((await db.query("select * from ai_usage")).rows.length, 2);
+  await assert.rejects(() => db.query("select consume_ai_quota($1,'quiz')", [alice]));
+  await assert.rejects(() =>
+    db.query("insert into ai_requests(user_id,task,status) values($1,'quiz','ok')", [alice]),
+  );
+  await db.exec("reset role");
   await db.close();
 });

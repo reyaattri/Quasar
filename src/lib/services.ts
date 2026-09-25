@@ -5,7 +5,6 @@ import { Platform } from "react-native";
 import Constants from "expo-constants";
 import type { CustomerInfo, PurchasesPackage } from "react-native-purchases";
 import type { Progress } from "./progress";
-import { isValidDeck, type NoteDeck } from "./noteQuiz";
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const anon = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 export const supabase =
@@ -75,21 +74,25 @@ export async function loadCloud(userId: string) {
   if (error) throw error;
   return data?.state ?? null;
 }
+// Web uses RevenueCat Billing (Stripe checkout); phones use the App Store / Google Play.
 const rcKey =
-  Platform.OS === "ios"
-    ? process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY
-    : process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
-export const purchaseReady =
-  Platform.OS !== "web" && Constants.appOwnership !== "expo" && !!rcKey;
+  Platform.OS === "web"
+    ? process.env.EXPO_PUBLIC_REVENUECAT_WEB_KEY
+    : Platform.OS === "ios"
+      ? process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY
+      : process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
+export const webPurchases = Platform.OS === "web";
+export const purchaseReady = Constants.appOwnership !== "expo" && !!rcKey;
 let configured = false;
+let knownUser: string | null = null;
 async function purchases() {
   if (!purchaseReady)
     throw new Error(
-      "Purchases become available in a configured Android or iOS development build. No payment has been made.",
+      "Purchases aren't connected in this build yet. No payment has been made.",
     );
   const p = (await import("react-native-purchases")).default;
   if (!configured) {
-    p.configure({ apiKey: rcKey! });
+    p.configure({ apiKey: rcKey!, appUserID: knownUser ?? undefined });
     configured = true;
   }
   return p;
@@ -111,6 +114,7 @@ export async function restore() {
   return (await purchases()).restorePurchases();
 }
 export async function identifyPurchases(userId: string | null) {
+  knownUser = userId;
   if (!purchaseReady) return;
   const p = await purchases();
   if (userId) await p.logIn(userId);
@@ -137,62 +141,6 @@ export async function track(
     /* Analytics never blocks learning. */
   }
 }
-export async function generatePersonalized(factId: string, p: Progress) {
-  if (!supabase)
-    throw new Error(
-      "Personalized generation needs the connected Supabase service.",
-    );
-  const { data, error } = await supabase.functions.invoke("generate-mnemonic", {
-    body: { factId, profile: p.profile },
-  });
-  if (error) throw error;
-  return data as { story: string; imageUrl?: string };
-}
-
-export type TutorFeedback = {
-  points: { covered: boolean; evidence: string }[];
-  misconceptions: string[];
-  feedback: string;
-  followUp: string;
-};
-
-export async function gradeExplanation(input: {
-  prompt: string;
-  reference: string;
-  keyPoints: string[];
-  explanation: string;
-}) {
-  if (!supabase)
-    throw new Error("AI feedback needs the connected Supabase service.");
-  const { data, error } = await supabase.functions.invoke("grade-explanation", {
-    body: input,
-  });
-  if (error) throw error;
-  return data as TutorFeedback;
-}
-
-export async function generateQuiz(input: {
-  title: string;
-  text?: string;
-  pdfBase64?: string;
-}): Promise<NoteDeck> {
-  if (!supabase)
-    throw new Error("AI quizzes need the connected Supabase service.");
-  const { data, error } = await supabase.functions.invoke("generate-quiz", {
-    body: input,
-  });
-  if (error) throw error;
-  const deck = {
-    id: Date.now().toString(36),
-    title: String(data?.title ?? input.title),
-    createdAt: new Date().toISOString(),
-    origin: "ai" as const,
-    questions: data?.questions,
-  };
-  if (!isValidDeck(deck)) throw new Error("The AI quiz came back incomplete.");
-  return deck;
-}
-
 export async function deleteAccount() {
   if (!supabase)
     throw new Error("Account deletion needs the connected Supabase service.");

@@ -7,7 +7,7 @@ import { medicalModules } from "../data/medicalLessons";
 import { teachConcepts } from "../data/biologyUnderstanding";
 import { attemptsOf, conceptId, errorMemory, parseConcept } from "../lib/learning";
 import { applicationHints, type Attempt, type Progress } from "../lib/progress";
-import type { TutorFeedback } from "../lib/services";
+import type { TutorFeedback } from "../lib/ai";
 
 type Log = (a: Omit<Attempt, "at">) => void;
 type Tutor = (input: {

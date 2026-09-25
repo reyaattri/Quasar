@@ -14,9 +14,11 @@ import {
   errorMemory,
   gardenStage,
   allConceptIds,
+  parseConcept,
 } from "./src/lib/learning";
 import { buildPlan, type Task } from "./src/lib/planner";
 import type { NoteDeck } from "./src/lib/noteQuiz";
+import { medicalModules } from "./src/data/medicalLessons";
 import { QuasarMark } from "./src/components/QuasarMark";
 import { ToolkitIcon } from "./src/components/ToolkitIcon";
 import { ToolkitConversation } from "./src/features/ToolkitConversation";
@@ -99,11 +101,10 @@ import {
   hasPro,
   identifyPurchases,
   track,
-  generatePersonalized,
   deleteAccount,
-  gradeExplanation,
-  generateQuiz,
+  webPurchases,
 } from "./src/lib/services";
+import { gradeExplanation, generateQuiz, personalizeStory, newHook } from "./src/lib/ai";
 type Page =
   | "home"
   | "library"
@@ -365,6 +366,33 @@ function Quasar() {
     onLater: (id) => setP((v) => scheduleSoon(v, id)),
     onAngle: (id, angle) =>
       setP((v) => ({ ...v, cues: { ...v.cues, [id]: angle } })),
+    onNewHook:
+      supabase && userId && pro
+        ? async (e) => {
+            const at = parseConcept(e.conceptId);
+            if (!at || at.isCase) return;
+            const card = medicalModules[at.module].cards[at.card];
+            const res = await newHook({
+              concept: card.title,
+              truth: e.truth ?? card.choices[card.answer],
+              misconception: e.misconception,
+              reference: card.biology,
+              cue: card.hook,
+              interests: p.profile.interests,
+            });
+            setP((v) => ({
+              ...v,
+              hooks: {
+                ...v.hooks,
+                [e.conceptId]: [
+                  ...(v.hooks?.[e.conceptId] ?? []),
+                  { text: res.hook, why: res.why, at: new Date().toISOString() },
+                ],
+              },
+            }));
+          }
+        : undefined,
+    onUpgrade: pro ? undefined : () => nav("paywall"),
   };
   const openScene = (id: string) => {
     if (id === "market") {
@@ -1499,10 +1527,23 @@ function Quasar() {
               real pricing the moment Quasar is connected to the app store.
             </Text>
           </View>
+        ) : webPurchases && !userId ? (
+          <Card style={{ gap: 10 }}>
+            <Icon name="key" size={22} />
+            <Text style={s.h3}>Sign in to subscribe.</Text>
+            <Text style={s.body}>
+              Your subscription is attached to your Quasar account, so it
+              follows you to any device and your AI features know you're a
+              member.
+            </Text>
+            <Button icon="arrow" onPress={() => nav("settings")}>
+              Sign in or create an account
+            </Button>
+          </Card>
         ) : packages.length ? (
           <View style={{ gap: 12 }}>
             {packages.map((pack) => {
-              const featured = pack.packageType === "ANNUAL";
+              const featured = pack.packageType === "ANNUAL" || packages.length === 1;
               return (
                 <Card
                   key={pack.identifier}
@@ -1512,7 +1553,7 @@ function Quasar() {
                       : undefined
                   }
                 >
-                  {featured && <Tag color={C.yellow}>BEST VALUE</Tag>}
+                  {pack.packageType === "ANNUAL" && packages.length > 1 && <Tag color={C.yellow}>BEST VALUE</Tag>}
                   <Text style={s.h3}>{pack.product.title}</Text>
                   <Text style={s.body}>{pack.product.description}</Text>
                   <Button
@@ -1536,9 +1577,11 @@ function Quasar() {
           </Text>
         )}
       </Reveal>
-      <Button secondary disabled={busy || !purchaseReady} onPress={() => pay()}>
-        Restore purchases
-      </Button>
+      {!webPurchases && (
+        <Button secondary disabled={busy || !purchaseReady} onPress={() => pay()}>
+          Restore purchases
+        </Button>
+      )}
       {pro && (
         <Button
           secondary
@@ -1993,7 +2036,7 @@ function Quasar() {
                           onPress={async () => {
                             setBusy(true);
                             try {
-                              const result = await generatePersonalized(
+                              const result = await personalizeStory(
                                 fact.id,
                                 p,
                               );

@@ -22,6 +22,8 @@ for (const rel of [
   "src/lib/planner.ts",
   "tests/progress.test.ts",
   "tests/learning.test.ts",
+  "supabase/functions/_shared/tasks.ts",
+  "tests/ai.test.ts",
 ]) {
   const target = path.join(out, rel.replace(/\.ts$/, ".js"));
   fs.mkdirSync(path.dirname(target), { recursive: true });
@@ -42,6 +44,7 @@ const r = spawnSync(
     "--test",
     path.join(out, "tests/progress.test.js"),
     path.join(out, "tests/learning.test.js"),
+    path.join(out, "tests/ai.test.js"),
     "tests/database.test.cjs",
     "tests/release.test.cjs",
   ],

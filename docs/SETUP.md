@@ -21,10 +21,8 @@ The app saves guest and signed-in profiles under separate local keys. A new acco
 Deploy the authenticated Edge Functions before testing connected accounts:
 
 ```sh
-supabase functions deploy generate-mnemonic
+supabase functions deploy ai
 supabase functions deploy delete-account
-supabase functions deploy grade-explanation
-supabase functions deploy generate-quiz
 ```
 
 The delete function validates the current access token and confirmation value, then deletes the Supabase Auth user with the service role. Foreign-key cascades remove the learner's cloud rows. The app separately clears that account's device cache and signs RevenueCat back into its anonymous state. Verify this flow in a disposable test account before release.
@@ -33,31 +31,24 @@ The delete function validates the current access token and confirmation value, t
 
 Create Android/iOS apps in RevenueCat, connect the corresponding store, and add real subscription products. Attach them to entitlement quasar_pro, create an offering and mark it current.
 
-Set the public platform SDK key in EXPO_PUBLIC_REVENUECAT_ANDROID_KEY or EXPO_PUBLIC_REVENUECAT_IOS_KEY. Configure published privacy and terms URLs in the matching public environment variables before enabling purchase buttons. Products, prices and billing periods come from RevenueCat; the app does not hard-code a price.
+Set the public SDK key in EXPO_PUBLIC_REVENUECAT_ANDROID_KEY, EXPO_PUBLIC_REVENUECAT_IOS_KEY or, for the web build, EXPO_PUBLIC_REVENUECAT_WEB_KEY (a RevenueCat Billing key; sandbox keys start with rcb_sb_ and use Stripe test cards). On web the learner signs in before subscribing, and signing in replaces Restore purchases. Configure published privacy and terms URLs in the matching public environment variables before enabling purchase buttons. Products, prices and billing periods come from RevenueCat; the app does not hard-code a price.
 
-Create a development build for actual purchase tests. Web and Expo Go do not count as real sandbox purchase verification. Use the store’s sandbox/license-test account. Verify the checklist in RELEASE-CHECKLIST.md.
+On phones, create a development build for purchase tests; Expo Go can't make real purchases. On the web, RevenueCat Billing sandbox purchases are real RevenueCat transactions made with Stripe test cards. Use the store’s sandbox/license-test account. Verify the checklist in RELEASE-CHECKLIST.md.
 
-## 4. Personalized generation
+## 4. AI features (Quasar Plus)
 
-Deploy the generate-mnemonic Supabase Edge Function. Set server-only secrets: ANTHROPIC_API_KEY, optionally ANTHROPIC_MODEL, REVENUECAT_SECRET_KEY, and optionally REPLICATE_API_TOKEN. Supabase supplies SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.
+All AI features go through one Edge Function, `ai`. It verifies the Supabase session, checks the `quasar_pro` entitlement with RevenueCat on the server, validates the input, spends a per-feature daily quota, calls Claude through the official Anthropic SDK with structured JSON output, checks the answer and logs the request. The four tasks are the AI tutor, AI quizzes from notes, personalized stories and new memory hooks. Details and a diagram are in [AI-ARCHITECTURE.md](AI-ARCHITECTURE.md).
 
-The function validates the Supabase JWT, retrieves the fact from the trusted curriculum, checks quasar_pro against RevenueCat using the Supabase user ID, and atomically limits requests to 10 per UTC database date. RevenueCat login is linked to that same user ID in the native app. Client-provided entitlement flags are never trusted.
+Apply `supabase/migrations/202609250001_ai_gateway.sql` after the initial migration. Server-only secrets:
 
-The profile fields are sent to Claude only when the learner presses Make this story personal. The app should explain this in the published privacy policy. Flux.2 generation is optional; story generation still works if no Replicate token is configured. A prediction that does not complete during the synchronous wait produces a story-only result. Failed requests consume quota to avoid repeated upstream abuse.
+- `ANTHROPIC_API_KEY` (required)
+- `REVENUECAT_SECRET_KEY` (required; a V1 secret key)
+- `REPLICATE_API_TOKEN` (optional, for story pictures)
+- `AI_MODEL` (optional; defaults to `claude-opus-5`)
 
-Generated images are saved into a private user-specific Storage path with one-hour signed URLs. Server credentials must never be placed in EXPO_PUBLIC variables.
+Supabase supplies `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. Never put server credentials in `EXPO_PUBLIC_*` variables. `npm run setup:live` writes `.env` and sets these secrets without echoing them. The step-by-step path to a live sandbox purchase on the web is [GO-LIVE.md](GO-LIVE.md).
 
-### AI tutor feedback (Teach-Back)
-
-`grade-explanation` gives Quasar Plus members feedback on a written Teach-Back explanation. It uses the same secrets as `generate-mnemonic` (`ANTHROPIC_API_KEY`, `REVENUECAT_SECRET_KEY`) and shares its 10-requests-per-day quota. It calls Claude through the official Anthropic SDK with structured JSON output, and defaults to `claude-opus-5` with Anthropic's server-side refusal fallback turned on. Set the optional `GRADER_MODEL` secret to use a different model.
-
-Like the story generator, it validates the Supabase session and checks the `quasar_pro` entitlement against RevenueCat on the server. The explanation is treated as untrusted data, and the response is size-checked before it's returned. The app only shows the tutor button to a signed-in Plus member. The on-device key-idea check still decides what counts as mastered; AI feedback is advice, not a grade.
-
-### AI quizzes from notes
-
-`generate-quiz` turns a Plus member's pasted notes (up to 40,000 characters) or a PDF (up to 5 MB) into 8–12 multiple-choice questions. It uses the same secrets, entitlement check and daily quota as the other functions, and defaults to `claude-opus-5` (override with the `QUIZ_MODEL` secret) with structured JSON output. Every question has to carry a supporting quote. For pasted text, the server drops any question whose quote isn't actually in the notes. Quotes from a PDF can't be verified this way, so treat PDF quizzes with a little more care.
-
-The free quick quiz needs none of this: `src/lib/noteQuiz.ts` builds it on the device from "Term: definition" lines and key sentences.
+What the learner sends is treated as untrusted data. Profile fields go to Claude only when the learner presses *Make this story personal*; a Teach-Back explanation only on *Ask the AI tutor*; notes only on *Make an AI quiz*. The free quick quiz is built on the device by `src/lib/noteQuiz.ts`. Story pictures are stored privately with one-hour signed URLs.
 
 ## 5. Analytics
 

@@ -37,9 +37,8 @@ test("new learner completes course, recalls a scene, reflects, and persists mast
   await expect(
     page.getByText("Purchases open once Plus is connected."),
   ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Restore purchases" }),
-  ).toBeDisabled();
+  // Web purchases use RevenueCat Billing, where signing in restores; the button is phone-only.
+  await expect(page.getByRole("button", { name: "Restore purchases" })).toHaveCount(0);
 });
 test("small viewport has no horizontal overflow", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });

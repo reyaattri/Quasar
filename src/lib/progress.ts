@@ -53,6 +53,7 @@ export type Progress = {
   };
   attempts?: Attempt[];
   notes?: NoteDeck[];
+  hooks?: Record<string, { text: string; why: string; at: string }[]>;
   exam?: { label: string; date: string } | null;
   cues?: Record<string, number>;
 };
