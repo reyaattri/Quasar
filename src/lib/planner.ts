@@ -1,11 +1,7 @@
 import { medicalModules } from "../data/medicalLessons";
 import { teachConcepts, whyLadders } from "../data/biologyUnderstanding";
-import {
-  attemptsOf,
-  caseId,
-  conceptId,
-  errorMemory,
-} from "./learning";
+import { labCases } from "../data/caseLab";
+import { attemptsOf, conceptId, errorMemory } from "./learning";
 import type { Progress } from "./progress";
 
 export type TaskType = "recall" | "repair" | "teach" | "why" | "case" | "learn";
@@ -140,13 +136,17 @@ export function candidateTasks(p: Progress, now = new Date()): Task[] {
             : "You know the facts. Now check you know why they're true.",
           score: moduleScore,
         });
-      if (!attemptsOf(p, caseId(m)).some((a) => a.correct))
+      const open = labCases.find(
+        (c) => c.module === m && !attemptsOf(p, c.id).some((a) => a.correct),
+      );
+      if (open)
         tasks.push({
-          id: "case:" + m,
+          id: "case:" + open.id,
           type: "case",
           minutes: 10,
           module: m,
-          title: `Case: ${lesson.case.title}`,
+          conceptId: open.id,
+          title: `Case: ${open.title}`,
           reason: "Use what you learned on a problem you haven't seen before.",
           score: moduleScore - 2,
         });
@@ -155,17 +155,33 @@ export function candidateTasks(p: Progress, now = new Date()): Task[] {
   return tasks.sort((a, b) => b.score - a.score);
 }
 
+export function recoveryState(p: Progress, now = new Date()) {
+  const history = [...p.reviews, ...(p.attempts ?? [])];
+  if (!history.length) return null;
+  const last = Math.max(...history.map((h) => new Date(h.at).getTime()));
+  const daysAway = Math.floor((now.getTime() - last) / DAY);
+  const recalls = candidateTasks(p, now).filter((t) => t.type === "recall");
+  const backlog = recalls.filter(
+    (t) => now.getTime() - new Date(p.cards[t.conceptId!].due).getTime() >= DAY,
+  ).length;
+  return daysAway >= 3 || backlog >= 6 ? { daysAway, overdue: recalls.length } : null;
+}
+
 export function buildPlan(
   p: Progress,
   budget: number,
   skipped: string[] = [],
   now = new Date(),
 ) {
+  const recovery = recoveryState(p, now);
   const all = candidateTasks(p, now).filter((t) => !skipped.includes(t.id));
   const chosen: Task[] = [];
   let left = budget;
+  const cap = (type: TaskType) => (recovery && type === "recall" ? 4 : 2);
   const fits = (t: Task) =>
-    t.minutes <= left && chosen.filter((c) => c.type === t.type).length < 2;
+    t.minutes <= left &&
+    chosen.filter((c) => c.type === t.type).length < cap(t.type) &&
+    !(recovery && (t.type === "learn" || t.type === "case") && all.some((a) => a.type === "recall" && !chosen.includes(a)));
   const firstRecall = all.find((t) => t.type === "recall");
   if (firstRecall && fits(firstRecall)) {
     chosen.push(firstRecall);
@@ -177,5 +193,12 @@ export function buildPlan(
     left -= t.minutes;
   }
   if (!chosen.length && all.length) chosen.push(all[0]);
-  return { tasks: chosen, spare: all.filter((t) => !chosen.includes(t)) };
+  const deferred = recovery
+    ? all.filter((t) => t.type === "recall" && !chosen.includes(t)).length
+    : 0;
+  return {
+    tasks: chosen,
+    spare: all.filter((t) => !chosen.includes(t)),
+    recovery: recovery ? { ...recovery, deferred } : null,
+  };
 }

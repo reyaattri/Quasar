@@ -5,6 +5,7 @@ import { Meter, Reveal } from "../components/Reveal";
 import { errorMemory, readiness } from "../lib/learning";
 import type { Progress } from "../lib/progress";
 import { ErrorMemoryList, type ErrorActions } from "./ErrorMemory";
+import { MemoryGarden } from "./MemoryGarden";
 
 export function ReadyPanel({ progress, ...actions }: { progress: Progress } & ErrorActions) {
   const r = readiness(progress);
@@ -47,6 +48,7 @@ export function ReadyPanel({ progress, ...actions }: { progress: Progress } & Er
           </Text>
         </Card>
       </Reveal>
+      <MemoryGarden progress={progress} />
       {(open > 0 || fixed > 0) && (
         <Text style={s.h2}>
           {open ? `${open} ${open === 1 ? "idea needs" : "ideas need"} attention` : "No open mistakes"}

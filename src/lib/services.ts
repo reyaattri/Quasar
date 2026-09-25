@@ -148,6 +148,28 @@ export async function generatePersonalized(factId: string, p: Progress) {
   return data as { story: string; imageUrl?: string };
 }
 
+export type TutorFeedback = {
+  points: { covered: boolean; evidence: string }[];
+  misconceptions: string[];
+  feedback: string;
+  followUp: string;
+};
+
+export async function gradeExplanation(input: {
+  prompt: string;
+  reference: string;
+  keyPoints: string[];
+  explanation: string;
+}) {
+  if (!supabase)
+    throw new Error("AI feedback needs the connected Supabase service.");
+  const { data, error } = await supabase.functions.invoke("grade-explanation", {
+    body: input,
+  });
+  if (error) throw error;
+  return data as TutorFeedback;
+}
+
 export async function deleteAccount() {
   if (!supabase)
     throw new Error("Account deletion needs the connected Supabase service.");

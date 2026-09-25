@@ -3,11 +3,18 @@ import { WelcomeScene } from "./src/components/WelcomeScene";
 import { Reveal, Pulse, PressableScale } from "./src/components/Reveal";
 import { TeachBack } from "./src/features/TeachBack";
 import { WhyLadder } from "./src/features/WhyLadder";
+import { CaseLab } from "./src/features/CaseLab";
 import { TodayPlan } from "./src/features/TodayPlan";
 import { ReadyPanel } from "./src/features/Ready";
 import type { ErrorActions } from "./src/features/ErrorMemory";
-import { recordAttempt, scheduleSoon } from "./src/lib/learning";
-import type { Task } from "./src/lib/planner";
+import {
+  recordAttempt,
+  scheduleSoon,
+  errorMemory,
+  gardenStage,
+  allConceptIds,
+} from "./src/lib/learning";
+import { buildPlan, type Task } from "./src/lib/planner";
 import { QuasarMark } from "./src/components/QuasarMark";
 import { ToolkitIcon } from "./src/components/ToolkitIcon";
 import { ToolkitConversation } from "./src/features/ToolkitConversation";
@@ -92,6 +99,7 @@ import {
   track,
   generatePersonalized,
   deleteAccount,
+  gradeExplanation,
 } from "./src/lib/services";
 type Page =
   | "home"
@@ -109,7 +117,8 @@ type Page =
   | "pi"
   | "paywall"
   | "teach"
-  | "why";
+  | "why"
+  | "cases";
 const tabs = [
   ["home", "home", "Today"],
   ["library", "book", "Explore"],
@@ -320,6 +329,10 @@ function Quasar() {
     setFocus({ conceptId, mode });
     nav("teach");
   };
+  const openCase = (conceptId?: string) => {
+    setFocus({ conceptId, mode: "teach" });
+    nav("cases");
+  };
   const openWhy = (module?: number) => {
     setFocus({ module, mode: "teach" });
     nav("why");
@@ -328,7 +341,8 @@ function Quasar() {
     if (t.type === "recall") openTeach(t.conceptId, "recall");
     else if (t.type === "repair" || t.type === "teach") openTeach(t.conceptId);
     else if (t.type === "why") openWhy(t.module);
-    else openBiology(t.module, t.type === "case" ? "case" : "cards");
+    else if (t.type === "case") openCase(t.conceptId);
+    else openBiology(t.module, "cards");
   };
   const errorActions: ErrorActions = {
     onExplain: (id) => openTeach(id),
@@ -528,6 +542,15 @@ function Quasar() {
     const cont = scenes.find((x) => x.id === p.lastScene) ?? scenes[0];
     const deck = allFacts.filter((f) => f.sceneId === cont.id);
     const n = deck.filter((f) => p.mastered[f.id]).length;
+    const plan = buildPlan(p, 15).tasks;
+    const session = {
+      tasks: plan,
+      minutes: plan.reduce((m, t) => m + t.minutes, 0),
+      repair: errorMemory(p).filter((e) => !e.resolved).length,
+    };
+    const bioRecalled = allConceptIds.filter((id) => gardenStage(p, id) >= 2).length;
+    const reviewCount =
+      due.length + dueIds(p).filter((id) => id.startsWith("bio-")).length + session.repair;
     return (
       <View style={{ gap: 30 }}>
         <View style={s.between}>
@@ -537,16 +560,10 @@ function Quasar() {
               p.profile.name
                 ? "Hello, " + p.profile.name.split(" ")[0] + "."
                 : "Hello, curious mind.",
-              "Your next session is ready. Swap anything that doesn't fit today.",
+              "Pick up where you left off, or open today's session.",
             )}
           </View>
         </View>
-        <TodayPlan
-          progress={p}
-          onStart={startTask}
-          onExam={(exam) => setP((v) => ({ ...v, exam }))}
-          {...errorActions}
-        />
         <Reveal>
           <View style={[a.hero, wide && { flexDirection: "row" }]}>
             <View style={{ flex: 1, gap: 15, padding: 24 }}>
@@ -583,8 +600,8 @@ function Quasar() {
           <View style={a.statsRow}>
             {[
               [
-                String(due.length),
-                due.length ? "ready to review" : "all caught up",
+                String(reviewCount),
+                reviewCount ? "ready to review" : "all caught up",
                 "cards",
               ],
               [
@@ -592,7 +609,7 @@ function Quasar() {
                 "learning streak",
                 "flame",
               ],
-              [String(mastered), "concepts recalled", "leaf"],
+              [String(mastered + bioRecalled), "concepts recalled", "leaf"],
             ].map(([num, label, icon]) => (
               <View key={label} style={a.stat}>
                 <Icon name={icon} size={20} />
@@ -601,6 +618,27 @@ function Quasar() {
               </View>
             ))}
           </View>
+        </Reveal>
+        <Reveal delay={130}>
+          <PressableScale
+            accessibilityRole="button"
+            accessibilityLabel={`Open today's session: ${session.tasks.length} ${session.tasks.length === 1 ? "task" : "tasks"}, ${session.minutes} minutes`}
+            onPress={() => nav("review")}
+            style={[s.card, { flexDirection: "row", alignItems: "center", gap: 16, padding: 18 }]}
+          >
+            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: session.repair ? C.peach : C.sage, alignItems: "center", justifyContent: "center" }}>
+              <Icon name={session.repair ? "key" : "clock"} size={20} />
+            </View>
+            <View style={{ flex: 1, gap: 3 }}>
+              <Text style={s.h3}>Today's session</Text>
+              <Text style={s.small}>
+                {session.repair
+                  ? `${session.repair} ${session.repair === 1 ? "idea needs" : "ideas need"} repair · ${session.minutes} min planned`
+                  : `${session.tasks.length} ${session.tasks.length === 1 ? "task" : "tasks"} · ${session.minutes} min planned`}
+              </Text>
+            </View>
+            <Icon name="arrow" size={18} />
+          </PressableScale>
         </Reveal>
         <Reveal delay={160}>
           <Pressable
@@ -635,7 +673,7 @@ function Quasar() {
                 <Text style={[s.small, { color: "#C8D3C0" }]}>
                   {pro
                     ? "Manage your membership and personalized stories."
-                    : "Personalized mnemonic stories built around your interests."}
+                    : "Personalized stories and an AI tutor for your explanations."}
                 </Text>
               </View>
               <Icon name="arrow" size={18} color={C.paper} />
@@ -747,6 +785,7 @@ function Quasar() {
             [
               ["smile", "Teach-Back Studio", "Explain a concept with the lesson hidden.", () => openTeach(undefined)],
               ["spark", "The Why Ladder", "Five rungs from what happens to why it matters.", () => openWhy(undefined)],
+              ["map", "Case Lab", "Use what you know on problems you haven't seen.", () => openCase(undefined)],
             ] as const
           ).map(([icon, title, body, go]) => (
             <View key={title} style={{ flex: 1, minWidth: 150 }}>
@@ -914,13 +953,24 @@ function Quasar() {
     return (
       <View style={{ gap: 24 }}>
         {heading(
-          "RECALL PRACTICE",
+          "REVIEW",
           "Make it last.",
-          "Bring a memory back just before it fades.",
+          reviewStarted
+            ? "Bring a memory back just before it fades."
+            : "Today's plan first, then your vocabulary deck.",
+        )}
+        {!reviewStarted && (
+          <TodayPlan
+            progress={p}
+            onStart={startTask}
+            onExam={(exam) => setP((v) => ({ ...v, exam }))}
+            {...errorActions}
+          />
         )}
         {!reviewStarted ? (
-          <Reveal>
+          <Reveal delay={120}>
             <View style={{ gap: 24 }}>
+              <Text style={s.h2}>Vocabulary deck</Text>
               <Card style={{ backgroundColor: C.sage }}>
                 <Icon name="cards" size={36} />
                 <Text style={s.h2}>
@@ -1367,15 +1417,15 @@ function Quasar() {
           <Text style={{ color: "#DBE6D6", fontSize: 15, lineHeight: 22 }}>
             {pro
               ? "Thank you for supporting Quasar. Personalized stories are unlocked."
-              : "Support Quasar and unlock personalized mnemonic generation, built around what you already know."}
+              : "Support Quasar and unlock personalized mnemonic stories and an AI tutor that reads your explanations."}
           </Text>
         </View>
       </Reveal>
       <Reveal delay={90}>
         <View style={[s.row, { flexWrap: "wrap" }]}>
           {[
-            ["spark", "Personalized stories", "Built around your interests"],
-            ["leaf", "Optional illustrations", "For your personalized stories"],
+            ["spark", "Personalized stories", "Built around your interests, with optional pictures"],
+            ["smile", "AI tutor feedback", "On how you explain, not just which ideas"],
             ["check", "Core content stays free", "Scenes, review and progress"],
           ].map(([icon, title, body]) => (
             <View key={title} style={{ flex: 1, minWidth: 150 }}>
@@ -1751,15 +1801,25 @@ function Quasar() {
                   focus={focus.conceptId}
                   mode={focus.mode}
                   onAttempt={logAttempt}
-                  onDone={() => nav("home")}
+                  onDone={() => nav("review")}
+                  tutor={supabase && userId && pro ? gradeExplanation : undefined}
+                  onUpgrade={pro ? undefined : () => nav("paywall")}
+                />
+              ) : page === "cases" ? (
+                <CaseLab
+                  key={focus.conceptId ?? "all"}
+                  progress={p}
+                  focus={focus.conceptId}
+                  onAttempt={logAttempt}
+                  onNext={(kind, m) => (kind === "teach" ? openTeach(undefined) : openWhy(m))}
                 />
               ) : page === "why" ? (
                 <WhyLadder
                   key={String(focus.module)}
                   module={focus.module}
                   onAttempt={logAttempt}
-                  onCase={(m) => openBiology(m, "case")}
-                  onDone={() => nav("home")}
+                  onCase={(m) => openCase(`bio-case-${m}`)}
+                  onDone={() => nav("review")}
                 />
               ) : page === "medicine" ? (
                 <MedicineLesson

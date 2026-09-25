@@ -15,6 +15,7 @@ for (const rel of [
   "src/data/medicalLessons.ts",
   "src/data/lessonCoaching.ts",
   "src/data/biologyUnderstanding.ts",
+  "src/data/caseLab.ts",
   "src/lib/learning.ts",
   "src/lib/planner.ts",
   "tests/progress.test.ts",

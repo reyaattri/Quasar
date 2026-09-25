@@ -47,6 +47,7 @@ const paths: Record<string, string> = {
   cards: "M5 7h14v15H5zM8 3h14v15",
   flame: "M13 2c0 7 7 8 7 14a8 8 0 0 1-16 0c0-4 3-7 5-9-1 5 3 5 4-5",
   lock: "M5 10h14v12H5zM8 10V6a4 4 0 0 1 8 0v4",
+  mic: "M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3M5 11a7 7 0 0 0 14 0M12 18v3",
   sun: "M12 1v3m0 16v3M1 12h3m16 0h3M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2",
 };
 export function Icon({

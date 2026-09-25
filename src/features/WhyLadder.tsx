@@ -182,7 +182,7 @@ function Climb({
               Try the field case
             </Button>
             <Button secondary onPress={onDone}>
-              Back to Today
+              Back to my session
             </Button>
             <Button secondary onPress={onBack}>
               Choose another ladder

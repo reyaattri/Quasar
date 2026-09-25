@@ -10,12 +10,12 @@ Quasar shouldn't become a generic AI study planner with a few memory games attac
 
 | Pillar | The student's question | Status in this repository |
 | --- | --- | --- |
-| **Today** | What should I study, and why? | **Built for biology.** A rule-based planner ranks tasks with the priority formula below, fits them to 5, 15 or 30 minutes, respects prerequisites, takes an optional exam date into account, explains every pick and lets the student swap any task. |
+| **Today** | What should I study, and why? | **Built for biology** (on the Review tab). A rule-based planner ranks tasks with the priority formula below, fits them to 5, 15 or 30 minutes, respects prerequisites, takes an optional exam date into account, explains every pick and lets the student swap any task. **Recovery Mode** takes over after three days away or a backlog of reviews more than a day overdue: a small review-first plan that says how many items it set aside. |
 | **Memory Worlds** | How do I make this unforgettable? | **Built.** Walkable dojo, ruins and neon palaces with stable room anchors; illustrated biology, SAT, calculus, Korean and π courses. *Planned:* worlds generated from uploaded material, and persistent characters shared across subjects. |
-| **Teach-Back** | Can I explain it without help? | **Built (typed).** The lesson is hidden and the student writes an explanation. Quasar checks it against three authored key ideas, asks a *why* question about the first missing one instead of revealing it, allows one retry, then asks a follow-up question to defend it. *Planned:* AI-graded explanations, voice, and diagram reconstruction. |
-| **Case Lab** | Can I use it to solve a problem? | **Partial.** Each biology lesson ends with an original two-attempt field case, and every attempt is logged. The Why Ladder's final rung is an unfamiliar application question. *Planned:* multi-step simulations. |
+| **Teach-Back** | Can I explain it without help? | **Built.** The lesson is hidden and the student writes or, in supporting browsers, speaks an explanation. Quasar checks it on the device against three authored key ideas, asks a *why* question about the first missing one instead of revealing it, allows one retry, then asks a follow-up question to defend it. **AI tutor feedback** (Quasar Plus) reviews how the idea was explained, flags wrong claims and asks one more question, through a server function that needs Supabase, RevenueCat and Anthropic keys. *Planned:* voice on native builds, and diagram reconstruction. |
+| **Case Lab** | Can I use it to solve a problem? | **Built (first set).** Six original two-attempt field cases, two per biology lesson, on their own page; every attempt is logged and Today schedules the unsolved ones. The Why Ladder's final rung is also an unfamiliar application question. *Planned:* multi-step simulations. |
 | **Memory Debugger** | Why do I keep getting this wrong? | **Built.** Error Memory surfaces any concept missed twice, names the exact wrong answer the student keeps choosing next to what's true, offers alternative explanations (saving the one that helped) and schedules a re-check. It only resolves after a later correct answer given without help. |
-| **Ready** | What can I genuinely remember and use? | **Built.** Separate meters for factual recall, conceptual understanding and unfamiliar problem-solving, computed only from the learner's own answers, alongside open and repaired mistakes. No score prediction. |
+| **Ready** | What can I genuinely remember and use? | **Built.** Separate meters for factual recall, conceptual understanding and unfamiliar problem-solving, computed only from the learner's own answers, alongside open and repaired mistakes. No score prediction. The **Memory Garden** shows every concept as a plant that grows only from unaided success and blooms after recall on two different days. |
 
 The Why Ladder (the "Why Engine") runs across all three biology lessons: *What happens → Why → How it works → What if it fails → Use it somewhere new.* Quasar records the rung where understanding breaks.
 
@@ -61,24 +61,22 @@ Implementation: `src/lib/planner.ts`, tested in `tests/learning.test.ts`.
 
 ## Roadmap
 
-**Phase 1: prove the core loop (in this repository).** Frictionless onboarding, memory worlds, biology lessons, Teach-Back, the Why Ladder, Error Memory, Today and Ready.
+**Phase 1: prove the core loop (in this repository).** Frictionless onboarding, memory worlds, biology lessons, Teach-Back (with voice and the Plus AI tutor), the Why Ladder, Case Lab, Error Memory, Today with Recovery Mode, Ready and the Memory Garden.
 
 **Phase 2: adaptive learning.**
 - Upload and source grounding: PDFs, slides and notes turned into concepts, each linked to its source.
-- AI-graded Teach-Back against explicit rubrics.
 - Alternative mnemonics compared over delayed tests.
 - More field cases.
 
 **Phase 3: depth and exam preparation.**
 - Foundation, exam-depth and advanced-reasoning modes.
 - Syllabus-aligned tracks.
-- Recovery Mode for learners who fall behind.
 - A fuller Ready dashboard with delayed-retention results.
 
 **Phase 4: the wider universe.**
 - Connected worlds across subjects and personal memory palaces.
 - Art Style Studio: storybook and doodle styles exist today; pixel, animated and 3D are planned.
-- A Memory Garden that grows with demonstrated mastery, plus optional social sharing.
+- A wider Memory Garden across subjects, plus optional social sharing.
 - *Quasar Originals*, short illustrated story episodes such as *The Secrets of Cell City*.
 
 ## How we'll know it works
@@ -101,4 +99,4 @@ The goal is to learn whether each part improves learning, not just whether it lo
 ## Business model
 
 - **Free:** the core lessons, memory worlds, reviews, Teach-Back, the Why Ladder, Error Memory and Ready. Learning is never paywalled.
-- **Quasar Plus:** personalized mnemonic stories and illustrations generated from the learner's own interests, verified server-side through RevenueCat's `quasar_pro` entitlement. Prices come from the store, and willingness to pay is something to test, not assume.
+- **Quasar Plus:** personalized mnemonic stories and illustrations generated from the learner's own interests, plus AI tutor feedback on Teach-Back explanations, both verified server-side through RevenueCat's `quasar_pro` entitlement. Prices come from the store, and willingness to pay is something to test, not assume.

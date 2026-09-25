@@ -36,7 +36,7 @@ export function TodayPlan({
   const [budget, setBudget] = useState(15);
   const [skipped, setSkipped] = useState<string[]>([]);
   const [examOpen, setExamOpen] = useState(false);
-  const { tasks, spare } = buildPlan(progress, budget, skipped);
+  const { tasks, spare, recovery } = buildPlan(progress, budget, skipped);
   const minutes = tasks.reduce((n, t) => n + t.minutes, 0);
   const examDays = progress.exam
     ? Math.max(0, Math.ceil((new Date(progress.exam.date).getTime() - Date.now()) / 86_400_000))
@@ -61,8 +61,16 @@ export function TodayPlan({
             </Pressable>
           </View>
           <Text style={{ color: C.paper, fontFamily: "QuasarGrotesk", fontSize: 26, lineHeight: 31 }}>
-            {minutes} minutes. Here's what needs you.
+            {recovery ? "Welcome back. Let's start small." : `${minutes} minutes. Here's what needs you.`}
           </Text>
+          {recovery && (
+            <Text style={{ color: "#DBE6D6", fontSize: 14, lineHeight: 21 }}>
+              {recovery.daysAway >= 3 ? `It's been ${recovery.daysAway} days, and nothing is lost. ` : ""}
+              {recovery.overdue
+                ? `${recovery.overdue} ${recovery.overdue === 1 ? "review is" : "reviews are"} waiting. This ${minutes}-minute plan starts with the most important${recovery.deferred ? `; ${recovery.deferred} more can wait for another session` : ""}.`
+                : `This ${minutes}-minute plan eases you back in.`}
+            </Text>
+          )}
           {examOpen && (
             <View style={[s.row, { flexWrap: "wrap", gap: 8 }]}>
               {exams.map(([label, days]) => {

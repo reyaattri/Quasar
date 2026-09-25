@@ -253,7 +253,7 @@ export function MedicineLesson({
         {back}
         <PatientCase
           key={lesson.id}
-          lesson={lesson}
+          c={lesson.case}
           onTry={(correct, second, chose) =>
             onAttempt({
               conceptId: caseId(selected),
@@ -491,21 +491,22 @@ export function MedicineLesson({
     </View>
   );
 }
-function PatientCase({
-  lesson,
+export function PatientCase({
+  c,
   onBack,
   onTry,
   onNext,
+  backLabel = "Revisit the lesson scene",
 }: {
-  lesson: MedicalModule;
+  c: MedicalModule["case"];
   onBack: () => void;
   onTry: (correct: boolean, second: boolean, chose: string) => void;
   onNext: (kind: "teach" | "why") => void;
+  backLabel?: string;
 }) {
   const [answer, setAnswer] = useState<number | null>(null),
     [attempts, setAttempts] = useState(0);
-  const c = lesson.case,
-    correct = answer === c.answer,
+  const correct = answer === c.answer,
     finished = correct || attempts >= 2;
   return (
     <View style={{ gap: 18 }}>
@@ -560,7 +561,7 @@ function PatientCase({
                 Climb the Why Ladder
               </Button>
               <Button secondary onPress={onBack}>
-                Revisit the lesson scene
+                {backLabel}
               </Button>
             </>
           ) : (

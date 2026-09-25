@@ -30,11 +30,16 @@ const out = (name) => `docs/${name}.png`;
     p.attempts.push({ conceptId: "bio-0-5", mode: "why", correct: false, hinted: false, rung: 2, at: at(10),
       chose: "It is converted directly into ATP", truth: "It is the final electron acceptor at the end of the electron transport chain" });
     p.attempts.push({ conceptId: "bio-case-0", mode: "case", correct: true, hinted: false, at: at(12) });
+    p.attempts.push({ conceptId: "bio-0-2", mode: "teach", correct: true, hinted: false, at: at(13) });
+    p.attempts.push({ conceptId: "bio-0-2", mode: "recall", correct: true, hinted: false, at: new Date(t - 86_400_000 * 2).toISOString() });
+    p.attempts.push({ conceptId: "bio-0-0", mode: "why", correct: true, hinted: false, rung: 0, at: at(14) });
     p.exam = { label: "Biology exam", date: new Date(Date.now() + 12 * 86_400_000).toISOString() };
     localStorage.setItem(key, JSON.stringify(p));
   }, KEY);
   await page.reload();
   await settle(3500);
+  await button("Review").click();
+  await settle(2500);
   await page.screenshot({ path: out("today-plan-mobile") });
 
   const center = (text) =>
@@ -55,6 +60,9 @@ const out = (name) => `docs/${name}.png`;
   await button("Ready").click();
   await settle(2500);
   await page.screenshot({ path: out("ready-mobile") });
+  await center("MEMORY GARDEN");
+  await settle(2200);
+  await page.screenshot({ path: out("memory-garden-mobile") });
 
   await browser.close();
 })().catch((e) => {

@@ -18,7 +18,7 @@ The first screen shows no feature list. The hero glides from world to world (a q
 ### 2. Today: a plan with its reasons shown
 `src/features/TodayPlan.tsx` · `docs/today-plan-mobile.png`
 
-A dark hero card asks one question: how much time do you have? Choosing 5, 15 or 30 minutes rebuilds the plan instantly. Each task shows its type, its length and one plain sentence explaining why it was chosen. Swap sits outside the task's tap target, so a learner never starts a task by accident. The planner's formula is written up in `docs/PRODUCT-VISION.md`.
+Home stays calm: a greeting, the lesson to continue, and one slim *Today's session* row. The plan itself lives on the Review tab, where studying happens. There, a dark hero card asks one question: how much time do you have? Choosing 5, 15 or 30 minutes rebuilds the plan instantly. Each task shows its type, its length and one plain sentence explaining why it was chosen. Swap sits outside the task's tap target, so a learner never starts a task by accident. After a break, the card changes its headline to *Welcome back. Let's start small.*, says how long it's been and that nothing is lost, and names how many reviews it set aside, instead of dumping a backlog. The planner's formula is written up in `docs/PRODUCT-VISION.md`.
 
 ### 3. Teach-Back: a question before the answer
 `src/features/TeachBack.tsx` · `docs/teach-back-mobile.png`
@@ -40,8 +40,18 @@ Five segments across the top fill green or red as the learner climbs (*what, why
 
 Factual recall, conceptual understanding and unfamiliar problem-solving each get their own animated meter and colour. They're separate because knowing a fact isn't the same as explaining it. Untested areas say "Not tested yet" rather than showing a zero that looks like failure. The card states outright that this isn't a score prediction.
 
-### 7. Quasar Plus: a paywall that respects the learner
-The hero matches the onboarding's dark green, with a pulsing spark icon and three feature tiles, one of which says *core content stays free*. An annual package gets a *Best value* tag. If the store isn't connected, a dashed "coming soon" card explains that plainly instead of showing a broken or disabled buy button.
+### 7. Memory Garden: progress that never wilts
+`src/features/MemoryGarden.tsx` · `docs/memory-garden-mobile.png`
+
+Eighteen hand-drawn SVG plants in three beds, one bed per lesson and a petal colour per bed. A seed becomes a sprout when a concept is tried, grows leaves after a correct unaided recall, sets a bud once it's been explained, and blooms only after recall on two different days, which is spaced retention made visible. Nothing ever withers. A concept in Error Memory gets a small blue drop, a request for care rather than a penalty. Tapping a plant says exactly what would help it grow next.
+
+### 8. Case Lab and the AI tutor
+`src/features/CaseLab.tsx` · `src/features/TeachBack.tsx`
+
+Case Lab lists original field cases by lesson with honest status tags (*New*, *Solved*, *Solved with a hint*, *Try again*). In Teach-Back, a Quasar Plus member can ask the AI tutor for feedback. It arrives in a separate cool-blue card: evidence quoted from the learner's own words, any wrong claims flagged in red, one more question, and a reminder that AI feedback can be wrong. Everyone else sees a single quiet line about Plus rather than a locked button.
+
+### 9. Quasar Plus: a paywall that respects the learner
+The hero matches the onboarding's dark green, with a pulsing spark icon and three feature tiles (personalized stories, AI tutor feedback, and *core content stays free*). An annual package gets a *Best value* tag. If the store isn't connected, a dashed "coming soon" card explains that plainly instead of showing a broken or disabled buy button.
 
 ## Motion
 

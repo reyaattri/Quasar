@@ -23,6 +23,7 @@ Deploy both authenticated Edge Functions before testing connected accounts:
 ```sh
 supabase functions deploy generate-mnemonic
 supabase functions deploy delete-account
+supabase functions deploy grade-explanation
 ```
 
 The delete function validates the current access token and confirmation value, then deletes the Supabase Auth user with the service role. Foreign-key cascades remove the learner's cloud rows. The app separately clears that account's device cache and signs RevenueCat back into its anonymous state. Verify this flow in a disposable test account before release.
@@ -44,6 +45,12 @@ The function validates the Supabase JWT, retrieves the fact from the trusted cur
 The profile fields are sent to Claude only when the learner presses Make this story personal. The app should explain this in the published privacy policy. Flux.2 generation is optional; story generation still works if no Replicate token is configured. A prediction that does not complete during the synchronous wait produces a story-only result. Failed requests consume quota to avoid repeated upstream abuse.
 
 Generated images are saved into a private user-specific Storage path with one-hour signed URLs. Server credentials must never be placed in EXPO_PUBLIC variables.
+
+### AI tutor feedback (Teach-Back)
+
+`grade-explanation` gives Quasar Plus members feedback on a written Teach-Back explanation. It uses the same secrets as `generate-mnemonic` (`ANTHROPIC_API_KEY`, `REVENUECAT_SECRET_KEY`) and shares its 10-requests-per-day quota. It calls Claude through the official Anthropic SDK with structured JSON output, and defaults to `claude-opus-5` with Anthropic's server-side refusal fallback turned on. Set the optional `GRADER_MODEL` secret to use a different model.
+
+Like the story generator, it validates the Supabase session and checks the `quasar_pro` entitlement against RevenueCat on the server. The explanation is treated as untrusted data, and the response is size-checked before it's returned. The app only shows the tutor button to a signed-in Plus member. The on-device key-idea check still decides what counts as mastered; AI feedback is advice, not a grade.
 
 ## 5. Analytics
 

@@ -4,7 +4,9 @@ import { applicationHints, initialProgress, reviveProgress, streak } from "../sr
 import {
   allConceptIds,
   conceptId,
+  conceptInfo,
   errorMemory,
+  gardenStage,
   legacyToConceptId,
   readiness,
   recordAttempt,
@@ -12,6 +14,7 @@ import {
 import { buildPlan, candidateTasks, priority } from "../src/lib/planner";
 import { teachConcepts, whyLadders } from "../src/data/biologyUnderstanding";
 import { medicalModules } from "../src/data/medicalLessons";
+import { labCases } from "../src/data/caseLab";
 
 const t0 = new Date("2026-09-24T12:00:00Z");
 const later = (min: number) => new Date(t0.getTime() + min * 60_000);
@@ -34,6 +37,11 @@ test("authored understanding content covers every biology concept with valid ans
     }
   });
   assert.equal(legacyToConceptId(125), "bio-2-5");
+  assert.equal(labCases.length, 6);
+  for (const c of labCases) {
+    assert.ok(c.answer >= 0 && c.answer < c.choices.length);
+    assert.equal(conceptInfo(c.id)?.title, c.title);
+  }
 });
 
 test("biology recall attempts are scheduled with FSRS without touching vocabulary history", () => {
@@ -109,6 +117,24 @@ test("plans fit the time budget, cap repeats, and put repair of a recurring erro
   assert.ok(!swapped.tasks.some((t) => t.id === tasks[0].id), "a swapped task is replaced");
 });
 
+test("recovery mode welcomes a returning learner with a small, review-first plan", () => {
+  let p = initialProgress();
+  for (let m = 0; m < 2; m++)
+    for (let c = 0; c < 6; c++)
+      p = recordAttempt(p, { conceptId: conceptId(m, c), mode: "recall", correct: true, hinted: false }, t0);
+  assert.equal(buildPlan(p, 15, [], later(60)).recovery, null, "no recovery right after studying");
+  const back = later(60 * 24 * 40);
+  const plan = buildPlan(p, 15, [], back);
+  assert.ok(plan.recovery);
+  assert.ok(plan.recovery!.daysAway >= 3);
+  assert.equal(plan.recovery!.overdue, 12);
+  assert.ok(plan.tasks.every((t) => t.type === "recall"), "reviews before new material");
+  assert.equal(plan.tasks.length, 3);
+  assert.equal(plan.recovery!.deferred, 9, "the rest is explicitly set aside");
+  const importance = plan.tasks.map((t) => t.score);
+  assert.deepEqual(importance, [...importance].sort((a, b) => b - a));
+});
+
 test("readiness reports each knowledge type separately and never invents numbers", () => {
   const empty = readiness(initialProgress());
   assert.deepEqual([empty.recall.count, empty.understanding.count, empty.application.count], [0, 0, 0]);
@@ -121,6 +147,25 @@ test("readiness reports each knowledge type separately and never invents numbers
   assert.equal(r.understanding.value, 0);
   assert.equal(r.application.value, 1);
   assert.equal(r.untested, 17);
+});
+
+test("the memory garden grows only from unaided success and blooms after spaced recall", () => {
+  const id = conceptId(2, 4);
+  let p = initialProgress();
+  assert.equal(gardenStage(p, id), 0);
+  p = recordAttempt(p, { conceptId: id, mode: "recall", correct: false, hinted: false }, t0);
+  assert.equal(gardenStage(p, id), 1);
+  p = recordAttempt(p, { conceptId: id, mode: "recall", correct: true, hinted: false }, later(1));
+  assert.equal(gardenStage(p, id), 2);
+  p = recordAttempt(p, { conceptId: id, mode: "teach", correct: true, hinted: true }, later(2));
+  assert.equal(gardenStage(p, id), 2, "a hinted explanation doesn't grow a bud");
+  p = recordAttempt(p, { conceptId: id, mode: "why", correct: true, hinted: false, rung: 2 }, later(3));
+  assert.equal(gardenStage(p, id), 3);
+  p = recordAttempt(p, { conceptId: id, mode: "recall", correct: true, hinted: false }, later(4));
+  assert.equal(gardenStage(p, id), 3, "same-day recall isn't spaced");
+  p = recordAttempt(p, { conceptId: id, mode: "recall", correct: false, hinted: false }, later(60 * 26));
+  p = recordAttempt(p, { conceptId: id, mode: "recall", correct: true, hinted: false }, later(60 * 27));
+  assert.equal(gardenStage(p, id), 4);
 });
 
 test("older saved progress without learning history still loads", () => {

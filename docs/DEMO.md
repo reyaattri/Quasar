@@ -7,13 +7,13 @@ Record on a phone or an Android build if you can. If you record the web build at
 | Time | Show | Say |
 | --- | --- | --- |
 | 0:00–0:12 | Landing: the hero glides dojo → ruins → neon | "Most study apps show you the same explanation again. Quasar gives an idea somewhere to live." |
-| 0:12–0:25 | Pick Biology → Today plan; switch 15 → 30 min; open the task reasons | "Today picks what needs me and tells me why: knowledge gaps, what's due, my exam date." |
+| 0:12–0:25 | Home → *Today's session* → the plan on Review; switch 15 → 30 min; read the task reasons | "Today picks what needs me and tells me why: knowledge gaps, what's due, my exam date." |
 | 0:25–0:45 | Lesson card → hide card → choose a wrong answer | "I learn with a picture, then answer with the picture hidden." |
-| 0:45–1:05 | Back on Today: Repair task + Error Memory card ("You keep choosing…") | "Miss it twice and Quasar names the exact misconception, then offers a different angle." |
+| 0:45–1:05 | Back on Review: Repair task + Error Memory card ("You keep choosing…") | "Miss it twice and Quasar names the exact misconception, then offers a different angle." |
 | 1:05–1:25 | Explain it back → check → the guiding question → check again → Defend | "I teach it back. Quasar asks a question about what I left out instead of handing me the answer." |
 | 1:25–1:40 | Why Ladder: climb, slip on one rung, see "breaks at…" | "It finds where my understanding breaks, not just a score." |
-| 1:40–1:52 | Ready: three meters | "Recall, understanding and application, measured separately from my own unaided answers." |
-| 1:52–2:00 | Quasar Plus screen | "The core lessons are free. Quasar Plus adds personalized stories, through RevenueCat." Only show a purchase if it has actually been completed with a sandbox account. |
+| 1:40–1:52 | Ready: three meters, then the Memory Garden | "Recall, understanding and application, measured separately. And every idea I really know grows in my garden." |
+| 1:52–2:00 | Quasar Plus screen | "The core lessons are free. Quasar Plus adds personalized stories and an AI tutor, through RevenueCat." Only show a purchase if it has actually been completed with a sandbox account. |
 
 ## Screenshots
 
@@ -23,6 +23,7 @@ Record on a phone or an Android build if you can. If you record the web build at
 - `docs/error-memory-mobile.png`
 - `docs/teach-back-mobile.png`
 - `docs/ready-mobile.png`
+- `docs/memory-garden-mobile.png`
 
 ## Earlier recording
 

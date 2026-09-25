@@ -8,33 +8,34 @@ Quasar is a visual memory-learning app built with Expo and React Native. It give
 
 <p>
   <img src="docs/landing-worlds-mobile.png" width="19%" alt="Landing screen with the memory-worlds hero">
-  <img src="docs/today-plan-mobile.png" width="19%" alt="Today plan with a repair task and time budget">
+  <img src="docs/today-plan-mobile.png" width="19%" alt="Today's session on the Review tab, with a repair task and time budget">
   <img src="docs/teach-back-mobile.png" width="19%" alt="Teach-Back asking a guiding question about a missing idea">
   <img src="docs/error-memory-mobile.png" width="19%" alt="Error Memory naming a repeated misconception">
-  <img src="docs/ready-mobile.png" width="19%" alt="Ready dashboard with recall, understanding and application meters">
+  <img src="docs/memory-garden-mobile.png" width="19%" alt="Ready dashboard meters and the Memory Garden">
 </p>
 
 ## Why Quasar exists
 
 Most study tools show the same explanation again. Quasar starts from how memory actually works: a vivid cue gives an idea somewhere to live, but understanding only counts when you can bring it back and use it **without help**. So every picture and story in the app leads to an unaided attempt, and every attempt feeds back into what you study next.
 
-It works without an account. Progress stays on the device by default. The core lessons are free; Quasar Plus adds personalized stories without locking learning behind a paywall.
+It works without an account. Progress stays on the device by default. The core lessons are free; Quasar Plus adds personalized stories and AI tutor feedback without locking learning behind a paywall.
 
 ## The learning loop
 
 | Pillar | What it does | Where |
 | --- | --- | --- |
-| **Today** | Ranks your next tasks using knowledge gaps, due reviews, exam date, importance and prerequisites. Fits them to 5, 15 or 30 minutes and explains every pick; any task can be swapped. | `src/lib/planner.ts`, `src/features/TodayPlan.tsx` |
+| **Today** | On the Review tab, ranks your next tasks using knowledge gaps, due reviews, exam date, importance and prerequisites. Fits them to 5, 15 or 30 minutes and explains every pick; any task can be swapped. After a break, **Recovery Mode** welcomes you back with a small, review-first plan and says what it set aside. Home shows a single link to the session. | `src/lib/planner.ts`, `src/features/TodayPlan.tsx` |
 | **Memory Worlds** | Walkable dojo, ruins and neon palaces; illustrated biology, SAT, calculus, Korean and π courses. | `src/features/MemoryPalace.tsx` and the course folders |
-| **Teach-Back** | The lesson hides and you explain it. Missing ideas come back as a *why* question, not the answer. Then you defend it with a follow-up question. | `src/features/TeachBack.tsx` |
+| **Teach-Back** | The lesson hides and you explain it, by typing or, in supporting browsers, by speaking. Missing ideas come back as a *why* question, not the answer. Then you defend it with a follow-up question. Quasar Plus adds **AI tutor feedback** on how you explained it. | `src/features/TeachBack.tsx`, `supabase/functions/grade-explanation` |
 | **Why Ladder** | Five rungs: what → why → how → what if it fails → use it somewhere new. It records where your understanding breaks. | `src/features/WhyLadder.tsx` |
-| **Case Lab** | Original two-attempt field cases at the end of each biology lesson. | `src/features/MedicineLesson.tsx` |
+| **Case Lab** | Six original two-attempt field cases, two per lesson, on their own page and at the end of each lesson. | `src/features/CaseLab.tsx`, `src/data/caseLab.ts` |
 | **Error Memory** | Miss a concept twice and Quasar shows the exact answer you keep choosing next to what's true, offers other angles, and waits for a correct unaided answer before clearing it. | `src/lib/learning.ts`, `src/features/ErrorMemory.tsx` |
 | **Ready** | Separate meters for factual recall, conceptual understanding and unfamiliar problem-solving. Only answers given without a hint count as mastered, and nothing is estimated. | `src/features/Ready.tsx` |
+| **Memory Garden** | Each concept is a plant: planted when you try it, leaves on an unaided recall, a bud once you explain it, a bloom after recall on two different days. It never wilts while you're away. | `src/features/MemoryGarden.tsx` |
 
-The loop currently runs on the three biology lessons (18 concepts). Spaced review uses [FSRS](https://github.com/open-spaced-repetition/ts-fsrs) throughout. Teach-Back checks explanations against authored key ideas by keyword. It says so in the app, and it is not AI grading.
+The loop currently runs on the three biology lessons (18 concepts). Spaced review uses [FSRS](https://github.com/open-spaced-repetition/ts-fsrs) throughout. Teach-Back checks explanations on the device against authored key ideas, by keyword; the app says so, and that check decides what counts as mastered. The optional AI tutor (Quasar Plus) is advice on top: it runs on the server with Claude and needs the Supabase, RevenueCat and Anthropic setup in [docs/SETUP.md](docs/SETUP.md).
 
-What's built versus planned (upload and import, AI-graded explanations, voice, Quasar Originals, the Memory Garden and more) is listed in [docs/PRODUCT-VISION.md](docs/PRODUCT-VISION.md).
+What's built versus planned (upload and import, Quasar Originals, social features, exam tracks and more) is listed in [docs/PRODUCT-VISION.md](docs/PRODUCT-VISION.md).
 
 ## RevenueCat Shipaton 2026
 
@@ -46,7 +47,7 @@ Quasar is being prepared for the **Next Gen Award**. The **RevenueCat Design Awa
 | Open-source license | [`LICENSE`](LICENSE) (MIT) | **Ready** |
 | Clear description of what was built | This README, [product vision](docs/PRODUCT-VISION.md), [design narrative](docs/DESIGN-NARRATIVE.md) | **Ready** |
 | Mobile app with a valid package ID | Expo app, `com.reyaattri.quasar` | Ready |
-| RevenueCat SDK integrated | `react-native-purchases` with offerings, purchase, restore and `quasar_pro` entitlement checks in `src/lib/services.ts`; server-side entitlement check in `supabase/functions/generate-mnemonic` | Implemented |
+| RevenueCat SDK integrated | `react-native-purchases` with offerings, purchase, restore and `quasar_pro` entitlement checks in `src/lib/services.ts`. Plus unlocks personalized stories and AI tutor feedback, both checked server-side against RevenueCat in `supabase/functions/` | Implemented |
 | A real purchase through RevenueCat | Needs store products, RevenueCat keys and a sandbox purchase on a native build | **Not yet verified** |
 | Demo video (under 2 minutes) | Script in [docs/DEMO.md](docs/DEMO.md) | **To record**; the older `docs/quasar-demo.webm` predates the learning loop |
 | Student eligibility | Academic email, age and guardian consent are confirmed by the entrant on Devpost | Owner action |
@@ -79,15 +80,16 @@ npm run test:e2e
 npm run export:web
 ```
 
-The 23 unit tests cover:
-- the Today planner: priority weights, time budgets, prerequisites and swapping
+The 25 unit tests cover:
+- the Today planner: priority weights, time budgets, prerequisites, swapping and Recovery Mode
+- Memory Garden growth rules and the Case Lab cases
 - Error Memory detection and resolution
 - Ready's measures, and Teach-Back rubric matching
 - FSRS scheduling for biology concepts, and migration of older saved progress
 - π reconstruction and palace anchors
 - curriculum integrity and database row-level security
 
-Browser tests cover onboarding, learning, recall, worlds and the courses at phone size. `node scripts/capture-screens.cjs` regenerates the README screenshots.
+Browser tests cover onboarding, learning, recall, worlds, the courses, and the full loop (Error Memory, Teach-Back, repair, Ready, the Memory Garden, Case Lab and Recovery Mode) at phone size. `node scripts/capture-screens.cjs` regenerates the README screenshots.
 
 ## Connected services
 
@@ -105,7 +107,7 @@ Setup is in [docs/SETUP.md](docs/SETUP.md).
 | Path | Purpose |
 | --- | --- |
 | `App.tsx` | App shell, onboarding, navigation, settings, account and purchase flows |
-| `src/features/` | Courses, Teach-Back, Why Ladder, Today plan, Error Memory, Ready |
+| `src/features/` | Courses, Teach-Back, Why Ladder, Case Lab, Today plan, Error Memory, Ready, Memory Garden |
 | `src/lib/` | Progress and FSRS scheduling, learning history and Error Memory (`learning.ts`), the Today planner (`planner.ts`), services |
 | `src/data/` | Curriculum, Teach-Back key ideas and Why Ladders (`biologyUnderstanding.ts`), mnemonic cues and artwork mappings |
 | `src/components/` | Design system (`ui.tsx`), motion (`Reveal.tsx`), rooms, scenes and interface elements |
@@ -119,7 +121,7 @@ Setup is in [docs/SETUP.md](docs/SETUP.md).
 
 - **Storage:** guest progress, including the learning history behind Error Memory and Ready, stays on the device. Cloud backup happens only when a signed-in learner presses the backup button.
 - **Analytics:** off unless the learner turns them on.
-- **Personalization:** profile fields are sent to the generation endpoint only when the learner asks for a personalized story.
+- **Personalization and AI feedback:** profile fields go to the generation endpoint only when the learner asks for a personalized story, and a Teach-Back explanation goes to the AI tutor only when a Plus member presses its button. Voice dictation uses the browser's own speech service, only while switched on.
 - **Entitlements:** the server checks RevenueCat directly and never trusts a flag sent by the client.
 - **Content:** biology material is educational, not diagnosis or treatment. SAT practice is original, not an official College Board question bank. Artwork and audio provenance are documented in [docs/ARTWORK.md](docs/ARTWORK.md) and `assets/korean/credits.json`.
 

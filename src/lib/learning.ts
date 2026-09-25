@@ -1,7 +1,8 @@
 import { createEmptyCard, Rating } from "ts-fsrs";
 import { medicalModules } from "../data/medicalLessons";
 import { biologyCoaching } from "../data/lessonCoaching";
-import { scheduler, type Attempt, type Progress } from "./progress";
+import { findCase } from "../data/caseLab";
+import { localDay, scheduler, type Attempt, type Progress } from "./progress";
 
 export const conceptId = (module: number, card: number) => `bio-${module}-${card}`;
 export const caseId = (module: number) => `bio-case-${module}`;
@@ -15,7 +16,7 @@ export const allConceptIds = medicalModules.flatMap((m, i) =>
 export function parseConcept(id: string) {
   const c = /^bio-(\d)-(\d)$/.exec(id);
   if (c) return { module: +c[1], card: +c[2], isCase: false };
-  const k = /^bio-case-(\d)$/.exec(id);
+  const k = /^bio-case-(\d)(?:-[a-z])?$/.exec(id);
   if (k) return { module: +k[1], card: -1, isCase: true };
   return null;
 }
@@ -24,13 +25,15 @@ export function conceptInfo(id: string) {
   const parsed = parseConcept(id);
   if (!parsed) return null;
   const lesson = medicalModules[parsed.module];
-  if (parsed.isCase)
+  if (parsed.isCase) {
+    const c = findCase(id) ?? lesson.case;
     return {
       ...parsed,
-      title: lesson.case.title,
+      title: c.title,
       lesson: lesson.title,
-      angles: [lesson.case.hint, lesson.case.explanation],
+      angles: [c.hint, c.explanation],
     };
+  }
   const card = lesson.cards[parsed.card];
   const coaching = biologyCoaching[parsed.module][parsed.card];
   return {
@@ -112,6 +115,19 @@ export function errorMemory(p: Progress): ErrorEntry[] {
     });
   }
   return out.sort((a, b) => (a.lastWrongAt < b.lastWrongAt ? 1 : -1));
+}
+
+export type GardenStage = 0 | 1 | 2 | 3 | 4;
+
+// 0 seed · 1 sprout · 2 leaves (unaided recall) · 3 bud (also explained) · 4 bloom (recalled on two days)
+export function gardenStage(p: Progress, id: string): GardenStage {
+  const list = attemptsOf(p, id);
+  if (!list.length) return 0;
+  const good = list.filter((a) => a.correct && !a.hinted);
+  const recalls = good.filter((a) => a.mode === "recall");
+  if (!recalls.length) return 1;
+  if (!good.some((a) => a.mode === "teach" || a.mode === "why")) return 2;
+  return new Set(recalls.map((a) => localDay(new Date(a.at)))).size >= 2 ? 4 : 3;
 }
 
 export type ReadyMeter = { value: number; count: number };

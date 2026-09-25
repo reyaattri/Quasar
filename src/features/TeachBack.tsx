@@ -1,13 +1,21 @@
-import React, { useState } from "react";
-import { View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Pressable, View } from "react-native";
+import { dictationSupported, startDictation } from "../lib/dictation";
 import { Button, C, Card, Field, Icon, s, Tag, Text } from "../components/ui";
 import { PressableScale, Reveal } from "../components/Reveal";
 import { medicalModules } from "../data/medicalLessons";
 import { teachConcepts } from "../data/biologyUnderstanding";
 import { attemptsOf, conceptId, errorMemory, parseConcept } from "../lib/learning";
 import { applicationHints, type Attempt, type Progress } from "../lib/progress";
+import type { TutorFeedback } from "../lib/services";
 
 type Log = (a: Omit<Attempt, "at">) => void;
+type Tutor = (input: {
+  prompt: string;
+  reference: string;
+  keyPoints: string[];
+  explanation: string;
+}) => Promise<TutorFeedback>;
 
 function status(p: Progress, id: string) {
   const list = attemptsOf(p, id);
@@ -26,12 +34,16 @@ export function TeachBack({
   mode,
   onAttempt,
   onDone,
+  tutor,
+  onUpgrade,
 }: {
   progress: Progress;
   focus?: string;
   mode: "teach" | "recall";
   onAttempt: Log;
   onDone: () => void;
+  tutor?: Tutor;
+  onUpgrade?: () => void;
 }) {
   const [picked, setPicked] = useState<string | undefined>(focus);
   const parsed = picked ? parseConcept(picked) : null;
@@ -84,6 +96,8 @@ export function TeachBack({
       onAttempt={onAttempt}
       onDone={onDone}
       onAnother={() => setPicked(undefined)}
+      tutor={tutor}
+      onUpgrade={onUpgrade}
     />
   );
 }
@@ -95,6 +109,8 @@ function Session({
   onAttempt,
   onDone,
   onAnother,
+  tutor,
+  onUpgrade,
 }: {
   module: number;
   card: number;
@@ -102,6 +118,8 @@ function Session({
   onAttempt: Log;
   onDone: () => void;
   onAnother: () => void;
+  tutor?: Tutor;
+  onUpgrade?: () => void;
 }) {
   const id = conceptId(module, index);
   const card = medicalModules[module].cards[index];
@@ -115,6 +133,10 @@ function Session({
   const [recorded, setRecorded] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const [choice, setChoice] = useState<number | null>(null);
+  const [listening, setListening] = useState(false);
+  const stopRef = useRef<(() => void) | null>(null);
+  const voice = dictationSupported();
+  useEffect(() => () => stopRef.current?.(), []);
   const allHit = !!hits && hits.every(Boolean);
   const finalCheck = allHit || checks >= 2;
 
@@ -131,6 +153,24 @@ function Session({
     if (h.every(Boolean) || n >= 2) record(h.every(Boolean), n > 1);
   };
   const missing = hits ? concept.keyPoints.filter((_, i) => !hits[i]) : [];
+  const [ai, setAi] = useState<
+    | { state: "idle" }
+    | { state: "busy" }
+    | { state: "done"; result: TutorFeedback }
+    | { state: "error" }
+  >({ state: "idle" });
+  const askTutor = () => {
+    if (!tutor) return;
+    setAi({ state: "busy" });
+    tutor({
+      prompt: concept.prompt,
+      reference: card.biology,
+      keyPoints: concept.keyPoints.map((k) => k.text),
+      explanation: text,
+    })
+      .then((result) => setAi({ state: "done", result }))
+      .catch(() => setAi({ state: "error" }));
+  };
 
   return (
     <View style={{ gap: 20 }}>
@@ -165,6 +205,33 @@ function Session({
               multiline
               placeholder="Start with what happens, then say why…"
             />
+            {voice && !finalCheck && (
+              <View style={{ gap: 6 }}>
+                <Button
+                  small
+                  secondary
+                  icon={listening ? "close" : "mic"}
+                  onPress={() => {
+                    if (listening) {
+                      stopRef.current?.();
+                      return;
+                    }
+                    setListening(true);
+                    stopRef.current = startDictation(
+                      (t) => setText((old) => (old ? old.trimEnd() + " " : "") + t),
+                      () => setListening(false),
+                    );
+                  }}
+                >
+                  {listening ? "Stop listening" : "Say it out loud instead"}
+                </Button>
+                <Text style={s.small}>
+                  {listening
+                    ? "Listening… your words appear above."
+                    : "Your browser's speech service turns your voice into text."}
+                </Text>
+              </View>
+            )}
             {!finalCheck && (
               <Button icon="check" disabled={text.trim().length < 20} onPress={check}>
                 {checks ? "Check again" : "Check my explanation"}
@@ -202,6 +269,56 @@ function Session({
                   </Text>
                 )}
               </Card>
+            )}
+            {hits && tutor && ai.state !== "done" && (
+              <Button secondary icon="spark" disabled={ai.state === "busy"} onPress={askTutor}>
+                {ai.state === "busy" ? "The tutor is reading…" : "Ask the AI tutor for feedback"}
+              </Button>
+            )}
+            {ai.state === "error" && (
+              <Text style={s.small}>
+                The AI tutor is unavailable right now. Your keyword check still counts.
+              </Text>
+            )}
+            {ai.state === "done" && (
+              <Card style={{ backgroundColor: "#EEF1F8", borderColor: "#D5DCEB", gap: 10 }}>
+                <Text style={[s.small, { fontWeight: "700", letterSpacing: 1.2, color: C.ink }]}>
+                  AI TUTOR FEEDBACK
+                </Text>
+                <Text style={[s.body, { color: C.ink }]}>{ai.result.feedback}</Text>
+                {ai.result.points.map((pt, i) =>
+                  pt.covered && pt.evidence ? (
+                    <View key={i} style={[s.row, { alignItems: "flex-start" }]}>
+                      <Icon name="check" size={16} color={C.green} />
+                      <Text style={[s.small, { flex: 1 }]}>“{pt.evidence}”</Text>
+                    </View>
+                  ) : null,
+                )}
+                {ai.result.misconceptions.length > 0 && (
+                  <View style={{ gap: 4 }}>
+                    <Text style={[s.small, { fontWeight: "700", color: C.red }]}>CHECK THIS CLAIM</Text>
+                    {ai.result.misconceptions.map((m) => (
+                      <Text key={m} style={[s.small, { color: C.red }]}>
+                        {m}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+                <View style={{ backgroundColor: C.white, borderRadius: 14, padding: 12, gap: 4 }}>
+                  <Text style={[s.small, { fontWeight: "700", letterSpacing: 1.2 }]}>ONE MORE QUESTION</Text>
+                  <Text style={[s.body, { color: C.ink }]}>{ai.result.followUp}</Text>
+                </View>
+                <Text style={s.small}>
+                  AI feedback can be wrong. Compare it with the lesson, and trust the evidence.
+                </Text>
+              </Card>
+            )}
+            {hits && !tutor && onUpgrade && (
+              <Pressable accessibilityRole="button" onPress={onUpgrade}>
+                <Text style={s.link}>
+                  Want feedback on how you explained it, not just which ideas? AI tutor feedback comes with Quasar Plus →
+                </Text>
+              </Pressable>
             )}
             {!revealed && (
               <Button
@@ -285,7 +402,7 @@ function Session({
               Quasar uses this to decide what comes back tomorrow and what needs
               a different angle.
             </Text>
-            <Button onPress={onDone}>Back to Today</Button>
+            <Button onPress={onDone}>Back to my session</Button>
             <Button secondary onPress={onAnother}>
               Explain another concept
             </Button>
