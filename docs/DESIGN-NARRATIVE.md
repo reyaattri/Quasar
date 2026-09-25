@@ -38,7 +38,7 @@ Five segments across the top fill green or red as the learner climbs (*what, why
 ### 6. Ready: three kinds of knowing
 `src/features/Ready.tsx` · `docs/ready-mobile.png`
 
-Factual recall, conceptual understanding and unfamiliar problem-solving each get their own animated meter and colour. They're separate because knowing a fact isn't the same as explaining it. Untested areas say "Not tested yet" rather than showing a zero that looks like failure. The card states outright that this isn't a score prediction.
+Ready opens with the existing journal: the dark ring cover, *A week in memory*, and the yellow *Your next small step* ticket. The biology meters and the garden follow as further journal pages, in the same white-paper style, with a small label, a headline and quiet body text. Factual recall, conceptual understanding and unfamiliar problem-solving each get their own animated meter and colour. They're separate because knowing a fact isn't the same as explaining it. Untested areas say "Not tested yet" rather than showing a zero that looks like failure. The card states outright that this isn't a score prediction.
 
 ### 7. Memory Garden: progress that never wilts
 `src/features/MemoryGarden.tsx` · `docs/memory-garden-mobile.png`
@@ -50,7 +50,14 @@ Eighteen hand-drawn SVG plants in three beds, one bed per lesson and a petal col
 
 Case Lab lists original field cases by lesson with honest status tags (*New*, *Solved*, *Solved with a hint*, *Try again*). In Teach-Back, a Quasar Plus member can ask the AI tutor for feedback. It arrives in a separate cool-blue card: evidence quoted from the learner's own words, any wrong claims flagged in red, one more question, and a reminder that AI feedback can be wrong. Everyone else sees a single quiet line about Plus rather than a locked button.
 
-### 9. Quasar Plus: a paywall that respects the learner
+### 9. Notes → Quiz and the Hangul Lab
+`src/features/NotesQuiz.tsx` · `src/features/HangulLab.tsx`
+
+Notes → Quiz keeps the promise in its title. Paste notes and the quick quiz appears immediately, built on the device. After each answer, a yellow-ruled quote shows the line from the learner's own notes the question came from, so the source is always one glance away.
+
+The Hangul Lab treats every syllable as a little building. A large dark tile shows the block, and below it colour-coded slots (sage for the first consonant, yellow for the vowel, peach for the final consonant) show exactly how it stacks. Picking ㅗ instead of ㅏ visibly moves the vowel from beside the consonant to underneath it. The vowel lessons teach the real heaven-earth-person design of Hangul before any memory cue. The sound-twin drills remember what the learner mixes up and bring it back first.
+
+### 10. Quasar Plus: a paywall that respects the learner
 The hero matches the onboarding's dark green, with a pulsing spark icon and three feature tiles (personalized stories, AI tutor feedback, and *core content stays free*). An annual package gets a *Best value* tag. If the store isn't connected, a dashed "coming soon" card explains that plainly instead of showing a broken or disabled buy button.
 
 ## Motion

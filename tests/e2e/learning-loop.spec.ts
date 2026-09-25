@@ -89,3 +89,67 @@ test("Case Lab records a new case, and a long break opens a gentle recovery plan
   await page.getByRole("button", { name: "All cases" }).click();
   await expect(page.getByRole("button", { name: /^The mutation that changed nothing, Solved$/ })).toBeVisible();
 });
+
+test("pasted notes become a quick quiz whose answers are saved for review", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await page.getByText("WELCOME TO QUASAR").waitFor();
+  await page.evaluate((key) => {
+    const p = JSON.parse(localStorage.getItem(key)!);
+    p.onboarded = true;
+    localStorage.setItem(key, JSON.stringify(p));
+  }, KEY);
+  await page.reload();
+  await page.getByRole("button", { name: "Explore", exact: true }).click();
+  await page.getByRole("button", { name: /^Notes → Quiz/ }).click();
+  await page.getByLabel("Deck title").fill("Cells");
+  await page.getByLabel("Your notes").fill(
+    "Mitochondria: transfer energy from sugar into ATP\nRibosome: builds proteins by reading mRNA\nChloroplast: captures light energy to make sugar\nNucleus: stores DNA behind a double membrane",
+  );
+  await page.getByRole("button", { name: "Make a quick quiz" }).click();
+  await expect(page.getByText("1 / 4", { exact: true })).toBeVisible();
+  for (let i = 0; i < 4; i++) {
+    await page.locator('[role="button"]').filter({ hasText: /^(Mitochondria|Ribosome|Chloroplast|Nucleus|transfer|builds|captures|stores)/ }).first().click();
+    await expect(page.getByText(/^From your notes:/)).toBeVisible();
+    await page.getByRole("button", { name: i === 3 ? "See my score" : "Next question" }).click();
+  }
+  await expect(page.getByText(/of 4 right\./)).toBeVisible();
+  await page.getByRole("button", { name: "Back to my notes" }).click();
+  await expect(page.getByText("Cells", { exact: true })).toBeVisible();
+  const saved = await page.evaluate((key) => {
+    const p = JSON.parse(localStorage.getItem(key)!);
+    return { decks: p.notes.length, cards: Object.keys(p.cards).filter((k: string) => k.startsWith("note-")).length };
+  }, KEY);
+  expect(saved).toEqual({ decks: 1, cards: 4 });
+});
+
+test("the Hangul Lab builds syllables and remembers sound-twin answers", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await page.getByText("WELCOME TO QUASAR").waitFor();
+  await page.evaluate((key) => {
+    const p = JSON.parse(localStorage.getItem(key)!);
+    p.onboarded = true;
+    localStorage.setItem(key, JSON.stringify(p));
+  }, KEY);
+  await page.reload();
+  await page.getByRole("button", { name: "Explore", exact: true }).click();
+  await page.getByRole("button", { name: "Open Korean practice" }).click();
+  await page.getByRole("button", { name: /^Open the Hangul Lab/ }).click();
+  await expect(page.getByText("THREE STROKES MAKE EVERY VOWEL")).toBeVisible();
+  await page.getByRole("button", { name: "Build a block" }).click();
+  await page.getByRole("button", { name: "ㄱ", exact: true }).first().click();
+  await page.getByRole("button", { name: "ㅡ", exact: true }).click();
+  await page.getByRole("button", { name: "ㄹ", exact: true }).last().click();
+  await expect(page.getByLabel("글, pronounced geul")).toBeVisible();
+  await page.getByRole("button", { name: "Sound twins" }).click();
+  await expect(page.getByText(/^Which one is “/)).toBeVisible();
+  await page.locator('[role="button"][aria-label]').filter({ hasText: /^[가-힣]$/ }).first().click();
+  await page.getByRole("button", { name: "Next" }).click();
+  const answers = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)!).attempts.filter((a: { conceptId: string }) => a.conceptId.startsWith("ko-")).length, KEY);
+  expect(answers).toBe(1);
+  await page.getByRole("button", { name: "Back to the picture story" }).click();
+  await expect(page.getByRole("button", { name: "What happens next?" })).toBeVisible();
+});

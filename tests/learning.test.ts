@@ -15,6 +15,17 @@ import { buildPlan, candidateTasks, priority } from "../src/lib/planner";
 import { teachConcepts, whyLadders } from "../src/data/biologyUnderstanding";
 import { medicalModules } from "../src/data/medicalLessons";
 import { labCases } from "../src/data/caseLab";
+import { isValidDeck, noteConceptId, quickQuiz } from "../src/lib/noteQuiz";
+import {
+  compose,
+  decompose,
+  hangulWords,
+  isVerticalVowel,
+  romanize,
+  romanizeWord,
+  soundTwins,
+  vowelLessons,
+} from "../src/data/hangul";
 
 const t0 = new Date("2026-09-24T12:00:00Z");
 const later = (min: number) => new Date(t0.getTime() + min * 60_000);
@@ -166,6 +177,62 @@ test("the memory garden grows only from unaided success and blooms after spaced 
   p = recordAttempt(p, { conceptId: id, mode: "recall", correct: false, hinted: false }, later(60 * 26));
   p = recordAttempt(p, { conceptId: id, mode: "recall", correct: true, hinted: false }, later(60 * 27));
   assert.equal(gardenStage(p, id), 4);
+});
+
+test("quick quizzes turn term lines and sentences into answerable questions", () => {
+  const notes = [
+    "Mitochondria: transfer energy from sugar into ATP",
+    "- Ribosome: builds proteins by reading mRNA codons",
+    "Chloroplast — captures light energy to make sugar",
+    "1. Nucleus = stores DNA behind a double membrane",
+    "See https://example.com: not a definition",
+  ].join("\n");
+  const deck = quickQuiz("Cells", notes, t0);
+  assert.ok(!("error" in deck));
+  if ("error" in deck) return;
+  assert.ok(isValidDeck(deck));
+  assert.equal(deck.questions.length, 4);
+  for (const q of deck.questions) {
+    assert.equal(new Set(q.choices).size, q.choices.length, "no duplicate choices");
+    assert.ok(q.source && notes.includes(q.source), "every question points back to a line in the notes");
+  }
+  assert.deepEqual(quickQuiz("Cells", notes, t0), deck, "the same notes give the same quiz");
+
+  const prose =
+    "Photosynthesis captures light energy and stores it in sugar molecules. Respiration releases that stored energy as ATP inside mitochondria. Enzymes speed up reactions without being consumed themselves. Diffusion moves particles from higher to lower concentration without energy.";
+  const cloze = quickQuiz("Energy", prose, t0);
+  assert.ok(!("error" in cloze) && cloze.questions.every((q) => q.prompt.includes("_____")));
+  assert.ok("error" in quickQuiz("Tiny", "Too short to quiz.", t0));
+});
+
+test("note and Hangul answers are scheduled for review but kept out of biology readiness", () => {
+  const id = noteConceptId("deck1", "p0");
+  let p = recordAttempt(initialProgress(), { conceptId: id, mode: "recall", correct: false, hinted: false }, t0);
+  p = recordAttempt(p, { conceptId: "ko-ㅓ", mode: "recall", correct: true, hinted: false }, t0);
+  assert.ok(p.cards[id] && p.cards["ko-ㅓ"], "both get FSRS cards");
+  const r = readiness(p);
+  assert.equal(r.recall.count, 0);
+  assert.equal(r.untested, 18);
+  assert.equal(errorMemory(p).length, 0);
+});
+
+test("Hangul blocks compose, decompose and romanize by the Unicode and Revised Romanization rules", () => {
+  assert.equal(compose("ㅎ", "ㅏ", "ㄴ"), "한");
+  assert.equal(compose("ㄱ", "ㅡ", "ㄹ"), "글");
+  assert.equal(compose("ㅇ", "ㅏ"), "아");
+  assert.deepEqual(decompose("닭"), { initial: "ㄷ", vowel: "ㅏ", final: "ㄺ" });
+  assert.equal(decompose("A"), null);
+  assert.equal(romanize("한"), "han");
+  assert.equal(romanize("밥"), "bap");
+  assert.equal(romanize("강"), "gang");
+  assert.equal(romanizeWord("사과"), "sagwa");
+  assert.equal(romanizeWord("김치"), "gimchi");
+  assert.equal(romanizeWord("커피"), "keopi");
+  assert.equal(isVerticalVowel("ㅏ"), true);
+  assert.equal(isVerticalVowel("ㅗ"), false);
+  for (const t of soundTwins) assert.equal(new Set(t.set.map(romanize)).size, t.set.length, t.title);
+  assert.equal(new Set(hangulWords.map((w) => romanizeWord(w.word))).size, hangulWords.length);
+  for (const l of vowelLessons) assert.equal(romanize(compose("ㅇ", l.vowel)), l.sound);
 });
 
 test("older saved progress without learning history still loads", () => {

@@ -44,6 +44,10 @@ export function conceptInfo(id: string) {
   };
 }
 
+// Spaced-review items: biology concepts, Hangul items and note-quiz questions (not field cases).
+export const schedulable = (id: string) =>
+  /^bio-\d-\d$/.test(id) || id.startsWith("ko-") || id.startsWith("note-");
+
 export const attemptsOf = (p: Progress, id: string) =>
   (p.attempts ?? []).filter((a) => a.conceptId === id);
 
@@ -54,7 +58,7 @@ export function recordAttempt(
 ): Progress {
   const full: Attempt = { ...attempt, at: now.toISOString() };
   let cards = p.cards;
-  if (attempt.mode === "recall" && parseConcept(attempt.conceptId)) {
+  if (attempt.mode === "recall" && schedulable(attempt.conceptId)) {
     const old = p.cards[attempt.conceptId] ?? createEmptyCard(now);
     const next = scheduler.repeat(old, now)[
       attempt.correct && !attempt.hinted ? Rating.Good : Rating.Again
@@ -139,7 +143,7 @@ function latestBy(list: Attempt[], key: (a: Attempt) => string) {
 }
 
 export function readiness(p: Progress) {
-  const all = p.attempts ?? [];
+  const all = (p.attempts ?? []).filter((a) => parseConcept(a.conceptId));
   const meter = (list: Attempt[]): ReadyMeter => ({
     value: list.length
       ? list.filter((a) => a.correct && !a.hinted).length / list.length

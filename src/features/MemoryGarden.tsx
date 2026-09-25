@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Pressable, View } from "react-native";
 import Svg, { Circle, Ellipse, Path } from "react-native-svg";
 import { MotiView } from "moti";
-import { C, Card, s, Tag, Text } from "../components/ui";
+import { C, s, Text } from "../components/ui";
 import { Reveal } from "../components/Reveal";
 import { medicalModules } from "../data/medicalLessons";
 import {
@@ -74,14 +74,15 @@ export function MemoryGarden({ progress }: { progress: Progress }) {
     : null;
   return (
     <Reveal>
-      <Card style={{ backgroundColor: "#F3EFE2", gap: 14 }}>
-        <View style={s.between}>
-          <Tag color={C.sage}>MEMORY GARDEN</Tag>
-          <Text style={s.small}>
+      <View style={[s.paper, { gap: 14 }]}>
+        <View>
+          <Text style={s.label}>YOUR MEMORY GARDEN</Text>
+          <Text style={[s.h2, { marginTop: 6 }]}>What's taking root.</Text>
+          <Text style={[s.small, { marginTop: 4 }]}>
             {blooms} in bloom · {growing} of 18 growing
           </Text>
         </View>
-        <Text style={s.body}>
+        <Text style={s.small}>
           Every concept is a plant. It only grows from answers you give without help, and
           it never wilts while you're away.
         </Text>
@@ -118,7 +119,7 @@ export function MemoryGarden({ progress }: { progress: Progress }) {
           </View>
         ))}
         {sel ? (
-          <View accessibilityLiveRegion="polite" style={{ backgroundColor: C.white, borderRadius: 16, padding: 14, gap: 4 }}>
+          <View accessibilityLiveRegion="polite" style={{ backgroundColor: "#F6EFDB", borderRadius: 16, padding: 14, gap: 4 }}>
             <Text style={s.label}>
               {medicalModules[sel.m].cards[sel.c].title} · {stageName[sel.stage].toLowerCase()}
             </Text>
@@ -130,7 +131,7 @@ export function MemoryGarden({ progress }: { progress: Progress }) {
         ) : (
           <Text style={s.small}>Tap a plant to see what helps it grow.</Text>
         )}
-      </Card>
+      </View>
     </Reveal>
   );
 }

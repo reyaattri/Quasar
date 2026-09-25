@@ -22,7 +22,7 @@
 - [ ] Deploy Supabase schema and confirm real email signup, login, logout, and backup on two devices.
 - [ ] Configure RevenueCat store products, current offering and quasar_pro entitlement.
 - [ ] Deploy and test the delete-account Edge Function with a disposable account.
-- [ ] Deploy the grade-explanation Edge Function; with a sandbox Plus test account, confirm AI tutor feedback works, a non-Plus account is refused, and the quota applies.
+- [ ] Deploy the grade-explanation and generate-quiz Edge Functions; with a sandbox Plus test account, confirm AI tutor feedback and AI quizzes (text and PDF) work, a non-Plus account is refused, and the quota applies.
 - [x] Make the GitHub repository public for the Next Gen submission path.
 - [ ] Publish privacy and terms pages; enter their URLs in app configuration.
 - [ ] Build and install on Android/iOS; inspect safe areas, keyboard, back button and accessibility.

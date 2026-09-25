@@ -64,6 +64,35 @@ const out = (name) => `docs/${name}.png`;
   await settle(2200);
   await page.screenshot({ path: out("memory-garden-mobile") });
 
+  await button("Explore").click();
+  await settle();
+  await page.getByRole("button", { name: /^Notes → Quiz/ }).click();
+  await settle();
+  await page.getByLabel("Deck title").fill("Cells · week 3");
+  await page.getByLabel("Your notes").fill(
+    "Mitochondria: transfer energy from sugar into ATP\nRibosome: builds proteins by reading mRNA codons\nChloroplast: captures light energy to make sugar\nNucleus: stores DNA behind a double membrane\nHelicase: separates the two DNA strands",
+  );
+  await button("Make a quick quiz").click();
+  await settle();
+  await page.locator('[role="button"]').filter({ hasText: /^(Mitochondria|Ribosome|Chloroplast|Nucleus|Helicase|transfer|builds|captures|stores|separates)/ }).first().click();
+  await settle();
+  await page.screenshot({ path: out("notes-quiz-mobile") });
+
+  await button("Explore").click();
+  await settle();
+  await button("Open Korean practice").click();
+  await settle();
+  await page.getByRole("button", { name: /^Open the Hangul Lab/ }).click();
+  await settle();
+  await button("Build a block").click();
+  await page.getByRole("button", { name: "ㅎ", exact: true }).first().click();
+  await page.getByRole("button", { name: "ㅏ", exact: true }).click();
+  await page.getByRole("button", { name: "ㄴ", exact: true }).last().click();
+  await center("HOW IT STACKS");
+  await page.mouse.wheel(0, -220);
+  await settle();
+  await page.screenshot({ path: out("hangul-lab-mobile") });
+
   await browser.close();
 })().catch((e) => {
   console.error(e);

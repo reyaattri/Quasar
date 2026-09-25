@@ -5,6 +5,7 @@ import { Platform } from "react-native";
 import Constants from "expo-constants";
 import type { CustomerInfo, PurchasesPackage } from "react-native-purchases";
 import type { Progress } from "./progress";
+import { isValidDeck, type NoteDeck } from "./noteQuiz";
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const anon = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 export const supabase =
@@ -168,6 +169,28 @@ export async function gradeExplanation(input: {
   });
   if (error) throw error;
   return data as TutorFeedback;
+}
+
+export async function generateQuiz(input: {
+  title: string;
+  text?: string;
+  pdfBase64?: string;
+}): Promise<NoteDeck> {
+  if (!supabase)
+    throw new Error("AI quizzes need the connected Supabase service.");
+  const { data, error } = await supabase.functions.invoke("generate-quiz", {
+    body: input,
+  });
+  if (error) throw error;
+  const deck = {
+    id: Date.now().toString(36),
+    title: String(data?.title ?? input.title),
+    createdAt: new Date().toISOString(),
+    origin: "ai" as const,
+    questions: data?.questions,
+  };
+  if (!isValidDeck(deck)) throw new Error("The AI quiz came back incomplete.");
+  return deck;
 }
 
 export async function deleteAccount() {

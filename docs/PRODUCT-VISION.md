@@ -61,10 +61,10 @@ Implementation: `src/lib/planner.ts`, tested in `tests/learning.test.ts`.
 
 ## Roadmap
 
-**Phase 1: prove the core loop (in this repository).** Frictionless onboarding, memory worlds, biology lessons, Teach-Back (with voice and the Plus AI tutor), the Why Ladder, Case Lab, Error Memory, Today with Recovery Mode, Ready and the Memory Garden.
+**Phase 1: prove the core loop (in this repository).** Frictionless onboarding, memory worlds, biology lessons, Notes → Quiz (a free on-device quick quiz, plus Plus AI quizzes from text or PDF with source quotes), the Hangul Lab, Teach-Back (with voice and the Plus AI tutor), the Why Ladder, Case Lab, Error Memory, Today with Recovery Mode, Ready and the Memory Garden.
 
 **Phase 2: adaptive learning.**
-- Upload and source grounding: PDFs, slides and notes turned into concepts, each linked to its source.
+- Deeper import: slides and lecture recordings, and turning notes into full concepts with key ideas, not just quiz questions.
 - Alternative mnemonics compared over delayed tests.
 - More field cases.
 
@@ -99,4 +99,4 @@ The goal is to learn whether each part improves learning, not just whether it lo
 ## Business model
 
 - **Free:** the core lessons, memory worlds, reviews, Teach-Back, the Why Ladder, Error Memory and Ready. Learning is never paywalled.
-- **Quasar Plus:** personalized mnemonic stories and illustrations generated from the learner's own interests, plus AI tutor feedback on Teach-Back explanations, both verified server-side through RevenueCat's `quasar_pro` entitlement. Prices come from the store, and willingness to pay is something to test, not assume.
+- **Quasar Plus:** personalized mnemonic stories and illustrations generated from the learner's own interests, AI tutor feedback on Teach-Back explanations, and AI quizzes from uploaded notes, all verified server-side through RevenueCat's `quasar_pro` entitlement. Prices come from the store, and willingness to pay is something to test, not assume.

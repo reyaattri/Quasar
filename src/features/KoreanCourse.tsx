@@ -1,17 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Image, PanResponder, View, Linking } from "react-native";
 import Svg, { Path, Circle, Text as SvgText, Rect, Image as SvgImage, Defs, ClipPath } from "react-native-svg";
-import * as Speech from "expo-speech";
-import {
-  RecordingPresets,
-  requestRecordingPermissionsAsync,
-  setAudioModeAsync,
-  useAudioPlayer,
-  useAudioRecorder,
-} from "expo-audio";
 import { Button, C, Card, s, Tag, Text } from "../components/ui";
 import { readingPractice } from "../data/koreanPractice";
-import { koreanAudio } from "../data/koreanAudio";
+import { VoicePractice } from "../components/VoicePractice";
+import { PressableScale } from "../components/Reveal";
+import type { Attempt, Progress } from "../lib/progress";
+import { HangulLab } from "./HangulLab";
 
 const storyBeats = [
   {
@@ -259,134 +254,6 @@ function TracePad({
   );
 }
 
-export function VoicePractice({
-  phrase,
-  listeningOnly = false,
-}: {
-  phrase: string;
-  listeningOnly?: boolean;
-}) {
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY),
-    player = useAudioPlayer();
-  const [recording, setRecording] = useState(false),
-    [uri, setUri] = useState<string | null>(null),
-    [status, setStatus] = useState(""),
-    [busy, setBusy] = useState(false);
-  useEffect(
-    () => () => {
-      Speech.stop();
-      player.pause();
-    },
-    [],
-  );
-  const listen = async () => {
-    try {
-      await Speech.stop();
-      if (koreanAudio[phrase]) {
-        player.replace(koreanAudio[phrase]);
-        await player.seekTo(0);
-        player.play();
-        setStatus("Listen first, then repeat at your own pace.");
-        return;
-      }
-      const voices = await Speech.getAvailableVoicesAsync();
-      const voice = voices.find((v) =>
-        v.language.toLowerCase().startsWith("ko"),
-      );
-      if (!voice) {
-        setStatus(
-          "A Korean device voice is not available. Install a Korean text-to-speech voice in device settings, then try again.",
-        );
-        return;
-      }
-      Speech.speak(phrase, {
-        language: "ko-KR",
-        voice: voice.identifier,
-        rate: 0.8,
-        onError: () =>
-          setStatus(
-            "Audio could not play. You can retry without losing your place.",
-          ),
-      });
-    } catch {
-      setStatus("The voice could not start. Please try again.");
-    }
-  };
-  const toggle = async () => {
-    setBusy(true);
-    try {
-      if (recording) {
-        await recorder.stop();
-        setRecording(false);
-        await setAudioModeAsync({ allowsRecording: false });
-        setUri(recorder.uri);
-        setStatus(
-          recorder.uri
-            ? "Listen back and compare. A recording is not a pronunciation score."
-            : "No recording was saved. Please try again.",
-        );
-      } else {
-        await Speech.stop();
-        player.pause();
-        const permission = await requestRecordingPermissionsAsync();
-        if (!permission.granted) {
-          setStatus(
-            "Microphone access is off. You can still listen, trace, and continue.",
-          );
-          return;
-        }
-        await setAudioModeAsync({
-          allowsRecording: true,
-          playsInSilentMode: true,
-        });
-        await recorder.prepareToRecordAsync();
-        recorder.record();
-        setRecording(true);
-        setStatus("Recording. Take your time, then tap Stop recording.");
-      }
-    } catch {
-      setRecording(false);
-      setStatus(
-        "The microphone did not capture that. Retry whenever you are ready; your place is saved.",
-      );
-    } finally {
-      setBusy(false);
-    }
-  };
-  return (
-    <View style={{ gap: 12 }}>
-      <Button secondary disabled={recording || busy} onPress={listen}>
-        Listen to the Korean example
-      </Button>
-      {!listeningOnly && (
-        <Button disabled={busy} onPress={toggle}>
-          {recording ? "Stop recording" : "Record my voice"}
-        </Button>
-      )}
-      {uri && !recording && (
-        <Button
-          secondary
-          onPress={async () => {
-            try {
-              player.replace(uri);
-              await player.seekTo(0);
-              player.play();
-            } catch {
-              setStatus("Playback failed. Try recording again.");
-            }
-          }}
-        >
-          Play my recording
-        </Button>
-      )}
-      <Text accessibilityLiveRegion="polite" style={s.small}>
-        {status ||
-          "No timer. No automatic advance. Compare your voice with the example and retry as often as you like."}
-      </Text>
-    </View>
-  );
-}
-
 function Host({ index }: { index: number }) {
   return (
     <Svg
@@ -468,9 +335,15 @@ function StoryBeatSketch({ index }: { index: number }) {
   );
 }
 
-export function KoreanCourse() {
+export function KoreanCourse({
+  progress,
+  onAttempt,
+}: {
+  progress: Progress;
+  onAttempt: (a: Omit<Attempt, "at">) => void;
+}) {
   const [mode, setMode] = useState<
-      "story" | "conversation" | "recall" | "reading"
+      "story" | "conversation" | "recall" | "reading" | "lab"
     >("story"),
     [index, setIndex] = useState(0);
   const [readingDone, setReadingDone] = useState(false);
@@ -483,7 +356,24 @@ export function KoreanCourse() {
         Follow the picture story, hear each Korean sound, and trace its shape.
         Then put the pictures away and draw what you remember.
       </Text>
-      <View style={{ gap: 10 }}>
+      {mode !== "lab" && (
+        <PressableScale
+          accessibilityRole="button"
+          accessibilityLabel="Open the Hangul Lab: vowels, syllable blocks, sound twins and real words"
+          onPress={() => setMode("lab")}
+          style={{ backgroundColor: C.green, borderRadius: 24, padding: 20, gap: 8, flexDirection: "row", alignItems: "center" }}
+        >
+          <View style={{ width: 58, height: 58, borderRadius: 16, backgroundColor: "rgba(242,203,108,0.18)", alignItems: "center", justifyContent: "center" }}>
+            <Text style={{ fontSize: 32, color: C.yellow }}>한</Text>
+          </View>
+          <View style={{ flex: 1, gap: 4, marginLeft: 12 }}>
+            <Text style={{ color: "#E3EBCF", fontSize: 11, letterSpacing: 2, fontWeight: "700" }}>HANGUL LAB</Text>
+            <Text style={[s.h3, { color: C.paper }]}>Vowels, blocks, sound twins and real words</Text>
+            <Text style={{ color: "#C8D3C0", fontSize: 13 }}>Build any syllable and practise what you mix up.</Text>
+          </View>
+        </PressableScale>
+      )}
+      <View style={{ gap: 10, display: mode === "lab" ? "none" : "flex" }}>
         <Button
           secondary
           onPress={() => {
@@ -506,7 +396,9 @@ export function KoreanCourse() {
             : "Conversations unlock after reading practice"}
         </Button>
       </View>
-      {mode === "story" ? (
+      {mode === "lab" ? (
+        <HangulLab progress={progress} onAttempt={onAttempt} onBack={() => setMode("story")} />
+      ) : mode === "story" ? (
         <Card style={{ gap: 16, backgroundColor: C.paper, minWidth: 0, padding: 18 }}>
           <Tag>
             PICTURE STORY · {index + 1} OF {storyBeats.length}

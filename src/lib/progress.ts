@@ -1,6 +1,7 @@
 import { createEmptyCard, fsrs, Rating, type Card } from "ts-fsrs";
 import type { ArtStyle } from "../data/content";
 import type { PalaceSave } from "../features/MemoryPalace";
+import type { NoteDeck } from "./noteQuiz";
 export type Profile = {
   name: string;
   subjects: string[];
@@ -51,6 +52,7 @@ export type Progress = {
     batches: number[];
   };
   attempts?: Attempt[];
+  notes?: NoteDeck[];
   exam?: { label: string; date: string } | null;
   cues?: Record<string, number>;
 };

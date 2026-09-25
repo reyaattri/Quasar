@@ -4,6 +4,7 @@ import { Reveal, Pulse, PressableScale } from "./src/components/Reveal";
 import { TeachBack } from "./src/features/TeachBack";
 import { WhyLadder } from "./src/features/WhyLadder";
 import { CaseLab } from "./src/features/CaseLab";
+import { NotesQuiz } from "./src/features/NotesQuiz";
 import { TodayPlan } from "./src/features/TodayPlan";
 import { ReadyPanel } from "./src/features/Ready";
 import type { ErrorActions } from "./src/features/ErrorMemory";
@@ -15,6 +16,7 @@ import {
   allConceptIds,
 } from "./src/lib/learning";
 import { buildPlan, type Task } from "./src/lib/planner";
+import type { NoteDeck } from "./src/lib/noteQuiz";
 import { QuasarMark } from "./src/components/QuasarMark";
 import { ToolkitIcon } from "./src/components/ToolkitIcon";
 import { ToolkitConversation } from "./src/features/ToolkitConversation";
@@ -100,6 +102,7 @@ import {
   generatePersonalized,
   deleteAccount,
   gradeExplanation,
+  generateQuiz,
 } from "./src/lib/services";
 type Page =
   | "home"
@@ -118,7 +121,8 @@ type Page =
   | "paywall"
   | "teach"
   | "why"
-  | "cases";
+  | "cases"
+  | "notes";
 const tabs = [
   ["home", "home", "Today"],
   ["library", "book", "Explore"],
@@ -333,6 +337,18 @@ function Quasar() {
     setFocus({ conceptId, mode: "teach" });
     nav("cases");
   };
+  const saveDeck = (deck: NoteDeck) =>
+    setP((v) => ({ ...v, notes: [...(v.notes ?? []).filter((d) => d.id !== deck.id), deck].slice(-20) }));
+  const deleteDeck = (id: string) =>
+    setP((v) => {
+      const prefix = `note-${id}-`;
+      return {
+        ...v,
+        notes: (v.notes ?? []).filter((d) => d.id !== id),
+        cards: Object.fromEntries(Object.entries(v.cards).filter(([k]) => !k.startsWith(prefix))),
+        attempts: (v.attempts ?? []).filter((a) => !a.conceptId.startsWith(prefix)),
+      };
+    });
   const openWhy = (module?: number) => {
     setFocus({ module, mode: "teach" });
     nav("why");
@@ -550,7 +566,7 @@ function Quasar() {
     };
     const bioRecalled = allConceptIds.filter((id) => gardenStage(p, id) >= 2).length;
     const reviewCount =
-      due.length + dueIds(p).filter((id) => id.startsWith("bio-")).length + session.repair;
+      due.length + dueIds(p).filter((id) => /^(bio|note|ko)-/.test(id)).length + session.repair;
     return (
       <View style={{ gap: 30 }}>
         <View style={s.between}>
@@ -786,6 +802,7 @@ function Quasar() {
               ["smile", "Teach-Back Studio", "Explain a concept with the lesson hidden.", () => openTeach(undefined)],
               ["spark", "The Why Ladder", "Five rungs from what happens to why it matters.", () => openWhy(undefined)],
               ["map", "Case Lab", "Use what you know on problems you haven't seen.", () => openCase(undefined)],
+              ["cards", "Notes → Quiz", "Paste your notes and get a quiz that comes back for review.", () => nav("notes")],
             ] as const
           ).map(([icon, title, body, go]) => (
             <View key={title} style={{ flex: 1, minWidth: 150 }}>
@@ -950,6 +967,7 @@ function Quasar() {
   };
   const review = () => {
     const f = allFacts.find((f) => f.id === reviewQueue[reviewIndex]);
+    const noteDue = dueIds(p).filter((id) => id.startsWith("note-")).length;
     return (
       <View style={{ gap: 24 }}>
         {heading(
@@ -966,6 +984,28 @@ function Quasar() {
             onExam={(exam) => setP((v) => ({ ...v, exam }))}
             {...errorActions}
           />
+        )}
+        {!reviewStarted && (p.notes?.length ?? 0) > 0 && (
+          <Reveal delay={100}>
+            <PressableScale
+              accessibilityRole="button"
+              accessibilityLabel={`Your notes: ${noteDue} questions due`}
+              onPress={() => nav("notes")}
+              style={[s.card, { flexDirection: "row", alignItems: "center", gap: 16, padding: 18 }]}
+            >
+              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: "#F4E6B8", alignItems: "center", justifyContent: "center" }}>
+                <Icon name="cards" size={20} />
+              </View>
+              <View style={{ flex: 1, gap: 3 }}>
+                <Text style={s.h3}>Your notes</Text>
+                <Text style={s.small}>
+                  {p.notes!.length} {p.notes!.length === 1 ? "deck" : "decks"}
+                  {noteDue ? ` · ${noteDue} ${noteDue === 1 ? "question" : "questions"} due` : " · nothing due"}
+                </Text>
+              </View>
+              <Icon name="arrow" size={18} />
+            </PressableScale>
+          </Reveal>
         )}
         {!reviewStarted ? (
           <Reveal delay={120}>
@@ -1103,8 +1143,6 @@ function Quasar() {
           "What you can recall, explain and use.",
           "Measured from your own unaided answers, never estimated.",
         )}
-        <ReadyPanel progress={p} {...errorActions} />
-        <Text style={s.h2}>Your growing collection</Text>
         <Reveal>
           <ProgressMobile
             mastered={mastered}
@@ -1129,6 +1167,7 @@ function Quasar() {
             onReview={() => nav(due.length ? "review" : "library")}
           />
         </Reveal>
+        <ReadyPanel progress={p} {...errorActions} />
         <Text style={s.h2}>Inside your collection</Text>
         {scenes.map((sc, i) => (
           <Reveal key={sc.id} delay={60 + i * 60}>
@@ -1793,7 +1832,7 @@ function Quasar() {
                   onWorlds={() => nav("flex")}
                 />
               ) : page === "korean" ? (
-                <KoreanCourse />
+                <KoreanCourse progress={p} onAttempt={logAttempt} />
               ) : page === "teach" ? (
                 <TeachBack
                   key={(focus.conceptId ?? "pick") + focus.mode}
@@ -1803,6 +1842,15 @@ function Quasar() {
                   onAttempt={logAttempt}
                   onDone={() => nav("review")}
                   tutor={supabase && userId && pro ? gradeExplanation : undefined}
+                  onUpgrade={pro ? undefined : () => nav("paywall")}
+                />
+              ) : page === "notes" ? (
+                <NotesQuiz
+                  progress={p}
+                  onSave={saveDeck}
+                  onDelete={deleteDeck}
+                  onAttempt={logAttempt}
+                  aiQuiz={supabase && userId && pro ? generateQuiz : undefined}
                   onUpgrade={pro ? undefined : () => nav("paywall")}
                 />
               ) : page === "cases" ? (

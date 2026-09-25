@@ -309,6 +309,13 @@ export const s = StyleSheet.create({
     minHeight: 49,
   },
   divider: { height: 1, backgroundColor: C.line },
+  paper: {
+    backgroundColor: C.white,
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: C.line,
+  },
   section: { gap: 16 },
   link: {
     fontFamily: "QuasarGrotesk",

@@ -24,6 +24,8 @@ Record on a phone or an Android build if you can. If you record the web build at
 - `docs/teach-back-mobile.png`
 - `docs/ready-mobile.png`
 - `docs/memory-garden-mobile.png`
+- `docs/notes-quiz-mobile.png`
+- `docs/hangul-lab-mobile.png`
 
 ## Earlier recording
 

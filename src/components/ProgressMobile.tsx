@@ -113,7 +113,7 @@ export function ProgressMobile({
           </View>
         </View>
       </View>
-      <View style={styles.paper}>
+      <View style={s.paper}>
         <View style={s.between}>
           <View>
             <Text style={s.label}>YOUR PRACTICE RHYTHM</Text>
@@ -249,13 +249,6 @@ const styles = StyleSheet.create({
   },
   metric: { color: C.paper, fontSize: 28, lineHeight: 34 },
   metricLabel: { color: "#D1DFC9", fontSize: 12, marginTop: 3 },
-  paper: {
-    backgroundColor: C.white,
-    borderRadius: 24,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: C.line,
-  },
   ticket: {
     backgroundColor: "#F4DE9B",
     borderRadius: 20,
