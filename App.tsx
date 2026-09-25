@@ -1898,8 +1898,6 @@ function Quasar() {
                 courseBody()
               ) : page === "flex" ? (
                 <MemoryPalace
-                  onCellCity={() => nav("city")}
-                  cityDone={p.city?.done.length ?? 0}
                   saved={p.palace}
                   onSave={(palace) => setP((old) => ({ ...old, palace }))}
                 />
@@ -1965,6 +1963,8 @@ function Quasar() {
                 <MedicineLesson
                   key={bioStart?.n ?? "studio"}
                   start={bioStart}
+                  onCellCity={() => nav("city")}
+                  cityDone={p.city?.done.length ?? 0}
                   onAttempt={logAttempt}
                   onNext={(kind, m) =>
                     kind === "teach"
