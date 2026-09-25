@@ -90,7 +90,7 @@ test("Case Lab records a new case, and a long break opens a gentle recovery plan
   await expect(page.getByRole("button", { name: /^The mutation that changed nothing, Solved$/ })).toBeVisible();
 });
 
-test("pasted notes become a quick quiz whose answers are saved for review", async ({ page }) => {
+test("pasted notes open to read and flashcards first, then a quiz whose answers are saved for review", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
@@ -107,7 +107,15 @@ test("pasted notes become a quick quiz whose answers are saved for review", asyn
   await page.getByLabel("Your notes").fill(
     "Mitochondria: transfer energy from sugar into ATP\nRibosome: builds proteins by reading mRNA\nChloroplast: captures light energy to make sugar\nNucleus: stores DNA behind a double membrane",
   );
-  await page.getByRole("button", { name: "Make a quick quiz" }).click();
+  await page.getByRole("button", { name: "Study these notes" }).click();
+  await expect(page.getByText("1 · READ")).toBeVisible();
+  await expect(page.getByText("Key ideas")).toBeVisible();
+  await page.getByRole("button", { name: "Next: 4 flashcards" }).click();
+  await page.getByRole("button", { name: /^Card: / }).click();
+  await expect(page.getByText("ANSWER", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Not sure yet" }).click();
+  await expect(page.getByText("CARD 2 / 4")).toBeVisible();
+  await page.getByRole("button", { name: "Skip to the quiz →" }).click();
   await expect(page.getByText("1 / 4", { exact: true })).toBeVisible();
   for (let i = 0; i < 4; i++) {
     await page.locator('[role="button"]').filter({ hasText: /^(Mitochondria|Ribosome|Chloroplast|Nucleus|transfer|builds|captures|stores)/ }).first().click();
@@ -152,4 +160,57 @@ test("the Hangul Lab builds syllables and remembers sound-twin answers", async (
   expect(answers).toBe(1);
   await page.getByRole("button", { name: "Back to the picture story" }).click();
   await expect(page.getByRole("button", { name: "What happens next?" })).toBeVisible();
+});
+
+test("Cell City: an episode runs from the real biology to rebuilt memory and scheduled clues", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await page.getByText("WELCOME TO QUASAR").waitFor();
+  await page.evaluate((key) => {
+    const p = JSON.parse(localStorage.getItem(key)!);
+    p.onboarded = true;
+    localStorage.setItem(key, JSON.stringify(p));
+  }, KEY);
+  await page.reload();
+  await page.getByRole("button", { name: "Explore", exact: true }).click();
+  await page.getByRole("button", { name: "Enter Cell City" }).click();
+  await expect(page.getByText("0 of 6 districts lit")).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Episode 2: The Missing Energy, locked$/ })).toBeDisabled();
+  await page.getByRole("button", { name: /^Episode 1: Welcome to Cell City$/ }).click();
+  await expect(page.getByText("FIRST, WHAT'S REALLY HAPPENING")).toBeVisible();
+  await page.getByRole("button", { name: "Enter the scene" }).click();
+  for (let i = 0; i < 4; i++) await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("button", { name: "Rebuild it from memory" }).click();
+  const pairs: [string, RegExp][] = [
+    ["Nucleus", /^Keeps the DNA/],
+    ["Ribosome", /^Links amino acids/],
+    ["Mitochondrion", /^Transfers energy/],
+    ["Cell membrane", /^Controls what enters/],
+  ];
+  for (const [left, right] of pairs) {
+    await page.getByRole("button", { name: left, exact: true }).click();
+    await page.getByRole("button", { name: right }).click();
+  }
+  await expect(page.getByText("Rebuilt without a slip.")).toBeVisible();
+  await page.getByRole("button", { name: "On to the clues" }).click();
+  await expect(page.getByText("CITY CUE")).toBeVisible();
+  for (const [answer, next] of [
+    [/^An mRNA copy/, "Next clue"],
+    [/^Oxygen \(O₂\)/, "Next clue"],
+    [/^Transfer it into ATP/, "Continue"],
+  ] as const) {
+    await page.getByRole("button", { name: answer }).click();
+    await expect(page.getByText("Right.", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: next, exact: true }).click();
+  }
+  await expect(page.getByText("Welcome to Cell City: solved.")).toBeVisible();
+  const saved = await page.evaluate((key) => {
+    const p = JSON.parse(localStorage.getItem(key)!);
+    return { done: p.city.done, cards: Object.keys(p.cards).filter((k: string) => k.startsWith("city-")).sort() };
+  }, KEY);
+  expect(saved).toEqual({ done: [1], cards: ["city-e1-q1", "city-e1-q2", "city-e1-q3"] });
+  await page.getByRole("button", { name: "Back to the city" }).last().click();
+  await expect(page.getByText("1 of 6 districts lit")).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Episode 2: The Missing Energy$/ })).toBeEnabled();
 });

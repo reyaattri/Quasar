@@ -2,6 +2,7 @@ import { createEmptyCard, Rating } from "ts-fsrs";
 import { medicalModules } from "../data/medicalLessons";
 import { biologyCoaching } from "../data/lessonCoaching";
 import { findCase } from "../data/caseLab";
+import { findCityItem } from "../data/cellCity";
 import { localDay, scheduler, type Attempt, type Progress } from "./progress";
 
 export const conceptId = (module: number, card: number) => `bio-${module}-${card}`;
@@ -22,6 +23,19 @@ export function parseConcept(id: string) {
 }
 
 export function conceptInfo(id: string) {
+  const city = findCityItem(id);
+  if (city) {
+    const q = city.question;
+    return {
+      module: -1,
+      card: -1,
+      isCase: false,
+      world: "Cell City",
+      title: q ? q.title : `Cell City · ${city.episode.title}`,
+      lesson: `Cell City · Episode ${city.episode.n}`,
+      angles: q ? [q.another, q.why, q.cue].filter(Boolean) : city.episode.science.slice(0, 2),
+    };
+  }
   const parsed = parseConcept(id);
   if (!parsed) return null;
   const lesson = medicalModules[parsed.module];
@@ -44,9 +58,12 @@ export function conceptInfo(id: string) {
   };
 }
 
-// Spaced-review items: biology concepts, Hangul items and note-quiz questions (not field cases).
+// Spaced-review items: biology concepts, Hangul items, note-quiz questions and Cell City clues (not field cases).
 export const schedulable = (id: string) =>
-  /^bio-\d-\d$/.test(id) || id.startsWith("ko-") || id.startsWith("note-");
+  /^bio-\d-\d$/.test(id) ||
+  id.startsWith("ko-") ||
+  id.startsWith("note-") ||
+  /^city-e\d-q\d$/.test(id);
 
 export const attemptsOf = (p: Progress, id: string) =>
   (p.attempts ?? []).filter((a) => a.conceptId === id);

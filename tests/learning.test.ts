@@ -15,7 +15,8 @@ import { buildPlan, candidateTasks, priority } from "../src/lib/planner";
 import { teachConcepts, whyLadders } from "../src/data/biologyUnderstanding";
 import { medicalModules } from "../src/data/medicalLessons";
 import { labCases } from "../src/data/caseLab";
-import { isValidDeck, noteConceptId, quickQuiz } from "../src/lib/noteQuiz";
+import { buildStudy, isValidDeck, noteConceptId, quickQuiz, studyFor } from "../src/lib/noteQuiz";
+import { cellCity, characters, cueLevel, explainCovered } from "../src/data/cellCity";
 import {
   compose,
   decompose,
@@ -248,4 +249,96 @@ test("teach-back rubric credits each key point it can find", () => {
   const text = "RNA polymerase reads the template strand and builds a complementary RNA that uses uracil.";
   assert.deepEqual(applicationHints(text, [a.keywords, b.keywords, c.keywords]), [true, true, true]);
   assert.deepEqual(applicationHints("It copies DNA.", [a.keywords, b.keywords, c.keywords]), [false, false, false]);
+});
+
+test("quick quizzes read headings, bullets, numbered steps and plain sentences", () => {
+  const notes = [
+    "# Cellular respiration",
+    "## Glycolysis",
+    "- Glycolysis takes place in the cytoplasm.",
+    "- One glucose is split into 2 pyruvate molecules.",
+    "- It does not need oxygen.",
+    "## Krebs cycle",
+    "- The Krebs cycle occurs in the mitochondrial matrix.",
+    "- Acetyl-CoA: the 2-carbon molecule that enters the cycle",
+    "## Electron transport chain",
+    "- The electron transport chain is located in the inner mitochondrial membrane.",
+    "- Oxygen is the final electron acceptor and forms water.",
+    "Stages in order:",
+    "1. Glycolysis",
+    "2. Pyruvate oxidation",
+    "3. Krebs cycle",
+    "4. Oxidative phosphorylation",
+    "KEY TERMS",
+    "Chemiosmosis — ATP made as protons flow back through ATP synthase",
+    "Fermentation: regenerates NAD+ when oxygen is missing",
+  ].join("\n");
+  const deck = quickQuiz("Respiration", notes, t0);
+  assert.ok(!("error" in deck));
+  if ("error" in deck) return;
+  assert.ok(isValidDeck(deck));
+  const kinds = new Set(deck.questions.map((q) => q.kind));
+  for (const k of ["order", "group", "fact"]) assert.ok(kinds.has(k as never), `includes a ${k} question`);
+  assert.ok(deck.questions.length >= 8 && deck.questions.length <= 12);
+  for (const q of deck.questions) {
+    assert.equal(new Set(q.choices.map((c) => c.toLowerCase())).size, q.choices.length, "no duplicate choices");
+    assert.ok(q.choices.length >= 3);
+    if (q.prompt.includes("_____")) assert.ok(!q.prompt.toLowerCase().includes(`“${q.choices[q.answer].toLowerCase()} `), "the blank hides the answer");
+  }
+  const order = deck.questions.find((q) => q.prompt.includes("what comes first"));
+  if (order) assert.equal(order.choices[order.answer], "Glycolysis");
+  const place = deck.questions.find((q) => q.kind === "fact" && q.prompt.includes("Glycolysis takes place in"));
+  if (place) assert.equal(place.choices[place.answer], "the cytoplasm");
+
+  // Study notes come first: every heading becomes a section, and definitions and lists become flashcards.
+  const study = studyFor(deck);
+  assert.deepEqual(
+    study.sections.map((x) => x.heading),
+    ["Glycolysis", "Krebs cycle", "Electron transport chain", "Stages in order", "Key terms"],
+  );
+  assert.ok(study.cards.some((c) => c.front === "Chemiosmosis"));
+  assert.ok(study.cards.some((c) => c.back.startsWith("1. Glycolysis")));
+  assert.deepEqual(buildStudy(notes), deck.study);
+  // An AI deck without study notes studies from its own questions.
+  const bare = studyFor({ ...deck, study: undefined });
+  assert.equal(bare.cards.length, deck.questions.length);
+});
+
+test("Cell City episodes are complete, answerable and fade their cues", () => {
+  assert.equal(cellCity.length, 6);
+  const ids = new Set<string>();
+  cellCity.forEach((e, i) => {
+    assert.equal(e.n, i + 1);
+    assert.ok(e.science.length > 0 && e.scene.length > 0 && e.clues.length >= 3);
+    for (const b of e.scene) assert.ok(characters[b.who]);
+    for (const q of e.clues) {
+      assert.match(q.id, /^city-e\d-q\d$/);
+      assert.ok(!ids.has(q.id));
+      ids.add(q.id);
+      assert.ok(q.answer >= 0 && q.answer < q.choices.length);
+      assert.equal(new Set(q.choices).size, q.choices.length);
+      assert.ok(q.why && q.another);
+      if (!e.noCues) assert.ok(q.cue && q.nudge);
+      assert.equal(conceptInfo(q.id)?.title, q.title);
+    }
+    if (e.rebuild.kind === "match") assert.equal(e.rebuild.left.length, e.rebuild.right.length);
+    else assert.ok(e.rebuild.steps.length >= 4);
+  });
+  const id = "city-e2-q2";
+  let p = recordAttempt(initialProgress(), { conceptId: id, mode: "recall", correct: true, hinted: true }, t0);
+  assert.ok(p.cards[id], "clues are scheduled for review");
+  assert.equal(cueLevel(p.attempts!, id), 1);
+  p = recordAttempt(p, { conceptId: id, mode: "recall", correct: true, hinted: false }, later(5));
+  assert.equal(cueLevel(p.attempts!, id), 2);
+  p = recordAttempt(p, { conceptId: id, mode: "recall", correct: false, hinted: false, chose: "4", truth: "2" }, later(10));
+  assert.equal(cueLevel(p.attempts!, id), 0, "a miss brings the full cue back");
+  p = recordAttempt(p, { conceptId: id, mode: "recall", correct: false, hinted: false, chose: "4", truth: "2" }, later(15));
+  const entry = errorMemory(p).find((e) => e.conceptId === id);
+  assert.equal(entry?.misconception, "4");
+  assert.equal(readiness(p).untested, 18, "Cell City doesn't change biology readiness");
+  const e6 = cellCity[5].explain!;
+  assert.deepEqual(
+    explainCovered("Oxygen is the final acceptor, so electrons back up, the pumps stop and there is no proton gradient, so ATP synthase stops.", e6),
+    [true, true, true, true],
+  );
 });

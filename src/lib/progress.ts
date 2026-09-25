@@ -56,6 +56,7 @@ export type Progress = {
   hooks?: Record<string, { text: string; why: string; at: string }[]>;
   exam?: { label: string; date: string } | null;
   cues?: Record<string, number>;
+  city?: { done: number[] };
 };
 export const initialProgress = (): Progress => ({
   version: 1,

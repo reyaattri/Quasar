@@ -4,6 +4,7 @@ export const worlds = [
     id: "dojo",
     name: "The quiet dojo",
     caption: "Watercolour gardens · a peaceful instrumental score",
+    lore: "A hillside school where every room smells of cedar and tea. Quiet enough to hear a single bell, so loud images stand out.",
     color: "#DCE8CA",
     ink: "#254D3C",
     places: [
@@ -19,6 +20,7 @@ export const worlds = [
     id: "egypt",
     name: "Beyond the dunes",
     caption: "Golden pixel ruins · desert chamber music",
+    lore: "A sandstone temple half-swallowed by dunes. Torchlight, echoing chambers and treasure rooms built for things you must not lose.",
     color: "#F4D59E",
     ink: "#674321",
     places: [
@@ -34,6 +36,7 @@ export const worlds = [
     id: "neon",
     name: "Midnight rooftops",
     caption: "Neon pixel city · a nighttime synth score",
+    lore: "Rooftops above a city that never sleeps. Every stop hums, glows or sells something, so nothing you leave here stays still.",
     color: "#D9D2FA",
     ink: "#352D65",
     places: [

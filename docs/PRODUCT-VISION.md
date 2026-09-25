@@ -11,7 +11,7 @@ Quasar shouldn't become a generic AI study planner with a few memory games attac
 | Pillar | The student's question | Status in this repository |
 | --- | --- | --- |
 | **Today** | What should I study, and why? | **Built for biology** (on the Review tab). A rule-based planner ranks tasks with the priority formula below, fits them to 5, 15 or 30 minutes, respects prerequisites, takes an optional exam date into account, explains every pick and lets the student swap any task. **Recovery Mode** takes over after three days away or a backlog of reviews more than a day overdue: a small review-first plan that says how many items it set aside. |
-| **Memory Worlds** | How do I make this unforgettable? | **Built.** Walkable dojo, ruins and neon palaces with stable room anchors; illustrated biology, SAT, calculus, Korean and π courses. *Planned:* worlds generated from uploaded material, and persistent characters shared across subjects. |
+| **Memory Worlds** | How do I make this unforgettable? | **Built.** *The Secrets of Cell City*, a six-episode story world (cell structures and cellular respiration) with six recurring characters, rebuild-from-memory games, evidence-based reasoning and fading cues. Walkable dojo, ruins and neon palaces with stable room anchors; illustrated biology, SAT, calculus, Korean and π courses. *Planned:* more story worlds, worlds generated from uploaded material, and characters shared across subjects. |
 | **Teach-Back** | Can I explain it without help? | **Built.** The lesson is hidden and the student writes or, in supporting browsers, speaks an explanation. Quasar checks it on the device against three authored key ideas, asks a *why* question about the first missing one instead of revealing it, allows one retry, then asks a follow-up question to defend it. **AI tutor feedback** (Quasar Plus) reviews how the idea was explained, flags wrong claims and asks one more question, through a server function that needs Supabase, RevenueCat and Anthropic keys. *Planned:* voice on native builds, and diagram reconstruction. |
 | **Case Lab** | Can I use it to solve a problem? | **Built (first set).** Six original two-attempt field cases, two per biology lesson, on their own page; every attempt is logged and Today schedules the unsolved ones. The Why Ladder's final rung is also an unfamiliar application question. *Planned:* multi-step simulations. |
 | **Memory Debugger** | Why do I keep getting this wrong? | **Built.** Error Memory surfaces any concept missed twice, names the exact wrong answer the student keeps choosing next to what's true, offers alternative explanations (saving the one that helped) and schedules a re-check. It only resolves after a later correct answer given without help. With Quasar Plus, the AI writes a **self-repairing mnemonic**: a new hook aimed at that exact misconception, saved beside the old cue until the learner chooses it. |
@@ -61,7 +61,7 @@ Implementation: `src/lib/planner.ts`, tested in `tests/learning.test.ts`.
 
 ## Roadmap
 
-**Phase 1: prove the core loop (in this repository).** Frictionless onboarding, memory worlds, biology lessons, Notes → Quiz (a free on-device quick quiz, plus Plus AI quizzes from text or PDF with source quotes), the Hangul Lab, Teach-Back (with voice and the Plus AI tutor), the Why Ladder, Case Lab, Error Memory, Today with Recovery Mode, Ready and the Memory Garden.
+**Phase 1: prove the core loop (in this repository).** Frictionless onboarding, memory worlds, biology lessons, the Cell City story world, Notes → Quiz (study your notes and flashcards first, then a free on-device quiz, plus Plus AI quizzes from text or PDF with source quotes), the Hangul Lab, Teach-Back (with voice and the Plus AI tutor), the Why Ladder, Case Lab, Error Memory, Today with Recovery Mode, Ready and the Memory Garden.
 
 **Phase 2: adaptive learning.**
 - Deeper import: slides and lecture recordings, and turning notes into full concepts with key ideas, not just quiz questions.
@@ -77,7 +77,7 @@ Implementation: `src/lib/planner.ts`, tested in `tests/learning.test.ts`.
 - Connected worlds across subjects and personal memory palaces.
 - Art Style Studio: storybook and doodle styles exist today; pixel, animated and 3D are planned.
 - A wider Memory Garden across subjects, plus optional social sharing.
-- *Quasar Originals*, short illustrated story episodes such as *The Secrets of Cell City*.
+- *Quasar Originals*: more illustrated story worlds like *The Secrets of Cell City* (built), with animated characters (see `docs/ART-PIPELINE.md`).
 
 ## How we'll know it works
 

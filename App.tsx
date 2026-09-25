@@ -5,6 +5,7 @@ import { TeachBack } from "./src/features/TeachBack";
 import { WhyLadder } from "./src/features/WhyLadder";
 import { CaseLab } from "./src/features/CaseLab";
 import { NotesQuiz } from "./src/features/NotesQuiz";
+import { CellCity } from "./src/features/CellCity";
 import { TodayPlan } from "./src/features/TodayPlan";
 import { ReadyPanel } from "./src/features/Ready";
 import type { ErrorActions } from "./src/features/ErrorMemory";
@@ -123,7 +124,8 @@ type Page =
   | "teach"
   | "why"
   | "cases"
-  | "notes";
+  | "notes"
+  | "city";
 const tabs = [
   ["home", "home", "Today"],
   ["library", "book", "Explore"],
@@ -594,7 +596,7 @@ function Quasar() {
     };
     const bioRecalled = allConceptIds.filter((id) => gardenStage(p, id) >= 2).length;
     const reviewCount =
-      due.length + dueIds(p).filter((id) => /^(bio|note|ko)-/.test(id)).length + session.repair;
+      due.length + dueIds(p).filter((id) => /^(bio|note|ko|city)-/.test(id)).length + session.repair;
     return (
       <View style={{ gap: 30 }}>
         <View style={s.between}>
@@ -846,6 +848,39 @@ function Quasar() {
             </View>
           ))}
         </View>
+      </Reveal>
+      <Reveal delay={60}>
+        <PressableScale
+          accessibilityRole="button"
+          accessibilityLabel="Enter Cell City"
+          onPress={() => nav("city")}
+          style={{ backgroundColor: "#202A3B", borderRadius: 28, padding: 20, gap: 14 }}
+        >
+          <Tag color={C.yellow}>MEMORY WORLD · CELL CITY</Tag>
+          <View style={[s.row, { gap: 8 }]}>
+            {[0, 5].map((index) => (
+              <View key={index} style={{ flex: 1, borderRadius: 16, overflow: "hidden" }}>
+                <AtlasArt
+                  source={require("./assets/bio-cells-world.png")}
+                  columns={3}
+                  rows={2}
+                  index={index}
+                  height={140}
+                />
+              </View>
+            ))}
+          </View>
+          <Text style={[s.h2, { color: "#FFFDF4" }]}>The city is losing power.</Text>
+          <Text style={[s.body, { color: "#D8DCE6" }]}>
+            Six episodes inside a living cell. Follow the fuel from glycolysis to
+            ATP synthase, then find out what caused the blackout.
+          </Text>
+          <Text style={[s.label, { color: C.yellow }]}>
+            {(p.city?.done.length ?? 0) > 0
+              ? `${p.city!.done.length} of 6 districts lit · continue →`
+              : "Start the investigation →"}
+          </Text>
+        </PressableScale>
       </Reveal>
       <Card style={{ backgroundColor: C.yellow, gap: 14, borderRadius: 28 }}>
         <Tag>π · THE RIDICULOUS ROUTE</Tag>
@@ -1863,6 +1898,8 @@ function Quasar() {
                 courseBody()
               ) : page === "flex" ? (
                 <MemoryPalace
+                  onCellCity={() => nav("city")}
+                  cityDone={p.city?.done.length ?? 0}
                   saved={p.palace}
                   onSave={(palace) => setP((old) => ({ ...old, palace }))}
                 />
@@ -1886,6 +1923,18 @@ function Quasar() {
                   onDone={() => nav("review")}
                   tutor={supabase && userId && pro ? gradeExplanation : undefined}
                   onUpgrade={pro ? undefined : () => nav("paywall")}
+                />
+              ) : page === "city" ? (
+                <CellCity
+                  progress={p}
+                  onTop={() => scroll.current?.scrollTo({ y: 0, animated: false })}
+                  onAttempt={logAttempt}
+                  onComplete={(n) =>
+                    setP((v) => ({
+                      ...v,
+                      city: { done: [...new Set([...(v.city?.done ?? []), n])].sort() },
+                    }))
+                  }
                 />
               ) : page === "notes" ? (
                 <NotesQuiz

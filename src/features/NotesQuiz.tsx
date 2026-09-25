@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { Button, C, Card, Field, Icon, s, Tag, Text } from "../components/ui";
 import { PressableScale, Reveal } from "../components/Reveal";
-import { noteConceptId, quickQuiz, type NoteDeck } from "../lib/noteQuiz";
+import { buildStudy, noteConceptId, quickQuiz, studyFor, type NoteDeck } from "../lib/noteQuiz";
 import { dueIds, type Attempt, type Progress } from "../lib/progress";
 
 type AiQuiz = (input: { title: string; text?: string; pdfBase64?: string }) => Promise<NoteDeck>;
@@ -36,7 +36,7 @@ export function NotesQuiz({
   onUpgrade?: () => void;
 }) {
   const decks = progress.notes ?? [];
-  const [open, setOpen] = useState<{ deck: NoteDeck; dueOnly: boolean } | null>(null);
+  const [open, setOpen] = useState<{ deck: NoteDeck; dueOnly: boolean; study?: boolean } | null>(null);
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [pdf, setPdf] = useState<{ name: string; base64: string } | null>(null);
@@ -46,6 +46,15 @@ export function NotesQuiz({
   const due = new Set(dueIds(progress).filter((id) => id.startsWith("note-")));
   const dueIn = (d: NoteDeck) => d.questions.filter((q) => due.has(noteConceptId(d.id, q.id))).length;
 
+  if (open?.study)
+    return (
+      <StudyRun
+        key={open.deck.id}
+        deck={open.deck}
+        onQuiz={() => setOpen({ deck: open.deck, dueOnly: false })}
+        onDone={() => setOpen(null)}
+      />
+    );
   if (open)
     return (
       <QuizRun
@@ -87,7 +96,7 @@ export function NotesQuiz({
     const result = quickQuiz(title, text);
     if ("error" in result) return setError(result.error);
     onSave(result);
-    setOpen({ deck: result, dueOnly: false });
+    setOpen({ deck: result, dueOnly: false, study: true });
   };
 
   const makeAi = () => {
@@ -95,9 +104,11 @@ export function NotesQuiz({
     setBusy("ai");
     setError("");
     aiQuiz({ title: title || pdf?.name || "My notes", text: text || undefined, pdfBase64: pdf?.base64 })
-      .then((deck) => {
+      .then((made) => {
+        // Pasted notes also get on-device study notes; a PDF studies from the AI's own questions.
+        const deck = text.trim() ? { ...made, study: buildStudy(text) } : made;
         onSave(deck);
-        setOpen({ deck, dueOnly: false });
+        setOpen({ deck, dueOnly: false, study: true });
       })
       .catch((e) => setError(e instanceof Error ? e.message : "The AI quiz is unavailable right now. Try the quick quiz instead."))
       .finally(() => setBusy(""));
@@ -109,11 +120,12 @@ export function NotesQuiz({
         <View style={{ gap: 9 }}>
           <Tag color={C.yellow}>NOTES → QUIZ</Tag>
           <Text accessibilityRole="header" style={s.title}>
-            Turn your notes into questions.
+            Read your notes. Then prove you know them.
           </Text>
           <Text style={s.body}>
-            Paste your notes or choose a file. Quasar builds a quiz, and every
-            question comes back for spaced review.
+            Paste your notes or choose a file. Quasar lays them out to study,
+            with flashcards for the key terms, then quizzes you. Every question
+            comes back for spaced review.
           </Text>
         </View>
       </Reveal>
@@ -141,11 +153,12 @@ export function NotesQuiz({
           )}
           <Text style={s.small}>{text.length.toLocaleString()} / 40,000 characters</Text>
           <Button icon="arrow" disabled={busy !== "" || text.trim().length < 40} onPress={makeQuick}>
-            Make a quick quiz
+            Study these notes
           </Button>
           <Text style={s.small}>
-            The quick quiz is built on your device from “Term: definition” lines
-            and key sentences. Your notes aren't uploaded.
+            Built on your device, so your notes aren't uploaded. It reads
+            headings, bullet points, numbered steps, “Term: definition” lines
+            and sentences like “Glycolysis takes place in the cytoplasm.”
           </Text>
           {aiQuiz ? (
             <>
@@ -155,7 +168,7 @@ export function NotesQuiz({
                 disabled={busy !== "" || (!pdf && text.trim().length < 80)}
                 onPress={makeAi}
               >
-                {busy === "ai" ? "Writing your quiz…" : "Make an AI quiz"}
+                {busy === "ai" ? "Writing your quiz…" : "Study with an AI quiz"}
               </Button>
               <Text style={s.small}>
                 Sends these notes to the AI to write deeper questions. Each one
@@ -193,12 +206,17 @@ export function NotesQuiz({
                     {d.questions.length} questions{n ? ` · ${n} due for review` : ""}
                   </Text>
                   <View style={[s.row, { flexWrap: "wrap" }]}>
-                    <View style={{ flex: 1, minWidth: 130 }}>
-                      <Button small onPress={() => setOpen({ deck: d, dueOnly: n > 0 })}>
-                        {n ? `Review ${n} due` : "Practice"}
+                    <View style={{ flex: 1, minWidth: 110 }}>
+                      <Button small secondary icon="book" onPress={() => setOpen({ deck: d, dueOnly: false, study: true })}>
+                        Study
                       </Button>
                     </View>
-                    <View style={{ flex: 1, minWidth: 130 }}>
+                    <View style={{ flex: 1, minWidth: 110 }}>
+                      <Button small onPress={() => setOpen({ deck: d, dueOnly: n > 0 })}>
+                        {n ? `Review ${n} due` : "Quiz me"}
+                      </Button>
+                    </View>
+                    <View style={{ flex: 1, minWidth: 110 }}>
                       {confirmDelete === d.id ? (
                         <Button
                           small
@@ -333,6 +351,179 @@ function QuizRun({
           )}
         </Card>
       </Reveal>
+    </View>
+  );
+}
+
+const escapeTerm = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// Highlights key terms inside a point so the eye lands on what the quiz will ask about.
+function Marked({ text, terms }: { text: string; terms: string[] }) {
+  const list = terms.filter((t) => t.length >= 3).sort((a, b) => b.length - a.length);
+  if (!list.length) return <Text style={[s.body, { color: C.ink }]}>{text}</Text>;
+  const re = new RegExp(`(${list.map(escapeTerm).join("|")})`, "gi");
+  return (
+    <Text style={[s.body, { color: C.ink }]}>
+      {text.split(re).map((part, i) =>
+        i % 2 ? (
+          <Text key={i} style={{ fontWeight: "700", backgroundColor: "#F6E7AE" }}>
+            {part}
+          </Text>
+        ) : (
+          part
+        ),
+      )}
+    </Text>
+  );
+}
+
+function StudyRun({ deck, onQuiz, onDone }: { deck: NoteDeck; onQuiz: () => void; onDone: () => void }) {
+  const study = studyFor(deck);
+  const [step, setStep] = useState<"read" | "cards">(study.sections.length ? "read" : "cards");
+  const [card, setCard] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [unsure, setUnsure] = useState<number[]>([]);
+  const c = study.cards[card];
+  const quizButton = (
+    <Button icon="arrow" onPress={onQuiz}>
+      {`I'm ready. Quiz me (${deck.questions.length})`}
+    </Button>
+  );
+
+  return (
+    <View style={{ gap: 18 }}>
+      <View style={s.between}>
+        <Tag color={C.yellow}>{step === "read" ? "1 · READ" : "2 · FLASHCARDS"}</Tag>
+        <Pressable accessibilityRole="button" onPress={onDone}>
+          <Text style={s.link}>Back to my notes</Text>
+        </Pressable>
+      </View>
+      <Text accessibilityRole="header" style={s.title}>
+        {deck.title}
+      </Text>
+
+      {step === "read" ? (
+        <>
+          <Text style={s.body}>
+            Read it through once, slowly. The highlighted words are the ones
+            you'll be asked about.
+          </Text>
+          {study.sections.map((sec, i) => (
+            <Reveal key={sec.heading + i} delay={Math.min(i, 6) * 60}>
+              <View style={[s.paper, { gap: 10 }]}>
+                <Text style={s.h3}>{sec.heading}</Text>
+                {sec.points.map((pt, j) => (
+                  <View key={j} style={[s.row, { alignItems: "flex-start", gap: 10 }]}>
+                    <Text style={[s.body, { color: C.green }]}>•</Text>
+                    <View style={{ flex: 1 }}>
+                      <Marked text={pt} terms={study.terms} />
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </Reveal>
+          ))}
+          {study.cards.length ? (
+            <Button icon="cards" onPress={() => setStep("cards")}>
+              {`Next: ${study.cards.length} flashcards`}
+            </Button>
+          ) : (
+            quizButton
+          )}
+        </>
+      ) : c ? (
+        <>
+          <Text style={s.body}>
+            Say the answer out loud before you turn the card. Anything you're
+            unsure of is listed again at the end.
+          </Text>
+          <Text style={s.label}>
+            CARD {card + 1} / {study.cards.length}
+          </Text>
+          <Reveal key={card + String(flipped)}>
+            <PressableScale
+              accessibilityRole="button"
+              accessibilityLabel={flipped ? "Answer: " + c.back : "Card: " + c.front + ". Tap to turn it over."}
+              onPress={() => setFlipped(!flipped)}
+              style={[
+                s.card,
+                {
+                  minHeight: 190,
+                  justifyContent: "center",
+                  gap: 10,
+                  backgroundColor: flipped ? C.sage : "#FFFDF6",
+                  borderColor: C.ink,
+                  borderWidth: 1.5,
+                },
+              ]}
+            >
+              <Text style={s.label}>{flipped ? "ANSWER" : "WHAT DO YOU REMEMBER?"}</Text>
+              <Text style={flipped ? s.body : s.h2}>{flipped ? c.back : c.front}</Text>
+              {!flipped && <Text style={s.small}>Tap to turn over</Text>}
+            </PressableScale>
+          </Reveal>
+          {flipped && (
+            <View style={[s.row, { flexWrap: "wrap" }]}>
+              {(
+                [
+                  ["Not sure yet", true],
+                  ["I knew it", false],
+                ] as const
+              ).map(([label, again]) => (
+                <View key={label} style={{ flex: 1, minWidth: 130 }}>
+                  <Button
+                    small
+                    secondary={again}
+                    onPress={() => {
+                      if (again && !unsure.includes(card)) setUnsure([...unsure, card]);
+                      setFlipped(false);
+                      setCard(card + 1);
+                    }}
+                  >
+                    {label}
+                  </Button>
+                </View>
+              ))}
+            </View>
+          )}
+          {study.sections.length > 0 && (
+            <Pressable accessibilityRole="button" onPress={() => setStep("read")}>
+              <Text style={s.link}>Read the notes again</Text>
+            </Pressable>
+          )}
+        </>
+      ) : (
+        <Reveal>
+          <Card style={{ backgroundColor: C.sage, gap: 12 }}>
+            <Icon name="check" size={28} color={C.green} />
+            <Text style={s.h2}>
+              {unsure.length ? `${unsure.length} to look at once more.` : "You've been through every card."}
+            </Text>
+            {unsure.map((i) => (
+              <View key={i} style={{ borderLeftWidth: 3, borderLeftColor: C.yellow, paddingLeft: 10, gap: 2 }}>
+                <Text style={s.h3}>{study.cards[i].front}</Text>
+                <Text style={s.body}>{study.cards[i].back}</Text>
+              </View>
+            ))}
+            {quizButton}
+            <Button
+              small
+              secondary
+              onPress={() => {
+                setCard(0);
+                setUnsure([]);
+              }}
+            >
+              Go through the cards again
+            </Button>
+          </Card>
+        </Reveal>
+      )}
+      {step === "read" || c ? (
+        <Pressable accessibilityRole="button" onPress={onQuiz}>
+          <Text style={s.link}>Skip to the quiz →</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }

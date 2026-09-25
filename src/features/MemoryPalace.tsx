@@ -1,4 +1,4 @@
-import { roomFor, objectPoints } from "../data/palaceRooms";
+import { roomFor, objectPoints, palaceRooms } from "../data/palaceRooms";
 import { contextualCue } from "../data/worldCues";
 import { landmarkPeg } from "../data/landmarkPegs";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -90,9 +90,13 @@ export function WorldPicture({
 export function MemoryPalace({
   saved,
   onSave,
+  onCellCity,
+  cityDone = 0,
 }: {
   saved?: PalaceSave;
   onSave: (value: PalaceSave) => void;
+  onCellCity?: () => void;
+  cityDone?: number;
 }) {
   const value =
     saved && (saved.journey === -1 || saved.journey < journeys.length)
@@ -200,9 +204,26 @@ export function MemoryPalace({
         <Tag color={C.yellow}>MEMORY WORLDS</Tag>
         <Text style={s.title}>Give your memories a place.</Text>
         <Text style={s.body}>
-          Choose a world. Walk a fixed route, leave something unforgettable at
-          each stop, then find it again in your mind.
+          Two kinds of world. Story worlds teach a subject through characters
+          and places that come back every episode. Memory palaces hold anything
+          you need in order, one stop at a time.
         </Text>
+        {onCellCity && (
+          <Pressable accessibilityRole="button" accessibilityLabel="Open Cell City" onPress={onCellCity}>
+            <View style={{ backgroundColor: "#202A3B", borderRadius: 24, padding: 18, gap: 8 }}>
+              <Text style={[s.label, { color: C.yellow }]}>STORY WORLD · BIOLOGY</Text>
+              <Text style={[s.h2, { color: "#FFFDF4" }]}>The Secrets of Cell City</Text>
+              <Text style={[s.body, { color: "#D8DCE6" }]}>
+                A power shortage, six episodes, one culprit. Learn cell structures
+                and cellular respiration by solving it.
+              </Text>
+              <Text style={[s.label, { color: C.yellow }]}>
+                {cityDone ? `${cityDone} of 6 episodes solved →` : "Start episode 1 →"}
+              </Text>
+            </View>
+          </Pressable>
+        )}
+        <Text style={s.label}>MEMORY PALACES</Text>
         {value.reviewAt && (
           <Tag>
             {new Date(value.reviewAt) <= new Date()
@@ -244,6 +265,20 @@ export function MemoryPalace({
                 <Tag>{value.world === i ? "Selected" : "Explore"}</Tag>
               </View>
               <Text style={s.body}>{w.caption}</Text>
+              {value.world === i && (
+                <View style={{ gap: 8 }}>
+                  <Text style={[s.body, { color: w.ink }]}>{w.lore}</Text>
+                  <Text style={[s.label, { color: w.ink }]}>THE ROUTE</Text>
+                  {w.places.map((place, n) => (
+                    <View key={place} style={[s.row, { alignItems: "flex-start" }]}>
+                      <Text style={[s.small, { color: w.ink, fontWeight: "700", width: 20 }]}>{n + 1}</Text>
+                      <Text style={[s.small, { color: w.ink, flex: 1 }]}>
+                        {place}: {palaceRooms[i]?.[n]?.objects.join(", ").toLowerCase()}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
             </Card>
           </Pressable>
         ))}

@@ -19,6 +19,8 @@ Use Node 22+ and `npm ci`. `npm run web` serves the browser app; `npm start` sta
 - `App.tsx`: shell, responsive navigation, onboarding, home, review, progress, and feature entry points.
 - `src/components/`: code-native UI, interactive palace rooms and objects, shared graphics, progress, welcome art, and logo.
 - `src/features/`: lesson and game flows. Keep content-specific logic with the feature rather than expanding `App.tsx` unnecessarily.
+- Cell City (`src/features/CellCity.tsx`, `src/data/cellCity.ts`): six episodes, each laid out as the real biology, then the city mapping, the scene, a rebuild game and the clues. Clue ids are `city-e<n>-q<n>`, FSRS-scheduled. The cue level is the learner's current correct streak (0 = full cue, 1 = fading, 2 = gone). Placeholder art comes from `assets/bio-cells-world.png`; new art and character animation follow `docs/ART-PIPELINE.md`.
+- Notes → Quiz (`src/lib/noteQuiz.ts`): the device quiz parses headings, bullets, numbered lists, definitions and relation sentences. Decks carry `study` (sections, flashcards, key terms), which is shown before the quiz.
 - `src/data/`: bundled curriculum, mnemonic cues, world/room mappings, art coordinates, and toolkit scripts. This is the first place to edit lesson wording.
 - `src/lib/`: persistence, FSRS-style scheduling, and optional integrations.
 - `assets/`: original generated illustrations, user-provided image assets, procedural audio, fonts, and the app icon. `docs/ARTWORK.md` and related art records describe provenance.

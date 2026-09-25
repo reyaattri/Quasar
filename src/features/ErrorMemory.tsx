@@ -59,6 +59,8 @@ function ErrorCard({
   const [writing, setWriting] = useState<"" | "busy" | "error">("");
   const [error, setError] = useState("");
   const isCase = info.isCase;
+  // Explain-back and new hooks are built around the biology lessons.
+  const bio = !isCase && !("world" in info);
   const shown = angle !== null ? angles[angle] : null;
 
   const write = () => {
@@ -119,7 +121,7 @@ function ErrorCard({
           )}
         </View>
       )}
-      {!isCase && (
+      {bio && (
         <Button small icon="arrow" onPress={() => onExplain(entry.conceptId)}>
           Explain it back
         </Button>
@@ -150,7 +152,7 @@ function ErrorCard({
           </View>
         )}
       </View>
-      {!isCase && onNewHook && (
+      {bio && onNewHook && (
         <Button small secondary icon="spark" disabled={writing === "busy"} onPress={write}>
           {writing === "busy" ? "Writing a new hook…" : "Write me a new memory hook"}
         </Button>
@@ -160,7 +162,7 @@ function ErrorCard({
           {error}
         </Text>
       )}
-      {!isCase && !onNewHook && onUpgrade && (
+      {bio && !onNewHook && onUpgrade && (
         <Pressable accessibilityRole="button" onPress={onUpgrade}>
           <Text style={s.link}>Still not sticking? Quasar Plus can write you a brand-new memory hook for this mistake →</Text>
         </Pressable>
