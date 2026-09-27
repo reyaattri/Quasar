@@ -87,7 +87,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
       kind: "phrase" as Game,
       color: "#F1D379",
       body: "Remember a fictional six-word phrase.",
-      glyph: "••• → 🎺",
+      glyph: "••• / 🎺",
     },
   ];
   return (
@@ -121,7 +121,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
             {c.body}
           </Text>
           <Text style={[s.label, { color: i === 0 ? "#F2DFA8" : C.ink }]}>
-            Try it →
+            Try it
           </Text>
         </Pressable>
       ))}
@@ -196,7 +196,7 @@ export function FunFlex({ onWorlds }: { onWorlds: () => void }) {
                 ) : phase === "study" ? (
                   <>
                     <Text style={s.label}>
-                      {step + 1} / {sequence.length} · LOOK → LINK → PLACE
+                      {step + 1} / {sequence.length} · LOOK · LINK · PLACE
                     </Text>
                     {game === "cards" ? (
                       (() => {

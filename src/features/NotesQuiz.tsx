@@ -9,6 +9,7 @@ import {
   PressableScale,
   Reveal,
 } from "../components/Reveal";
+import { LearningActivityArt } from "../components/LearningActivityArt";
 import {
   buildStudy,
   noteConceptId,
@@ -156,7 +157,7 @@ export function NotesQuiz({
     <View style={{ gap: 22 }}>
       <Reveal>
         <View style={{ gap: 9 }}>
-          <Tag color={C.yellow}>NOTES → QUIZ</Tag>
+          <Tag color={C.yellow}>NOTES TO QUIZ</Tag>
           <Text accessibilityRole="header" style={s.title}>
             Read your notes. Then prove you know them.
           </Text>
@@ -165,6 +166,14 @@ export function NotesQuiz({
             with flashcards for the key terms, then quizzes you. Every question
             comes back for spaced review.
           </Text>
+          <View
+            style={{
+              height: 150,
+              marginTop: 6,
+            }}
+          >
+            <LearningActivityArt kind="notes" height={150} />
+          </View>
         </View>
       </Reveal>
 
@@ -244,7 +253,7 @@ export function NotesQuiz({
             <Pressable accessibilityRole="button" onPress={onUpgrade}>
               <Text style={s.link}>
                 Want deeper questions, or a quiz from a PDF? AI quizzes come
-                with Quasar Plus →
+                with Quasar Plus
               </Text>
             </Pressable>
           ) : null}
@@ -687,7 +696,7 @@ function StudyRun({
       )}
       {step === "read" || c ? (
         <Pressable accessibilityRole="button" onPress={onQuiz}>
-          <Text style={s.link}>Skip to the quiz →</Text>
+          <Text style={s.link}>Skip to the quiz</Text>
         </Pressable>
       ) : null}
     </View>

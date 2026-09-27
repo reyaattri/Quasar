@@ -103,7 +103,7 @@ export function PiCourse({
               label={`Route through ${r[0]}`}
               height={230}
             />
-            <Text style={s.small}>{r.slice(1).join(" → ")}</Text>
+            <Text style={s.small}>{r.slice(1).join(" · ")}</Text>
             <Button onPress={() => begin(i)}>Enter π room {i + 1}</Button>
           </Card>
         ))}
@@ -131,7 +131,7 @@ export function PiCourse({
             Linking.openURL("https://artofmemory.com/blog/major-system/")
           }
         >
-          How the Major System works ↗
+          How the Major System works
         </Button>
       </View>
     );

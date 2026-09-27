@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Pressable, View } from "react-native";
 import Svg, { Circle, Ellipse, Path } from "react-native-svg";
-import { MotiView } from "moti";
 import { C, s, Text } from "../components/ui";
 import { Reveal } from "../components/Reveal";
 import { medicalModules } from "../data/medicalLessons";
@@ -23,7 +22,7 @@ const nextStep = [
   "Recalled on separate days and explained. It's rooted.",
 ];
 
-function Plant({ stage, color, care }: { stage: GardenStage; color: string; care: boolean }) {
+function Plant({ stage, color, care, variety }: { stage: GardenStage; color: string; care: boolean; variety: number }) {
   const stem = [0, 14, 24, 30, 32][stage];
   const top = 50 - stem;
   return (
@@ -45,14 +44,38 @@ function Plant({ stage, color, care }: { stage: GardenStage; color: string; care
           <Path d={`M20 ${50 - stem * 0.78} q8 -1 10 -7 q-8 0 -10 7`} fill="#6C9760" />
         </>
       )}
-      {stage === 3 && <Ellipse cx={20} cy={top - 2} rx={3.6} ry={5} fill={color} />}
+      {stage === 3 &&
+        (variety === 1 ? (
+          <Path d={`M15 ${top + 2} Q20 ${top - 9} 25 ${top + 2} Q20 ${top + 7} 15 ${top + 2}`} fill={color} />
+        ) : variety === 2 ? (
+          <Path d={`M16 ${top - 5} Q20 ${top - 9} 24 ${top - 5} L23 ${top + 4} Q20 ${top + 8} 17 ${top + 4} Z`} fill={color} />
+        ) : (
+          <Ellipse cx={20} cy={top - 2} rx={3.6} ry={5} fill={color} />
+        ))}
       {stage === 4 && (
         <>
-          {[0, 72, 144, 216, 288].map((deg) => {
-            const r = (deg * Math.PI) / 180;
-            return <Circle key={deg} cx={20 + Math.cos(r) * 5.2} cy={top - 3 + Math.sin(r) * 5.2} r={4} fill={color} />;
-          })}
-          <Circle cx={20} cy={top - 3} r={3} fill={C.yellow} />
+          {variety === 0 && (
+            <>
+              {[0, 72, 144, 216, 288].map((deg) => {
+                const r = (deg * Math.PI) / 180;
+                return <Circle key={deg} cx={20 + Math.cos(r) * 5.2} cy={top - 3 + Math.sin(r) * 5.2} r={4} fill={color} />;
+              })}
+              <Circle cx={20} cy={top - 3} r={3} fill={C.yellow} />
+            </>
+          )}
+          {variety === 1 && (
+            <>
+              <Path d={`M20 ${top + 6} C9 ${top + 1} 12 ${top - 10} 16 ${top - 4} C17 ${top - 12} 23 ${top - 12} 24 ${top - 4} C29 ${top - 10} 31 ${top + 1} 20 ${top + 6} Z`} fill={color} />
+              <Path d={`M20 ${top + 4} L20 ${top - 7}`} stroke="#F5D36F" strokeWidth={1.5} />
+            </>
+          )}
+          {variety === 2 && (
+            <>
+              {[-7, 0, 7].map((x, i) => (
+                <Path key={x} d={`M${20 + x} ${top - 7 + Math.abs(x) / 2} Q${24 + x} ${top - 2} ${20 + x} ${top + 5} Q${16 + x} ${top - 2} ${20 + x} ${top - 7 + Math.abs(x) / 2} Z`} fill={i === 1 ? color : "#789FD0"} />
+              ))}
+            </>
+          )}
         </>
       )}
       {care && <Path d="M33 12 q3 4 0 6 q-3 -2 0 -6" fill="#8FB3DE" />}
@@ -104,14 +127,9 @@ export function MemoryGarden({ progress }: { progress: Progress }) {
                     onPress={() => setPicked(picked === id ? null : id)}
                     style={{ flex: 1, aspectRatio: 40 / 60, maxHeight: 84 }}
                   >
-                    <MotiView
-                      style={{ flex: 1 }}
-                      from={{ opacity: 0, translateY: 8 }}
-                      animate={{ opacity: 1, translateY: picked === id ? -3 : 0 }}
-                      transition={{ type: "timing", duration: 420, delay: (m * 6 + c) * 35 }}
-                    >
-                      <Plant stage={stage} color={petals[m]} care={open.has(id)} />
-                    </MotiView>
+                    <View style={{ flex: 1, transform: [{ translateY: picked === id ? -3 : 0 }] }}>
+                      <Plant stage={stage} color={petals[m]} care={open.has(id)} variety={m % 3} />
+                    </View>
                   </Pressable>
                 );
               })}

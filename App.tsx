@@ -6,7 +6,6 @@ import { WhyLadder } from "./src/features/WhyLadder";
 import { CaseLab } from "./src/features/CaseLab";
 import { NotesQuiz } from "./src/features/NotesQuiz";
 import { CellCity } from "./src/features/CellCity";
-import { CityCrowd } from "./src/components/CityCharacter";
 import { TodayPlan } from "./src/features/TodayPlan";
 import { ReadyPanel } from "./src/features/Ready";
 import type { ErrorActions } from "./src/features/ErrorMemory";
@@ -22,6 +21,11 @@ import { buildPlan, type Task } from "./src/lib/planner";
 import type { NoteDeck } from "./src/lib/noteQuiz";
 import { medicalModules } from "./src/data/medicalLessons";
 import { QuasarMark } from "./src/components/QuasarMark";
+import { CityCrowd } from "./src/components/CityCharacter";
+import {
+  LearningActivityArt,
+  type ActivityArtKind,
+} from "./src/components/LearningActivityArt";
 import { ToolkitIcon } from "./src/components/ToolkitIcon";
 import { ToolkitConversation } from "./src/features/ToolkitConversation";
 import { ExploreMemoryArt } from "./src/components/MemoryActivityArt";
@@ -522,7 +526,7 @@ function Quasar() {
               }}
               hitSlop={10}
             >
-              <Text style={s.link}>Skip intro →</Text>
+              <Text style={s.link}>Skip intro</Text>
             </Pressable>
           ) : (
             <Text style={s.small}>THE MEMORY TOOLKIT</Text>
@@ -697,8 +701,8 @@ function Quasar() {
             onPress={() => nav("review")}
             style={[s.card, { flexDirection: "row", alignItems: "center", gap: 16, padding: 18 }]}
           >
-            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: session.repair ? C.peach : C.sage, alignItems: "center", justifyContent: "center" }}>
-              <Icon name={session.repair ? "key" : "clock"} size={20} />
+            <View style={{ width: 76, height: 68 }}>
+              <LearningActivityArt kind={session.repair ? "repair" : "today"} height={68} />
             </View>
             <View style={{ flex: 1, gap: 3 }}>
               <Text style={s.h3}>Today's session</Text>
@@ -793,7 +797,7 @@ function Quasar() {
                 Walk through a dojo, ancient ruins or neon rooftops. Learn pi
                 with objects that are hard to forget.
               </Text>
-              <Text style={s.link}>Explore memory worlds →</Text>
+              <Text style={s.link}>Explore memory worlds</Text>
             </Card>
           </Pressable>
           <Card
@@ -850,30 +854,6 @@ function Quasar() {
   };
   const library = () => (
     <View style={{ gap: 24 }}>
-      <Reveal>
-        <View style={[s.row, { flexWrap: "wrap", alignItems: "stretch" }]}>
-          {(
-            [
-              ["smile", "Teach-Back Studio", "Explain a concept with the lesson hidden.", () => openTeach(undefined)],
-              ["spark", "The Why Ladder", "Five rungs from what happens to why it matters.", () => openWhy(undefined)],
-              ["map", "Case Lab", "Use what you know on problems you haven't seen.", () => openCase(undefined)],
-              ["cards", "Notes → Quiz", "Paste your notes and get a quiz that comes back for review.", () => nav("notes")],
-            ] as const
-          ).map(([icon, title, body, go]) => (
-            <View key={title} style={{ flex: 1, minWidth: 150 }}>
-              <PressableScale
-                accessibilityRole="button"
-                onPress={go}
-                style={[s.card, { gap: 8, backgroundColor: "#F4E6B8", borderColor: "#E6D49A" }]}
-              >
-                <Icon name={icon} size={22} />
-                <Text style={s.h3}>{title}</Text>
-                <Text style={s.small}>{body}</Text>
-              </PressableScale>
-            </View>
-          ))}
-        </View>
-      </Reveal>
       <Reveal delay={60}>
         <PressableScale
           accessibilityRole="button"
@@ -882,8 +862,8 @@ function Quasar() {
           style={{ backgroundColor: "#202A3B", borderRadius: 28, padding: 20, gap: 14 }}
         >
           <Tag color={C.yellow}>MEMORY WORLD · CELL CITY</Tag>
-          <View style={{ borderRadius: 18, backgroundColor: "#2C3850", paddingTop: 8, paddingHorizontal: 4 }}>
-            <CityCrowd ids={["osei", "kip", "mara"]} max={120} />
+          <View style={{ height: 112, marginHorizontal: -4, overflow: "hidden" }}>
+            <CityCrowd ids={["ribo", "gly", "mara", "osei"]} max={108} perRow={4} />
           </View>
           <Text style={[s.h2, { color: "#FFFDF4" }]}>The city is losing power.</Text>
           <Text style={[s.body, { color: "#D8DCE6" }]}>
@@ -892,11 +872,55 @@ function Quasar() {
           </Text>
           <Text style={[s.label, { color: C.yellow }]}>
             {(p.city?.done.length ?? 0) > 0
-              ? `${p.city!.done.length} of 6 districts lit · continue →`
-              : "Start the investigation →"}
+              ? `${p.city!.done.length} of 6 districts lit · Continue`
+              : "Start the investigation"}
           </Text>
         </PressableScale>
       </Reveal>
+      <View style={{ gap: 12 }}>
+        <Tag color={C.sage}>STUDY LABS</Tag>
+        <Text style={s.h2}>Different ways to prove you know it.</Text>
+        <Text style={s.body}>
+          Explain, question, apply or build a quiz. Pick the kind of practice your idea needs.
+        </Text>
+        {(
+          [
+            ["teach", "Teach-Back Studio", "Explain the idea with the lesson hidden.", "#E8F1F5", "#8BAFC0", () => openTeach(undefined)],
+            ["why", "The Why Ladder", "Climb from what happens to why it matters.", "#F0E8F4", "#B194BF", () => openWhy(undefined)],
+            ["case", "Case Lab", "Use the idea on a strange new problem.", "#E6EEE9", "#78998A", () => openCase(undefined)],
+            ["notes", "Notes to Quiz", "Turn your own notes into a study deck.", "#FAE5D7", "#D98D6E", () => nav("notes")],
+          ] as const
+        ).map(([kind, title, body, color, edge, go], index) => (
+          <Reveal key={title} delay={90 + index * 45}>
+            <PressableScale
+              accessibilityRole="button"
+              onPress={go}
+              style={[
+                s.card,
+                {
+                  minHeight: 132,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 16,
+                  padding: 16,
+                  backgroundColor: color,
+                  borderColor: edge,
+                  borderWidth: 1.5,
+                  overflow: "hidden",
+                },
+              ]}
+            >
+              <View style={{ width: 116, height: 96 }}>
+                <LearningActivityArt kind={kind as ActivityArtKind} height={96} />
+              </View>
+              <View style={{ flex: 1, gap: 5 }}>
+                <Text style={s.h3}>{title}</Text>
+                <Text style={s.small}>{body}</Text>
+              </View>
+            </PressableScale>
+          </Reveal>
+        ))}
+      </View>
       <Card style={{ backgroundColor: C.yellow, gap: 14, borderRadius: 28 }}>
         <Tag>π · THE RIDICULOUS ROUTE</Tag>
         <Image
@@ -1071,8 +1095,8 @@ function Quasar() {
               onPress={() => nav("notes")}
               style={[s.card, { flexDirection: "row", alignItems: "center", gap: 16, padding: 18 }]}
             >
-              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: "#F4E6B8", alignItems: "center", justifyContent: "center" }}>
-                <Icon name="cards" size={20} />
+              <View style={{ width: 76, height: 68 }}>
+                <LearningActivityArt kind="notes" height={68} />
               </View>
               <View style={{ flex: 1, gap: 3 }}>
                 <Text style={s.h3}>Your notes</Text>
@@ -1089,8 +1113,10 @@ function Quasar() {
           <Reveal delay={120}>
             <View style={{ gap: 24 }}>
               <Text style={s.h2}>Vocabulary deck</Text>
-              <Card style={{ backgroundColor: C.sage }}>
-                <Icon name="cards" size={36} />
+              <Card style={{ backgroundColor: "#EEF1F8", borderColor: "#AEBBD5", overflow: "hidden" }}>
+                <View style={{ height: 132, marginHorizontal: -6 }}>
+                  <LearningActivityArt kind="recall" height={132} />
+                </View>
                 <Text style={s.h2}>
                   {due.length
                     ? due.length + " memories are ready."

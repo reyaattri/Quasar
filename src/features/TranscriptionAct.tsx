@@ -230,7 +230,7 @@ export function TranscriptionAct({ compact = false }: { compact?: boolean }) {
         secondary
         onPress={() => Linking.openURL("https://www.rcsb.org/structure/1Y1W")}
       >
-        Structure and scientific source ↗
+        Structure and scientific source
       </Button>
     </Card>
   );

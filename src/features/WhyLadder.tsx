@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { MotiView } from "moti";
 import { Button, C, Card, Icon, s, Tag, Text } from "../components/ui";
 import { PressableScale, Reveal } from "../components/Reveal";
+import { LearningActivityArt } from "../components/LearningActivityArt";
 import { medicalModules } from "../data/medicalLessons";
 import { rungLevels, whyLadders } from "../data/biologyUnderstanding";
 import { conceptId } from "../lib/learning";
@@ -34,6 +35,14 @@ export function WhyLadder({
               notes the rung where your understanding breaks, so the next
               lesson can start there.
             </Text>
+            <View
+              style={{
+                height: 150,
+                marginTop: 6,
+              }}
+            >
+              <LearningActivityArt kind="why" height={150} />
+            </View>
           </View>
         </Reveal>
         {whyLadders.map((ladder, m) => (
@@ -45,7 +54,7 @@ export function WhyLadder({
             >
               <Text style={s.small}>{medicalModules[m].title.toUpperCase()}</Text>
               <Text style={s.h3}>{ladder.title}</Text>
-              <Text style={s.link}>Climb 5 rungs →</Text>
+              <Text style={s.link}>Climb 5 rungs</Text>
             </PressableScale>
           </Reveal>
         ))}

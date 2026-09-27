@@ -647,7 +647,7 @@ export function MemoryPalace({
                           <Text style={s.label}>SOUND CODE</Text>
                           <Text style={s.h3}>{item.decode}</Text>
                           <Text style={s.small}>
-                            Say the object → keep its consonant sounds → recover
+                            Say the object, keep its consonant sounds, recover
                             this room’s pair.
                           </Text>
                         </View>

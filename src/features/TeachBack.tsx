@@ -3,6 +3,7 @@ import { Pressable, View } from "react-native";
 import { dictationSupported, startDictation } from "../lib/dictation";
 import { Button, C, Card, Field, Icon, s, Tag, Text } from "../components/ui";
 import { PressableScale, Reveal } from "../components/Reveal";
+import { LearningActivityArt } from "../components/LearningActivityArt";
 import { medicalModules } from "../data/medicalLessons";
 import { teachConcepts } from "../data/biologyUnderstanding";
 import { attemptsOf, conceptId, errorMemory, parseConcept } from "../lib/learning";
@@ -60,6 +61,14 @@ export function TeachBack({
               Pick a concept. The lesson disappears, and you teach it back in
               your own words.
             </Text>
+            <View
+              style={{
+                height: 150,
+                marginTop: 6,
+              }}
+            >
+              <LearningActivityArt kind="teach" height={150} />
+            </View>
           </View>
         </Reveal>
         {medicalModules.map((lesson, m) => (
@@ -183,6 +192,9 @@ function Session({
           <Text accessibilityRole="header" style={s.title}>
             {card.title}
           </Text>
+          <View style={{ height: 104 }}>
+            <LearningActivityArt kind="teach" height={104} />
+          </View>
         </View>
       </Reveal>
 
@@ -316,7 +328,7 @@ function Session({
             {hits && !tutor && onUpgrade && (
               <Pressable accessibilityRole="button" onPress={onUpgrade}>
                 <Text style={s.link}>
-                  Want feedback on how you explained it, not just which ideas? AI tutor feedback comes with Quasar Plus →
+                  Want feedback on how you explained it, not just which ideas? AI tutor feedback comes with Quasar Plus
                 </Text>
               </Pressable>
             )}

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Image, Pressable, TextInput, View } from "react-native";
-import { MotiView } from "moti";
-import { useReducedMotion } from "react-native-reanimated";
 import { Button, C, Card, Icon, s, Tag, Text } from "../components/ui";
 import {
   Confetti,
@@ -114,18 +112,11 @@ export function CellCity({
             overflow: "hidden",
           }}
         >
-          <View
-            style={{
-              borderRadius: 18,
-              backgroundColor: "#2C3850",
-              paddingTop: 10,
-              paddingHorizontal: 4,
-            }}
-          >
+          <View style={{ paddingTop: 8, paddingHorizontal: 4 }}>
             <CityCrowd
-              ids={["osei", "nell", "ribo", "mara", "kip", "gly"]}
-              max={120}
-              perRow={3}
+              ids={["ribo", "gly", "mara", "osei"]}
+              max={136}
+              perRow={4}
             />
           </View>
           <View style={s.between}>
@@ -330,45 +321,6 @@ function EpisodeArt({ n }: { n: number }) {
   );
 }
 
-// The speaker steps up, talks for a moment, then settles into their own idle.
-function Stage({ who, beat }: { who: CharacterId; beat: number }) {
-  const [talking, setTalking] = useState(true);
-  useEffect(() => {
-    setTalking(true);
-    const t = setTimeout(() => setTalking(false), 2600);
-    return () => clearTimeout(t);
-  }, [beat]);
-  const c = characters[who];
-  return (
-    <View
-      style={{
-        backgroundColor: c.color,
-        borderRadius: 26,
-        borderWidth: 1.5,
-        borderColor: C.ink,
-        alignItems: "center",
-        paddingTop: 10,
-        overflow: "hidden",
-      }}
-    >
-      <Reveal key={who}>
-        <CityCharacter id={who} size={210} mood={talking ? "talk" : "idle"} />
-      </Reveal>
-      <View
-        style={{
-          alignSelf: "stretch",
-          backgroundColor: "rgba(41,59,48,0.9)",
-          paddingVertical: 8,
-          paddingHorizontal: 14,
-        }}
-      >
-        <Text style={{ color: "#FFFDF4", fontWeight: "700" }}>{c.name}</Text>
-        <Text style={{ color: "#D8DCE6", fontSize: 13 }}>{c.role}</Text>
-      </View>
-    </View>
-  );
-}
-
 type Phase = "brief" | "scene" | "rebuild" | "clues" | "explain" | "done";
 const phaseNames: Record<Phase, string> = {
   brief: "THE REAL BIOLOGY",
@@ -506,7 +458,6 @@ function EpisodeRun({
       {phase === "scene" && (
         <>
           <EpisodeArt n={episode.n} />
-          <Stage who={episode.scene[beat].who} beat={beat} />
           {episode.scene.slice(0, beat + 1).map((b, i) => (
             <Reveal key={i}>
               <View style={[s.row, { alignItems: "flex-start", gap: 12 }]}>
@@ -543,7 +494,7 @@ function EpisodeRun({
                 style={{ alignSelf: "center" }}
                 hitSlop={10}
               >
-                <Text style={s.link}>Skip scene →</Text>
+                <Text style={s.link}>Skip scene</Text>
               </Pressable>
             </View>
           ) : (

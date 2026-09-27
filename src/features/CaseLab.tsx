@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View } from "react-native";
 import { C, s, Tag, Text } from "../components/ui";
 import { PressableScale, Reveal } from "../components/Reveal";
+import { LearningActivityArt } from "../components/LearningActivityArt";
 import { labCases } from "../data/caseLab";
 import { medicalModules } from "../data/medicalLessons";
 import { attemptsOf } from "../lib/learning";
@@ -61,6 +62,14 @@ export function CaseLab({
             Original problems you haven't seen in the lessons. You get two tries;
             the hint only appears after the second.
           </Text>
+          <View
+            style={{
+              height: 150,
+              marginTop: 6,
+            }}
+          >
+            <LearningActivityArt kind="case" height={150} />
+          </View>
         </View>
       </Reveal>
       {medicalModules.map((lesson, m) => (

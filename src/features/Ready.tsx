@@ -28,11 +28,6 @@ export function ReadyPanel({ progress, ...actions }: { progress: Progress } & Er
             </View>
             <Text style={[s.h2, { marginTop: 6 }]}>Three kinds of knowing.</Text>
           </View>
-          <Text style={s.small}>
-            Measured separately, because knowing a fact isn't the same as
-            explaining it or using it. Answers you needed a hint for don't
-            count as mastered. This isn't a score prediction.
-          </Text>
           {rows.map(([title, sub, m, color]) => (
             <View key={title} style={{ gap: 7 }}>
               <View style={s.between}>

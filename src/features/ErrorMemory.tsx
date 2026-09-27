@@ -164,7 +164,7 @@ function ErrorCard({
       )}
       {bio && !onNewHook && onUpgrade && (
         <Pressable accessibilityRole="button" onPress={onUpgrade}>
-          <Text style={s.link}>Still not sticking? Quasar Plus can write you a brand-new memory hook for this mistake →</Text>
+          <Text style={s.link}>Still not sticking? Quasar Plus can write you a brand-new memory hook for this mistake</Text>
         </Pressable>
       )}
     </Card>

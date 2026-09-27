@@ -469,7 +469,7 @@ export function KoreanCourse({
           Linking.openURL("https://www.iksi.or.kr/lms/main/about.do")
         }
       >
-        Continue with King Sejong Institute ↗
+        Continue with King Sejong Institute
       </Button>
     </View>
   );

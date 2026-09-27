@@ -252,7 +252,7 @@ export function MedicineLesson({
               ATP synthase.
             </Text>
             <Text style={[s.label, { color: C.yellow }]}>
-              {cityDone ? `${cityDone} of 6 episodes solved →` : "Start episode 1 →"}
+              {cityDone ? `${cityDone} of 6 episodes solved` : "Start episode 1"}
             </Text>
           </Pressable>
         )}
@@ -315,7 +315,7 @@ export function MedicineLesson({
             <BioMiniLab module={selected} />
             {lesson.video && (
               <Button secondary onPress={() => Linking.openURL(lesson.video!)}>
-                Watch the real process ↗
+                Watch the real process
               </Button>
             )}
             {lesson.cards.map((c, i) => (
@@ -506,7 +506,7 @@ export function MedicineLesson({
         )}
       </Card>
       <Button secondary onPress={() => Linking.openURL(lesson.source)}>
-        Open the free biology reference ↗
+        Open the free biology reference
       </Button>
       <MedicalStudio concept={selected} />
       <Text style={s.small}>
@@ -576,7 +576,7 @@ export function PatientCase({
               <Text style={s.body}>{c.explanation}</Text>
               {c.source && (
                 <Button secondary onPress={() => Linking.openURL(c.source!)}>
-                  Read the source ↗
+                  Read the source
                 </Button>
               )}
               <Button icon="arrow" onPress={() => onNext("teach")}>

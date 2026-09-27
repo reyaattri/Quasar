@@ -126,7 +126,7 @@ export function MedicalStudio({ concept }: { concept: number }) {
           </Button>
         )}
         <Button secondary onPress={() => Linking.openURL(item.source)}>
-          Read the experimental record ↗
+          Read the experimental record
         </Button>
         {!!origin && (
           <>

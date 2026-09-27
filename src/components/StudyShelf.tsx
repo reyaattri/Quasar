@@ -69,7 +69,7 @@ export function StudyShelf({
     {
       tag: "WORDS WITH PERSONALITY",
       title: "A loose lid. A lucid idea.",
-      body: "Ridiculous cartoons → recall → a question in context.",
+      body: "Ridiculous cartoons, active recall, then a question in context.",
       note: "10 words · two five-word sessions",
       color: C.yellow,
       source: require("../../assets/sat-cartoons-user-selected.png"),

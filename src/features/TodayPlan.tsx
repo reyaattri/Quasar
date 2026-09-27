@@ -1,19 +1,26 @@
 import React, { useState } from "react";
 import { Pressable, View } from "react-native";
 import { MotiView } from "moti";
-import { Button, C, Card, Icon, s, Tag, Text } from "../components/ui";
+import { Button, C, Card, s, Text } from "../components/ui";
 import { PressableScale, Reveal } from "../components/Reveal";
+import {
+  LearningActivityArt,
+  type ActivityArtKind,
+} from "../components/LearningActivityArt";
 import { buildPlan, type Task, type TaskType } from "../lib/planner";
 import type { Progress } from "../lib/progress";
 import { ErrorMemoryList, type ErrorActions } from "./ErrorMemory";
 
-const look: Record<TaskType, { icon: string; label: string; tint: string }> = {
-  recall: { icon: "cards", label: "RECALL", tint: C.sage },
-  repair: { icon: "key", label: "REPAIR", tint: C.peach },
-  teach: { icon: "smile", label: "TEACH-BACK", tint: "#F4E6B8" },
-  why: { icon: "spark", label: "WHY LADDER", tint: "#E9DEF0" },
-  case: { icon: "map", label: "CASE", tint: "#E7DFEF" },
-  learn: { icon: "leaf", label: "NEW", tint: C.sage },
+const look: Record<
+  TaskType,
+  { art: ActivityArtKind; label: string; tint: string; edge: string }
+> = {
+  recall: { art: "recall", label: "RECALL", tint: "#EEF1F8", edge: "#AEBBD5" },
+  repair: { art: "repair", label: "REPAIR", tint: "#FAE5D7", edge: "#D98D6E" },
+  teach: { art: "teach", label: "TEACH-BACK", tint: "#E8F1F5", edge: "#8BAFC0" },
+  why: { art: "why", label: "WHY LADDER", tint: "#F0E8F4", edge: "#B194BF" },
+  case: { art: "case", label: "CASE LAB", tint: "#E6EEE9", edge: "#78998A" },
+  learn: { art: "learn", label: "NEW LESSON", tint: "#F7EDC9", edge: "#D9B959" },
 };
 
 const exams = [
@@ -60,9 +67,19 @@ export function TodayPlan({
               </Text>
             </Pressable>
           </View>
-          <Text style={{ color: C.paper, fontFamily: "QuasarGrotesk", fontSize: 26, lineHeight: 31 }}>
-            {recovery ? "Welcome back. Let's start small." : `${minutes} minutes. Here's what needs you.`}
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <View style={{ flex: 1, gap: 8 }}>
+              <Text style={{ color: C.paper, fontFamily: "QuasarGrotesk", fontSize: 26, lineHeight: 31 }}>
+                {recovery ? "Welcome back. Let's start small." : `${minutes} minutes. Here's what needs you.`}
+              </Text>
+              <Text style={{ color: "#C8D8CB", fontSize: 13, lineHeight: 18 }}>
+                A short route through what is fading, what is shaky and what comes next.
+              </Text>
+            </View>
+            <View style={{ width: 122, height: 94 }}>
+              <LearningActivityArt kind="today" height={94} />
+            </View>
+          </View>
           {recovery && (
             <Text style={{ color: "#DBE6D6", fontSize: 14, lineHeight: 21 }}>
               {recovery.daysAway >= 3 ? `It's been ${recovery.daysAway} days, and nothing is lost. ` : ""}
@@ -104,15 +121,32 @@ export function TodayPlan({
 
       {tasks.map((t, i) => (
         <Reveal key={t.id} delay={80 + i * 70}>
-          <View style={[s.card, { padding: 0, gap: 0 }]}>
+          <View
+            style={[
+              s.card,
+              {
+                padding: 0,
+                gap: 0,
+                overflow: "hidden",
+                backgroundColor: look[t.type].tint,
+                borderColor: look[t.type].edge,
+                borderWidth: 1.5,
+              },
+            ]}
+          >
             <PressableScale
               accessibilityRole="button"
               accessibilityLabel={`${t.title}, ${t.minutes} minutes. ${t.reason}`}
               onPress={() => onStart(t)}
-              style={{ flexDirection: "row", gap: 14, alignItems: "flex-start", padding: 18, paddingRight: 64 }}
+              style={{ flexDirection: "row", gap: 12, alignItems: "center", padding: 16, paddingRight: 54 }}
             >
-              <View style={{ width: 42, height: 42, borderRadius: 21, backgroundColor: look[t.type].tint, alignItems: "center", justifyContent: "center" }}>
-                <Icon name={look[t.type].icon} size={20} />
+              <View
+                style={{
+                  width: 86,
+                  height: 76,
+                }}
+              >
+                <LearningActivityArt kind={look[t.type].art} height={76} />
               </View>
               <View style={{ flex: 1, gap: 5 }}>
                 <Text style={[s.small, { fontWeight: "700", letterSpacing: 1.2, color: C.ink }]}>

@@ -81,7 +81,7 @@ export function OfficialSatPractice() {
               )
             }
           >
-            Read official question {q.number} ↗
+            Read official question {q.number}
           </Button>
           {!read ? (
             <Button onPress={() => setRead(true)}>
@@ -133,7 +133,7 @@ export function OfficialSatPractice() {
             </>
           )}
           <Button secondary onPress={() => Linking.openURL(answers)}>
-            College Board’s answer explanations ↗
+            College Board’s answer explanations
           </Button>
         </>
       )}
