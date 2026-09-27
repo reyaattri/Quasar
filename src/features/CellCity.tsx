@@ -1,16 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { Image, Pressable, TextInput, View } from "react-native";
 import { MotiView } from "moti";
 import { useReducedMotion } from "react-native-reanimated";
 import { Button, C, Card, Icon, s, Tag, Text } from "../components/ui";
-import { Meter, PressableScale, Reveal } from "../components/Reveal";
-import { AtlasArt } from "../components/StudyShelf";
+import {
+  Confetti,
+  Feedback,
+  Meter,
+  PressableScale,
+  Reveal,
+} from "../components/Reveal";
+import {
+  CityCharacter,
+  CityCrowd,
+  type Mood,
+} from "../components/CityCharacter";
+import { sceneLabels, sceneStills } from "../data/cellCityScenes";
 import {
   cellCity,
   characters,
   cityQuestions,
   cueLevel,
   explainCovered,
+  hostOf,
+  type CharacterId,
   type CityQuestion,
   type CueLevel,
   type Episode,
@@ -23,26 +36,6 @@ type Log = (a: Omit<Attempt, "at">) => void;
 
 const NIGHT = "#202A3B";
 const LAMP = "#F2CB6C";
-const cityArt = require("../../assets/bio-cells-world.png");
-
-// Placeholder panels from the biology atlas until each episode has its own picture.
-const episodeArt: Record<
-  number,
-  { index: number; dark?: boolean; label: string }
-> = {
-  1: {
-    index: 0,
-    label:
-      "Builders at work beside the Archive, whose guard checks everyone at the door",
-  },
-  3: {
-    index: 5,
-    label: "Foreman Kip in the power station, charging battery after battery",
-  },
-  4: { index: 5, dark: true, label: "The power station in darkness" },
-  6: { index: 5, label: "The power station running again" },
-};
-
 function shuffled<T>(items: T[]) {
   const a = [...items];
   for (let i = a.length - 1; i > 0; i--) {
@@ -121,27 +114,19 @@ export function CellCity({
             overflow: "hidden",
           }}
         >
-          <View style={[s.row, { gap: 8 }]}>
-            {[0, 5].map((index) => (
-              <View
-                key={index}
-                style={{
-                  flex: 1,
-                  borderRadius: 16,
-                  overflow: "hidden",
-                  backgroundColor: "#2C3850",
-                }}
-              >
-                <AtlasArt
-                  source={cityArt}
-                  columns={3}
-                  rows={2}
-                  index={index}
-                  height={150}
-                  inset={1}
-                />
-              </View>
-            ))}
+          <View
+            style={{
+              borderRadius: 18,
+              backgroundColor: "#2C3850",
+              paddingTop: 10,
+              paddingHorizontal: 4,
+            }}
+          >
+            <CityCrowd
+              ids={["osei", "nell", "ribo", "mara", "kip", "gly"]}
+              max={120}
+              perRow={3}
+            />
           </View>
           <View style={s.between}>
             <Text style={[s.label, { color: LAMP }]}>CITY POWER</Text>
@@ -300,23 +285,13 @@ export function CellCity({
   );
 }
 
-function Badge({
-  id,
-  size = 38,
-}: {
-  id: keyof typeof characters;
-  size?: number;
-}) {
+function Badge({ id, size = 44 }: { id: CharacterId; size?: number }) {
   const c = characters[id];
-  const initials = c.name
-    .replace(/^(Mayor|Archivist|Gatekeeper|Foreman|Courier) /, "")
-    .split(/\s|&/)
-    .filter(Boolean)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2);
+  // A round portrait: the character's picture, scaled up and pinned to the head and shoulders.
+  const big = size * 2.3;
   return (
     <View
+      accessibilityLabel={c.name}
       style={{
         width: size,
         height: size,
@@ -324,54 +299,72 @@ function Badge({
         backgroundColor: c.color,
         borderWidth: 1.5,
         borderColor: C.ink,
-        alignItems: "center",
-        justifyContent: "center",
+        overflow: "hidden",
       }}
     >
-      <Text style={{ fontWeight: "700", color: C.ink, fontSize: size * 0.36 }}>
-        {initials}
-      </Text>
+      <View style={{ marginLeft: -(big - size) / 2, marginTop: -size * 0.02 }}>
+        <CityCharacter id={id} size={big} still />
+      </View>
     </View>
   );
 }
 
 function EpisodeArt({ n }: { n: number }) {
-  const reduced = useReducedMotion();
-  const art = episodeArt[n];
-  if (!art) return null;
+  const height = 190;
   return (
     <View
-      accessibilityLabel={art.label}
+      accessibilityLabel={sceneLabels[n]}
       style={{
         borderRadius: 22,
         overflow: "hidden",
-        backgroundColor: art.dark ? NIGHT : C.sage,
+        backgroundColor: NIGHT,
+        height,
       }}
     >
-      <AtlasArt
-        source={cityArt}
-        columns={3}
-        rows={2}
-        index={art.index}
-        height={200}
-        inset={1}
+      <Image
+        source={sceneStills[n]}
+        resizeMode="cover"
+        style={{ width: "100%", height }}
       />
-      {art.dark && (
-        <MotiView
-          pointerEvents="none"
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-            backgroundColor: NIGHT,
-          }}
-          from={{ opacity: 0.72 }}
-          animate={{ opacity: reduced ? 0.72 : 0.58 }}
-          transition={{ type: "timing", duration: 900, loop: !reduced }}
-        />
-      )}
+    </View>
+  );
+}
+
+// The speaker steps up, talks for a moment, then settles into their own idle.
+function Stage({ who, beat }: { who: CharacterId; beat: number }) {
+  const [talking, setTalking] = useState(true);
+  useEffect(() => {
+    setTalking(true);
+    const t = setTimeout(() => setTalking(false), 2600);
+    return () => clearTimeout(t);
+  }, [beat]);
+  const c = characters[who];
+  return (
+    <View
+      style={{
+        backgroundColor: c.color,
+        borderRadius: 26,
+        borderWidth: 1.5,
+        borderColor: C.ink,
+        alignItems: "center",
+        paddingTop: 10,
+        overflow: "hidden",
+      }}
+    >
+      <Reveal key={who}>
+        <CityCharacter id={who} size={210} mood={talking ? "talk" : "idle"} />
+      </Reveal>
+      <View
+        style={{
+          alignSelf: "stretch",
+          backgroundColor: "rgba(41,59,48,0.9)",
+          paddingVertical: 8,
+          paddingHorizontal: 14,
+        }}
+      >
+        <Text style={{ color: "#FFFDF4", fontWeight: "700" }}>{c.name}</Text>
+        <Text style={{ color: "#D8DCE6", fontSize: 13 }}>{c.role}</Text>
+      </View>
     </View>
   );
 }
@@ -513,8 +506,9 @@ function EpisodeRun({
       {phase === "scene" && (
         <>
           <EpisodeArt n={episode.n} />
+          <Stage who={episode.scene[beat].who} beat={beat} />
           {episode.scene.slice(0, beat + 1).map((b, i) => (
-            <Reveal key={i} delay={i === beat ? 0 : 0}>
+            <Reveal key={i}>
               <View style={[s.row, { alignItems: "flex-start", gap: 12 }]}>
                 <Badge id={b.who} />
                 <View
@@ -576,6 +570,7 @@ function EpisodeRun({
                 : cueLevel(progress.attempts ?? [], episode.clues[clue].id)
             }
             noCues={episode.noCues}
+            host={hostOf[episode.n]}
             onAttempt={(a) => {
               if (a.correct) setRight((n) => n + 1);
               onAttempt(a);
@@ -604,8 +599,13 @@ function EpisodeRun({
               borderRadius: 28,
               padding: 22,
               gap: 14,
+              overflow: "hidden",
             }}
           >
+            <Confetti />
+            <View style={{ alignItems: "center" }}>
+              <CityCharacter id={hostOf[episode.n]} mood="happy" size={190} />
+            </View>
             <Icon name="sun" size={30} color={LAMP} />
             <Text style={[s.h2, { color: "#FFFDF4" }]}>
               {episode.title}: solved.
@@ -732,6 +732,7 @@ function ClueCard({
   q,
   level,
   noCues,
+  host,
   onAttempt,
   onNext,
   last,
@@ -739,6 +740,7 @@ function ClueCard({
   q: CityQuestion;
   level: CueLevel;
   noCues?: boolean;
+  host: CharacterId;
   onAttempt: Log;
   onNext: () => void;
   last: boolean;
@@ -769,46 +771,56 @@ function ClueCard({
         {order.map((i) => {
           const c = q.choices[i];
           return (
-            <PressableScale
+            <Feedback
               key={c}
-              accessibilityRole="button"
-              accessibilityState={{ disabled: choice !== null }}
-              disabled={choice !== null}
-              onPress={() => {
-                setChoice(i);
-                onAttempt({
-                  conceptId: q.id,
-                  mode: "recall",
-                  correct: i === q.answer,
-                  hinted: !noCues && (level === 0 || hint),
-                  chose: i === q.answer ? undefined : c,
-                  truth: q.choices[q.answer],
-                });
-              }}
-              style={[
-                s.input,
-                { justifyContent: "center" },
-                choice !== null &&
-                  i === q.answer && {
-                    backgroundColor: C.sage,
-                    borderColor: C.green,
-                  },
-                choice === i &&
-                  i !== q.answer && {
-                    backgroundColor: "#FBEFE3",
-                    borderColor: C.red,
-                  },
-              ]}
+              kind={
+                choice === null
+                  ? null
+                  : i === q.answer
+                    ? "right"
+                    : choice === i
+                      ? "wrong"
+                      : null
+              }
             >
-              <Text style={[s.body, { color: C.ink }]}>{c}</Text>
-            </PressableScale>
+              <PressableScale
+                accessibilityRole="button"
+                accessibilityState={{ disabled: choice !== null }}
+                disabled={choice !== null}
+                onPress={() => {
+                  setChoice(i);
+                  onAttempt({
+                    conceptId: q.id,
+                    mode: "recall",
+                    correct: i === q.answer,
+                    hinted: !noCues && (level === 0 || hint),
+                    chose: i === q.answer ? undefined : c,
+                    truth: q.choices[q.answer],
+                  });
+                }}
+                style={[
+                  s.input,
+                  { justifyContent: "center" },
+                  choice !== null &&
+                    i === q.answer && {
+                      backgroundColor: C.sage,
+                      borderColor: C.green,
+                    },
+                  choice === i &&
+                    i !== q.answer && {
+                      backgroundColor: "#FBEFE3",
+                      borderColor: C.red,
+                    },
+                ]}
+              >
+                <Text style={[s.body, { color: C.ink }]}>{c}</Text>
+              </PressableScale>
+            </Feedback>
           );
         })}
         {choice !== null && (
           <View style={{ gap: 10 }}>
-            <Text accessibilityLiveRegion="polite" style={s.h3}>
-              {choice === q.answer ? "Right." : "Not quite."}
-            </Text>
+            <Reaction host={host} right={choice === q.answer} seed={q.id} />
             <Text style={[s.body, { color: C.ink }]}>{q.why}</Text>
             {another ? (
               <View
@@ -1211,10 +1223,53 @@ function Revisit({
         q={q}
         level={q.cue ? cueLevel(progress.attempts ?? [], q.id) : 2}
         noCues={!q.cue}
+        host={hostOf[Number(/^city-e(\d)/.exec(q.id)?.[1] ?? 1)]}
         onAttempt={onAttempt}
         last={i === queue.length - 1}
         onNext={() => setI(i + 1)}
       />
     </View>
+  );
+}
+
+const pickLine = (list: string[], seed: string) =>
+  list[[...seed].reduce((n, ch) => n + ch.charCodeAt(0), 0) % list.length];
+
+// After an answer, the host reacts in their own voice: cheering when it's right, wincing when it isn't.
+function Reaction({
+  host,
+  right,
+  seed,
+}: {
+  host: CharacterId;
+  right: boolean;
+  seed: string;
+}) {
+  const c = characters[host];
+  const mood: Mood = right ? "happy" : "worried";
+  return (
+    <Reveal>
+      <View style={[s.row, { alignItems: "flex-end", gap: 6 }]}>
+        <CityCharacter id={host} mood={mood} size={104} />
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: right ? C.sage : "#FBEFE3",
+            borderRadius: 18,
+            borderBottomLeftRadius: 4,
+            padding: 12,
+            gap: 3,
+            marginBottom: 8,
+          }}
+        >
+          <Text accessibilityLiveRegion="polite" style={s.h3}>
+            {right ? "Right." : "Not quite."}
+          </Text>
+          <Text style={[s.small, { color: C.ink }]}>
+            {c.name}: {pickLine(right ? c.cheer : c.wince, seed)}
+          </Text>
+        </View>
+      </View>
+    </Reveal>
   );
 }

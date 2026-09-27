@@ -10,7 +10,13 @@ export type Character = {
   role: string;
   real: string;
   color: string;
+  // One line for each reaction; picked by the clue, so the same clue always gets the same joke.
+  cheer: string[];
+  wince: string[];
 };
+
+// Who reacts to a learner's answers in each episode.
+export const hostOf: Record<number, CharacterId> = { 1: "nell", 2: "gly", 3: "kip", 4: "kip", 5: "mara", 6: "osei" };
 
 export const characters: Record<CharacterId, Character> = {
   osei: {
@@ -19,6 +25,8 @@ export const characters: Record<CharacterId, Character> = {
     role: "Runs Cell City and asks for your help",
     real: "The cell as a whole: it needs every part working together",
     color: "#F1D379",
+    cheer: ["The city thanks you. I have a sash for this.","Splendid. Somebody write that on the clipboard.","My little organelles are cheering. Hear that?"],
+    wince: ["Hm. Let's pop back a step; nobody's in trouble.","Oh dear. That's what the clipboard is for."],
   },
   nell: {
     id: "nell",
@@ -26,6 +34,8 @@ export const characters: Record<CharacterId, Character> = {
     role: "Keeper of the Archive, the city's headquarters",
     real: "The nucleus: it holds the DNA and sends out mRNA copies",
     color: "#D9D2FA",
+    cheer: ["Correct. You may keep your blueprint privileges.","Hm. Not bad. Don't let it go to your head.","Filed under: things you know now."],
+    wince: ["No. But I'll allow one more try. Just the one.","The originals stay put, dear. Try again."],
   },
   ribo: {
     id: "ribo",
@@ -33,6 +43,8 @@ export const characters: Record<CharacterId, Character> = {
     role: "Two-part builders who read work orders",
     real: "Ribosomes: a large and a small subunit that read mRNA and link amino acids",
     color: "#BFD7AF",
+    cheer: ["Snap! Right onto the chain.","Rho: told you. Bo: you did not.","One more bead. Both of us agree."],
+    wince: ["The chain's wobbling again.","Bo hid behind the tape. Try once more?"],
   },
   mara: {
     id: "mara",
@@ -40,6 +52,8 @@ export const characters: Record<CharacterId, Character> = {
     role: "Guards the flexible city wall and its gates",
     real: "The cell membrane: a selectively permeable phospholipid bilayer with protein channels",
     color: "#F4C9B8",
+    cheer: ["Through you go. Small, uncharged, and correct.","Stamped. Next in line, please.","Approved. The ions will have to wait."],
+    wince: ["Access denied. Try the other gate.","I'd need to see some more ID for that answer."],
   },
   kip: {
     id: "kip",
@@ -47,6 +61,8 @@ export const characters: Record<CharacterId, Character> = {
     role: "Runs the power stations",
     real: "Mitochondria: where the citric acid cycle and oxidative phosphorylation happen",
     color: "#F0B27A",
+    cheer: ["That's how you charge a battery.","*sips tea* Good. Now we're cooking with current.","The little batteries are doing a wave."],
+    wince: ["*tea goes everywhere* Okay. Deep breath.","Lights flicker. So does my confidence."],
   },
   gly: {
     id: "gly",
@@ -54,6 +70,8 @@ export const characters: Record<CharacterId, Character> = {
     role: "Splits fuel parcels in the streets",
     real: "Glycolysis: splitting glucose in the cytoplasm",
     color: "#F4E6B8",
+    cheer: ["Clean split. Six cubes, two halves.","Delivered. No cubes were harmed.","Nice one. I'd tip, but batteries are all I have."],
+    wince: ["Whoops. That parcel's wobbling.","Cubes everywhere. We'll regroup."],
   },
 };
 

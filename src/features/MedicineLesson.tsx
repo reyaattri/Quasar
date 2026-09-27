@@ -1,6 +1,7 @@
 import { biologyCoaching } from "../data/lessonCoaching";
 import React, { useState } from "react";
 import { Image, Linking, Pressable, View } from "react-native";
+import { CityCrowd } from "../components/CityCharacter";
 import { Button, C, Card, s, Tag, Text } from "../components/ui";
 import { BioMiniLab } from "../components/BioMiniLab";
 import { MedicalStudio } from "../components/MedicalStudio";
@@ -242,6 +243,7 @@ export function MedicineLesson({
             onPress={onCellCity}
             style={{ backgroundColor: "#202A3B", borderRadius: 28, padding: 20, gap: 8 }}
           >
+            <CityCrowd ids={["kip", "osei", "mara"]} max={104} />
             <Text style={[s.label, { color: C.yellow }]}>STORY WORLD · CELLS AND ENERGY</Text>
             <Text style={[s.h2, { color: "#FFFDF4" }]}>The Secrets of Cell City</Text>
             <Text style={[s.body, { color: "#D8DCE6" }]}>

@@ -6,6 +6,7 @@ import { WhyLadder } from "./src/features/WhyLadder";
 import { CaseLab } from "./src/features/CaseLab";
 import { NotesQuiz } from "./src/features/NotesQuiz";
 import { CellCity } from "./src/features/CellCity";
+import { CityCrowd } from "./src/components/CityCharacter";
 import { TodayPlan } from "./src/features/TodayPlan";
 import { ReadyPanel } from "./src/features/Ready";
 import type { ErrorActions } from "./src/features/ErrorMemory";
@@ -857,18 +858,8 @@ function Quasar() {
           style={{ backgroundColor: "#202A3B", borderRadius: 28, padding: 20, gap: 14 }}
         >
           <Tag color={C.yellow}>MEMORY WORLD · CELL CITY</Tag>
-          <View style={[s.row, { gap: 8 }]}>
-            {[0, 5].map((index) => (
-              <View key={index} style={{ flex: 1, borderRadius: 16, overflow: "hidden" }}>
-                <AtlasArt
-                  source={require("./assets/bio-cells-world.png")}
-                  columns={3}
-                  rows={2}
-                  index={index}
-                  height={140}
-                />
-              </View>
-            ))}
+          <View style={{ borderRadius: 18, backgroundColor: "#2C3850", paddingTop: 8, paddingHorizontal: 4 }}>
+            <CityCrowd ids={["osei", "kip", "mara"]} max={120} />
           </View>
           <Text style={[s.h2, { color: "#FFFDF4" }]}>The city is losing power.</Text>
           <Text style={[s.body, { color: "#D8DCE6" }]}>
