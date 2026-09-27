@@ -796,25 +796,6 @@ function Quasar() {
               <Text style={s.link}>Explore memory worlds →</Text>
             </Card>
           </Pressable>
-          <PressableScale
-            accessibilityRole="button"
-            accessibilityLabel="Open Cell City"
-            onPress={() => nav("city")}
-            style={[s.card, { backgroundColor: "#EFE8FA", borderColor: "#DDD3F0", gap: 12 }]}
-          >
-            <Tag color="#DDD3F0">NEW STORY WORLD</Tag>
-            <CityCrowd ids={["kip", "osei", "gly"]} max={110} />
-            <Text style={s.h3}>The city is losing power. Kip needs you.</Text>
-            <Text style={s.body}>
-              Six short episodes inside a living cell, with a cast who tease you
-              when you're wrong and cheer when you're right.
-            </Text>
-            <Text style={s.link}>
-              {(p.city?.done.length ?? 0) > 0
-                ? `${p.city!.done.length} of 6 episodes solved · keep going →`
-                : "Start episode 1 →"}
-            </Text>
-          </PressableScale>
           <Card
             style={{
               backgroundColor: "#ECE4F4",
