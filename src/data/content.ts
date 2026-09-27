@@ -264,7 +264,7 @@ export const lessons = [
   },
   {
     title: "Make a name memorable",
-    type: "Personal Nick Name",
+    type: "Personal nickname",
     icon: "smile",
     body: "Privately connect a new name with a vivid, friendly image. Use a sound association that makes sense to you, then link it to the person.",
     example:

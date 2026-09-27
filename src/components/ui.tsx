@@ -96,6 +96,13 @@ export function Dots() {
     </View>
   );
 }
+// A chunky pixel-game button: stepped corners, a dark outline and a hard shadow it presses down into.
+// Drawn in SVG from the button's measured size, so the text and icon stay native and accessible.
+function pixelOutline(w: number, h: number, st: number) {
+  const s2 = st * 2;
+  return `M${s2} 0H${w - s2}V${st}H${w - st}V${s2}H${w}V${h - s2}H${w - st}V${h - st}H${w - s2}V${h}H${s2}V${h - st}H${st}V${h - s2}H0V${s2}H${st}V${st}H${s2}Z`;
+}
+const DEPTH = 4;
 export function Button({
   children,
   onPress,
@@ -103,6 +110,7 @@ export function Button({
   disabled = false,
   icon,
   small = false,
+  color,
 }: {
   children: React.ReactNode;
   onPress: () => void;
@@ -110,26 +118,51 @@ export function Button({
   disabled?: boolean;
   icon?: string;
   small?: boolean;
+  color?: string;
 }) {
+  const [size, setSize] = React.useState({ w: 0, h: 0 });
+  const face = secondary ? C.white : (color ?? C.green);
+  const ink = secondary ? C.ink : C.white;
+  const st = small ? 4 : 5;
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        s.button,
-        secondary && s.secondary,
-        small && { paddingVertical: 10, paddingHorizontal: 16 },
-        disabled && { opacity: 0.45 },
-        pressed && { opacity: 0.8, transform: [{ translateY: 1 }] },
-      ]}
+      style={{ paddingBottom: DEPTH, opacity: disabled ? 0.45 : 1 }}
     >
-      <Text style={[s.buttonText, secondary && { color: C.ink }]}>
-        {children}
-      </Text>
-      {icon && (
-        <Icon name={icon} size={18} color={secondary ? C.ink : C.white} />
-      )}
+      {({ pressed }) => {
+        const down = pressed && !disabled ? DEPTH - 1 : 0;
+        const w = size.w, h = size.h;
+        return (
+          <View>
+            {w > 0 && (
+              <Svg
+                pointerEvents="none"
+                width={w}
+                height={h + DEPTH}
+                style={{ position: "absolute", left: 0, top: 0 }}
+              >
+                <Path d={pixelOutline(w, h, st)} fill={C.ink} transform={`translate(0 ${DEPTH})`} />
+                <Path d={pixelOutline(w, h, st)} fill={face} stroke={C.ink} strokeWidth={2.5} transform={`translate(0 ${down})`} />
+                <Rect x={st * 2} y={3 + down} width={Math.max(0, w - st * 4)} height={3} fill={C.white} opacity={secondary ? 0.9 : 0.16} />
+              </Svg>
+            )}
+            <View
+              onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}
+              style={[
+                s.button,
+                { backgroundColor: "transparent", borderRadius: 0, transform: [{ translateY: down }] },
+                small && { paddingVertical: 10, paddingHorizontal: 16, minHeight: 40 },
+              ]}
+            >
+              <Text style={[s.buttonText, { color: ink, fontWeight: "700", letterSpacing: 0.2 }]}>{children}</Text>
+              {icon && <Icon name={icon} size={18} color={ink} />}
+            </View>
+          </View>
+        );
+      }}
     </Pressable>
   );
 }

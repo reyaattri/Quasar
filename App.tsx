@@ -1,5 +1,5 @@
 import { ProgressMobile } from "./src/components/ProgressMobile";
-import { NIGHT, WelcomeScene } from "./src/components/WelcomeScene";
+import { VIOLET, WelcomeScene } from "./src/components/WelcomeScene";
 import { Reveal, Pulse, PressableScale } from "./src/components/Reveal";
 import { TeachBack } from "./src/features/TeachBack";
 import { WhyLadder } from "./src/features/WhyLadder";
@@ -67,8 +67,8 @@ import {
   Card,
   Tag,
   Field,
-  Dots,
   serif,
+  Dots,
 } from "./src/components/ui";
 import { Scene, FactImage } from "./src/components/Scene";
 import {
@@ -512,7 +512,21 @@ function Quasar() {
       <View style={{ gap: 22 }}>
         <View style={s.between}>
           <Tag>Lesson {lesson + 1} of 6</Tag>
-          <Text style={s.small}>THE MEMORY TOOLKIT</Text>
+          {!p.onboarded ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Skip the introduction"
+              onPress={() => {
+                setP((v) => ({ ...v, onboarded: true }));
+                nav("home");
+              }}
+              hitSlop={10}
+            >
+              <Text style={s.link}>Skip intro →</Text>
+            </Pressable>
+          ) : (
+            <Text style={s.small}>THE MEMORY TOOLKIT</Text>
+          )}
         </View>
         <View style={s.progress}>
           <View
@@ -648,15 +662,25 @@ function Quasar() {
             {[
               [
                 String(reviewCount),
-                reviewCount ? "ready to review" : "all caught up",
+                reviewCount
+                  ? reviewCount === 1
+                    ? "memory knocking"
+                    : "memories knocking"
+                  : "all caught up",
                 "cards",
               ],
+              streak(p)
+                ? [
+                    String(streak(p)) + " day" + (streak(p) === 1 ? "" : "s"),
+                    "learning streak",
+                    "flame",
+                  ]
+                : ["Day 1", "streak starts today", "flame"],
               [
-                String(streak(p)) + " day" + (streak(p) === 1 ? "" : "s"),
-                "learning streak",
-                "flame",
+                String(mastered + bioRecalled),
+                mastered + bioRecalled ? "concepts recalled" : "first one's the hardest",
+                "leaf",
               ],
-              [String(mastered + bioRecalled), "concepts recalled", "leaf"],
             ].map(([num, label, icon]) => (
               <View key={label} style={a.stat}>
                 <Icon name={icon} size={20} />
@@ -772,6 +796,25 @@ function Quasar() {
               <Text style={s.link}>Explore memory worlds →</Text>
             </Card>
           </Pressable>
+          <PressableScale
+            accessibilityRole="button"
+            accessibilityLabel="Open Cell City"
+            onPress={() => nav("city")}
+            style={[s.card, { backgroundColor: "#EFE8FA", borderColor: "#DDD3F0", gap: 12 }]}
+          >
+            <Tag color="#DDD3F0">NEW STORY WORLD</Tag>
+            <CityCrowd ids={["kip", "osei", "gly"]} max={110} />
+            <Text style={s.h3}>The city is losing power. Kip needs you.</Text>
+            <Text style={s.body}>
+              Six short episodes inside a living cell, with a cast who tease you
+              when you're wrong and cheer when you're right.
+            </Text>
+            <Text style={s.link}>
+              {(p.city?.done.length ?? 0) > 0
+                ? `${p.city!.done.length} of 6 episodes solved · keep going →`
+                : "Start episode 1 →"}
+            </Text>
+          </PressableScale>
           <Card
             style={{
               backgroundColor: "#ECE4F4",
@@ -1654,8 +1697,8 @@ function Quasar() {
   // The first screen is one night scene, from the top bar to the button.
   const landing = !p.onboarded && page !== "settings" && onboarding === 0;
   return (
-    <SafeAreaView style={[a.safe, landing && { backgroundColor: NIGHT }]}>
-      <StatusBar style={landing ? "light" : "dark"} />
+    <SafeAreaView style={a.safe}>
+      <StatusBar style="dark" />
       <View style={a.layout}>
         {wide && p.onboarded && (
           <View style={a.sidebar}>
@@ -1700,14 +1743,14 @@ function Quasar() {
           </View>
         )}
         <View style={{ flex: 1 }}>
-          <View style={[a.topbar, landing && { backgroundColor: NIGHT, borderColor: NIGHT }]}>
+          <View style={[a.topbar, landing && { borderColor: "transparent" }]}>
             {!wide || !p.onboarded ? (
-              <Brand light={landing} />
+              <Brand />
             ) : (
               <Text style={s.small}>Your daily dose of discovery</Text>
             )}
             <View style={s.row}>
-              {!landing && (
+              {p.onboarded && (
                 <View style={[s.row, { gap: 5 }]}>
                   <Icon name="flame" size={18} />
                   <Text style={s.label}>{streak(p)}</Text>
@@ -1717,16 +1760,16 @@ function Quasar() {
                 accessibilityRole="button"
                 accessibilityLabel="Open settings"
                 onPress={() => nav("settings")}
-                style={[a.avatar, landing && { backgroundColor: "rgba(255,248,232,0.12)" }]}
+                style={a.avatar}
               >
-                <Text style={[s.label, landing && { color: "#FFF8E8" }]}>
+                <Text style={s.label}>
                   {p.profile.name ? p.profile.name[0].toUpperCase() : "Q"}
                 </Text>
               </Pressable>
             </View>
           </View>
-          <View style={[{ flex: 1 }, landing && { backgroundColor: NIGHT }]}>
-            {!landing && <Dots />}
+          <View style={{ flex: 1 }}>
+            <Dots />
             <ScrollView
               ref={scroll}
               keyboardShouldPersistTaps="handled"
@@ -1757,7 +1800,7 @@ function Quasar() {
                       <Text
                         style={{
                           textAlign: "center",
-                          color: "#FFF8E8",
+                          color: C.ink,
                           fontSize: 20,
                           fontWeight: "600",
                           letterSpacing: -0.3,
@@ -1791,11 +1834,11 @@ function Quasar() {
                               }
                               style={[
                                 a.landingChip,
-                                active && { backgroundColor: C.yellow, borderColor: C.yellow },
+                                active && { backgroundColor: VIOLET, borderColor: VIOLET },
                               ]}
                             >
-                              <Icon name={active ? "check" : icon} size={16} color={active ? NIGHT : "#FFF8E8"} />
-                              <Text style={[s.label, { color: active ? NIGHT : "#FFF8E8" }]}>{sub}</Text>
+                              <Icon name={active ? "check" : icon} size={16} color={active ? C.white : VIOLET} />
+                              <Text style={[s.label, { color: active ? C.white : C.ink }]}>{sub}</Text>
                             </PressableScale>
                           );
                         })}
@@ -1803,17 +1846,15 @@ function Quasar() {
                     </Reveal>
                     <Reveal delay={750}>
                       <View style={{ gap: 16, marginTop: 6 }}>
-                        <PressableScale
-                          accessibilityRole="button"
-                          accessibilityState={{ disabled: !p.profile.subjects.length }}
+                        <Button
+                          icon="arrow"
+                          color={VIOLET}
                           disabled={!p.profile.subjects.length}
                           onPress={() => setOnboarding(1)}
-                          style={[a.landingCta, !p.profile.subjects.length && { opacity: 0.45 }]}
                         >
-                          <Text style={{ color: NIGHT, fontSize: 17, fontWeight: "700" }}>Let’s get curious</Text>
-                          <Icon name="arrow" size={18} color={NIGHT} />
-                        </PressableScale>
-                        <Text style={{ textAlign: "center", color: "#9FB5AB", fontSize: 13 }}>
+                          Let’s get curious
+                        </Button>
+                        <Text style={[s.small, { textAlign: "center" }]}>
                           No account needed. Progress stays on your device.
                         </Text>
                       </View>
@@ -2267,7 +2308,7 @@ function Quasar() {
     </SafeAreaView>
   );
 }
-function Brand({ light = false }: { light?: boolean }) {
+function Brand() {
   return (
     <View style={[s.row, { gap: 8 }]}>
       <QuasarMark size={37} />
@@ -2277,7 +2318,7 @@ function Brand({ light = false }: { light?: boolean }) {
           fontWeight: "700",
           fontSize: 31,
           letterSpacing: -1.5,
-          color: light ? "#FFF8E8" : C.ink,
+          color: C.ink,
         }}
       >
         quasar
@@ -2433,17 +2474,8 @@ const a = StyleSheet.create({
     minHeight: 44,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(255,248,232,0.28)",
-    backgroundColor: "rgba(255,248,232,0.07)",
-  },
-  landingCta: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    minHeight: 56,
-    borderRadius: 999,
-    backgroundColor: C.yellow,
+    borderColor: "#DDD3F0",
+    backgroundColor: C.white,
   },
   styleChoice: {
     flexDirection: "row",

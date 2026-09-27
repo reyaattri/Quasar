@@ -532,9 +532,20 @@ function EpisodeRun({
             </Reveal>
           ))}
           {beat < episode.scene.length - 1 ? (
-            <Button icon="arrow" onPress={() => setBeat(beat + 1)}>
-              Continue
-            </Button>
+            <View style={{ gap: 12 }}>
+              <Button icon="arrow" onPress={() => setBeat(beat + 1)}>
+                Continue
+              </Button>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Skip the scene"
+                onPress={() => setPhase("rebuild")}
+                style={{ alignSelf: "center" }}
+                hitSlop={10}
+              >
+                <Text style={s.link}>Skip scene →</Text>
+              </Pressable>
+            </View>
           ) : (
             <Button icon="arrow" onPress={() => setPhase("rebuild")}>
               Rebuild it from memory
