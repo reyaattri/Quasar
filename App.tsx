@@ -1,5 +1,5 @@
 import { ProgressMobile } from "./src/components/ProgressMobile";
-import { WelcomeScene } from "./src/components/WelcomeScene";
+import { NIGHT, WelcomeScene } from "./src/components/WelcomeScene";
 import { Reveal, Pulse, PressableScale } from "./src/components/Reveal";
 import { TeachBack } from "./src/features/TeachBack";
 import { WhyLadder } from "./src/features/WhyLadder";
@@ -1651,9 +1651,11 @@ function Quasar() {
       </Button>
     </View>
   );
+  // The first screen is one night scene, from the top bar to the button.
+  const landing = !p.onboarded && page !== "settings" && onboarding === 0;
   return (
-    <SafeAreaView style={a.safe}>
-      <StatusBar style="dark" />
+    <SafeAreaView style={[a.safe, landing && { backgroundColor: NIGHT }]}>
+      <StatusBar style={landing ? "light" : "dark"} />
       <View style={a.layout}>
         {wide && p.onboarded && (
           <View style={a.sidebar}>
@@ -1698,31 +1700,33 @@ function Quasar() {
           </View>
         )}
         <View style={{ flex: 1 }}>
-          <View style={a.topbar}>
+          <View style={[a.topbar, landing && { backgroundColor: NIGHT, borderColor: NIGHT }]}>
             {!wide || !p.onboarded ? (
-              <Brand />
+              <Brand light={landing} />
             ) : (
               <Text style={s.small}>Your daily dose of discovery</Text>
             )}
             <View style={s.row}>
-              <View style={[s.row, { gap: 5 }]}>
-                <Icon name="flame" size={18} />
-                <Text style={s.label}>{streak(p)}</Text>
-              </View>
+              {!landing && (
+                <View style={[s.row, { gap: 5 }]}>
+                  <Icon name="flame" size={18} />
+                  <Text style={s.label}>{streak(p)}</Text>
+                </View>
+              )}
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Open settings"
                 onPress={() => nav("settings")}
-                style={a.avatar}
+                style={[a.avatar, landing && { backgroundColor: "rgba(255,248,232,0.12)" }]}
               >
-                <Text style={s.label}>
+                <Text style={[s.label, landing && { color: "#FFF8E8" }]}>
                   {p.profile.name ? p.profile.name[0].toUpperCase() : "Q"}
                 </Text>
               </Pressable>
             </View>
           </View>
-          <View style={{ flex: 1 }}>
-            <Dots />
+          <View style={[{ flex: 1 }, landing && { backgroundColor: NIGHT }]}>
+            {!landing && <Dots />}
             <ScrollView
               ref={scroll}
               keyboardShouldPersistTaps="handled"
@@ -1748,20 +1752,22 @@ function Quasar() {
               ) : null}
               {!p.onboarded && page !== "settings" ? (
                 onboarding === 0 ? (
-                  <View style={{ gap: 24 }}>
-                    <WelcomeScene />
-                    <Reveal delay={80}>
-                      {heading(
-                        "WELCOME TO QUASAR",
-                        "Learn it once. Remember it longer.",
-                        "Turn what you learn into places you can walk back through. Then explain it, use it, and keep it.",
-                      )}
+                  <WelcomeScene bleed={!wide}>
+                    <Reveal delay={550}>
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: "#FFF8E8",
+                          fontSize: 20,
+                          fontWeight: "600",
+                          letterSpacing: -0.3,
+                        }}
+                      >
+                        What are you curious about?
+                      </Text>
                     </Reveal>
-                    <Reveal delay={150}>
-                      <Text style={s.label}>What are you curious about?</Text>
-                    </Reveal>
-                    <Reveal delay={200}>
-                      <View style={[s.row, { flexWrap: "wrap", gap: 8 }]}>
+                    <Reveal delay={650}>
+                      <View style={[s.row, { flexWrap: "wrap", gap: 10, justifyContent: "center" }]}>
                         {(
                           [
                             ["SAT vocabulary", "book"],
@@ -1784,40 +1790,35 @@ function Quasar() {
                                 )
                               }
                               style={[
-                                a.styleChoice,
-                                { borderRadius: 999 },
-                                active && {
-                                  backgroundColor: C.sage,
-                                  borderColor: C.green,
-                                },
+                                a.landingChip,
+                                active && { backgroundColor: C.yellow, borderColor: C.yellow },
                               ]}
                             >
-                              <Icon
-                                name={active ? "check" : icon}
-                                size={16}
-                                color={active ? C.green : C.ink}
-                              />
-                              <Text style={s.label}>{sub}</Text>
+                              <Icon name={active ? "check" : icon} size={16} color={active ? NIGHT : "#FFF8E8"} />
+                              <Text style={[s.label, { color: active ? NIGHT : "#FFF8E8" }]}>{sub}</Text>
                             </PressableScale>
                           );
                         })}
                       </View>
                     </Reveal>
-                    <Reveal delay={260}>
-                      <View style={{ gap: 24 }}>
-                        <Button
-                          icon="arrow"
+                    <Reveal delay={750}>
+                      <View style={{ gap: 16, marginTop: 6 }}>
+                        <PressableScale
+                          accessibilityRole="button"
+                          accessibilityState={{ disabled: !p.profile.subjects.length }}
                           disabled={!p.profile.subjects.length}
                           onPress={() => setOnboarding(1)}
+                          style={[a.landingCta, !p.profile.subjects.length && { opacity: 0.45 }]}
                         >
-                          Let’s get curious
-                        </Button>
-                        <Text style={[s.small, { textAlign: "center" }]}>
-                          No account needed. Your progress stays on this device.
+                          <Text style={{ color: NIGHT, fontSize: 17, fontWeight: "700" }}>Let’s get curious</Text>
+                          <Icon name="arrow" size={18} color={NIGHT} />
+                        </PressableScale>
+                        <Text style={{ textAlign: "center", color: "#9FB5AB", fontSize: 13 }}>
+                          No account needed. Progress stays on your device.
                         </Text>
                       </View>
                     </Reveal>
-                  </View>
+                  </WelcomeScene>
                 ) : onboarding === 1 ? (
                   <View style={{ gap: 20 }}>
                     {heading(
@@ -2266,7 +2267,7 @@ function Quasar() {
     </SafeAreaView>
   );
 }
-function Brand() {
+function Brand({ light = false }: { light?: boolean }) {
   return (
     <View style={[s.row, { gap: 8 }]}>
       <QuasarMark size={37} />
@@ -2276,7 +2277,7 @@ function Brand() {
           fontWeight: "700",
           fontSize: 31,
           letterSpacing: -1.5,
-          color: C.ink,
+          color: light ? "#FFF8E8" : C.ink,
         }}
       >
         quasar
@@ -2423,6 +2424,27 @@ const a = StyleSheet.create({
     backgroundColor: "#F6E9C6",
   },
   piSymbol: { fontFamily: serif, fontSize: 57, color: C.ink },
+  landingChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    minHeight: 44,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(255,248,232,0.28)",
+    backgroundColor: "rgba(255,248,232,0.07)",
+  },
+  landingCta: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    minHeight: 56,
+    borderRadius: 999,
+    backgroundColor: C.yellow,
+  },
   styleChoice: {
     flexDirection: "row",
     alignItems: "center",
