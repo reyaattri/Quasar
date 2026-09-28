@@ -26,11 +26,11 @@ const labels: Record<ActivityArtKind, string> = {
   today: "A student races a clock along today's study route",
   recall: "An elephant librarian catches runaway memory cards",
   repair: "A raccoon mechanic repairs a cracked thought",
-  teach: "A teacher explains a cell to a confused potato student",
+  teach: "A student explains a cell to a giant listening ear",
   why: "A detective cat climbs a ladder made of questions",
   case: "An animal detective investigates a runaway test tube",
   learn: "A living cell city springs from an open book",
-  notes: "A mouse runs a machine that turns notes into cards",
+  notes: "A student turns one note into a quiz card with a toaster",
 };
 
 /** Generated editorial cartoons for Quasar's learning loop. */

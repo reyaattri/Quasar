@@ -17,10 +17,20 @@ const look: Record<
 > = {
   recall: { art: "recall", label: "RECALL", tint: "#EEF1F8", edge: "#AEBBD5" },
   repair: { art: "repair", label: "REPAIR", tint: "#FAE5D7", edge: "#D98D6E" },
-  teach: { art: "teach", label: "TEACH-BACK", tint: "#E8F1F5", edge: "#8BAFC0" },
+  teach: {
+    art: "teach",
+    label: "TEACH-BACK",
+    tint: "#E8F1F5",
+    edge: "#8BAFC0",
+  },
   why: { art: "why", label: "WHY LADDER", tint: "#F0E8F4", edge: "#B194BF" },
   case: { art: "case", label: "CASE LAB", tint: "#E6EEE9", edge: "#78998A" },
-  learn: { art: "learn", label: "NEW LESSON", tint: "#F7EDC9", edge: "#D9B959" },
+  learn: {
+    art: "learn",
+    label: "NEW LESSON",
+    tint: "#F7EDC9",
+    edge: "#D9B959",
+  },
 };
 
 const exams = [
@@ -46,7 +56,12 @@ export function TodayPlan({
   const { tasks, spare, recovery } = buildPlan(progress, budget, skipped);
   const minutes = tasks.reduce((n, t) => n + t.minutes, 0);
   const examDays = progress.exam
-    ? Math.max(0, Math.ceil((new Date(progress.exam.date).getTime() - Date.now()) / 86_400_000))
+    ? Math.max(
+        0,
+        Math.ceil(
+          (new Date(progress.exam.date).getTime() - Date.now()) / 86_400_000,
+        ),
+      )
     : null;
 
   return (
@@ -54,7 +69,14 @@ export function TodayPlan({
       <Reveal>
         <Card style={{ backgroundColor: "#254633", borderWidth: 0, gap: 16 }}>
           <View style={s.between}>
-            <Text style={{ color: "#E3EBCF", fontSize: 11, letterSpacing: 2, fontWeight: "700" }}>
+            <Text
+              style={{
+                color: "#E3EBCF",
+                fontSize: 11,
+                letterSpacing: 2,
+                fontWeight: "700",
+              }}
+            >
               TODAY · BIOLOGY
             </Text>
             <Pressable
@@ -62,27 +84,41 @@ export function TodayPlan({
               accessibilityLabel="Set exam date"
               onPress={() => setExamOpen(!examOpen)}
             >
-              <Text style={{ color: C.yellow, fontSize: 12, fontWeight: "700" }}>
+              <Text
+                style={{ color: C.yellow, fontSize: 12, fontWeight: "700" }}
+              >
                 {examDays !== null ? `Exam in ${examDays} days` : "+ Add exam"}
               </Text>
             </Pressable>
           </View>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+          <View style={{ gap: 8 }}>
             <View style={{ flex: 1, gap: 8 }}>
-              <Text style={{ color: C.paper, fontFamily: "QuasarGrotesk", fontSize: 26, lineHeight: 31 }}>
-                {recovery ? "Welcome back. Let's start small." : `${minutes} minutes. Here's what needs you.`}
+              <Text
+                style={{
+                  color: C.paper,
+                  fontFamily: "QuasarGrotesk",
+                  fontSize: 26,
+                  lineHeight: 31,
+                }}
+              >
+                {recovery
+                  ? "Welcome back. Let's start small."
+                  : `${minutes} minutes. Here's what needs you.`}
               </Text>
               <Text style={{ color: "#C8D8CB", fontSize: 13, lineHeight: 18 }}>
-                A short route through what is fading, what is shaky and what comes next.
+                A short route through what is fading, what is shaky and what
+                comes next.
               </Text>
             </View>
-            <View style={{ width: 122, height: 94 }}>
-              <LearningActivityArt kind="today" height={94} />
+            <View style={{ width: "100%", height: 172 }}>
+              <LearningActivityArt kind="today" height={172} />
             </View>
           </View>
           {recovery && (
             <Text style={{ color: "#DBE6D6", fontSize: 14, lineHeight: 21 }}>
-              {recovery.daysAway >= 3 ? `It's been ${recovery.daysAway} days, and nothing is lost. ` : ""}
+              {recovery.daysAway >= 3
+                ? `It's been ${recovery.daysAway} days, and nothing is lost. `
+                : ""}
               {recovery.overdue
                 ? `${recovery.overdue} ${recovery.overdue === 1 ? "review is" : "reviews are"} waiting. This ${minutes}-minute plan starts with the most important${recovery.deferred ? `; ${recovery.deferred} more can wait for another session` : ""}.`
                 : `This ${minutes}-minute plan eases you back in.`}
@@ -91,7 +127,10 @@ export function TodayPlan({
           {examOpen && (
             <View style={[s.row, { flexWrap: "wrap", gap: 8 }]}>
               {exams.map(([label, days]) => {
-                const active = days === 0 ? !progress.exam : examDays !== null && Math.abs(examDays - days) <= 1;
+                const active =
+                  days === 0
+                    ? !progress.exam
+                    : examDays !== null && Math.abs(examDays - days) <= 1;
                 return (
                   <Chip
                     key={label}
@@ -101,7 +140,12 @@ export function TodayPlan({
                     onPress={() => {
                       onExam(
                         days
-                          ? { label: "Biology exam", date: new Date(Date.now() + days * 86_400_000).toISOString() }
+                          ? {
+                              label: "Biology exam",
+                              date: new Date(
+                                Date.now() + days * 86_400_000,
+                              ).toISOString(),
+                            }
                           : null,
                       );
                       setExamOpen(false);
@@ -113,7 +157,16 @@ export function TodayPlan({
           )}
           <View style={[s.row, { gap: 8 }]} accessibilityRole="radiogroup">
             {[5, 15, 30].map((m) => (
-              <Chip key={m} label={`${m} min`} active={budget === m} dark onPress={() => { setBudget(m); setSkipped([]); }} />
+              <Chip
+                key={m}
+                label={`${m} min`}
+                active={budget === m}
+                dark
+                onPress={() => {
+                  setBudget(m);
+                  setSkipped([]);
+                }}
+              />
             ))}
           </View>
         </Card>
@@ -138,18 +191,23 @@ export function TodayPlan({
               accessibilityRole="button"
               accessibilityLabel={`${t.title}, ${t.minutes} minutes. ${t.reason}`}
               onPress={() => onStart(t)}
-              style={{ flexDirection: "row", gap: 12, alignItems: "center", padding: 16, paddingRight: 54 }}
+              style={{ gap: 12, padding: 18, paddingTop: 36 }}
             >
               <View
                 style={{
-                  width: 86,
-                  height: 76,
+                  width: "100%",
+                  height: 152,
                 }}
               >
-                <LearningActivityArt kind={look[t.type].art} height={76} />
+                <LearningActivityArt kind={look[t.type].art} height={152} />
               </View>
               <View style={{ flex: 1, gap: 5 }}>
-                <Text style={[s.small, { fontWeight: "700", letterSpacing: 1.2, color: C.ink }]}>
+                <Text
+                  style={[
+                    s.small,
+                    { fontWeight: "700", letterSpacing: 1.2, color: C.ink },
+                  ]}
+                >
                   {look[t.type].label} · {t.minutes} MIN
                 </Text>
                 <Text style={[s.label, { fontSize: 16 }]}>{t.title}</Text>
@@ -188,15 +246,49 @@ export function TodayPlan({
   );
 }
 
-function Chip({ label, active, onPress, dark }: { label: string; active: boolean; onPress: () => void; dark?: boolean }) {
+function Chip({
+  label,
+  active,
+  onPress,
+  dark,
+}: {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+  dark?: boolean;
+}) {
   return (
-    <Pressable accessibilityRole="button" accessibilityState={{ selected: active }} onPress={onPress}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+      onPress={onPress}
+    >
       <MotiView
-        animate={{ backgroundColor: active ? C.yellow : dark ? "rgba(255,255,255,0.08)" : C.white }}
+        animate={{
+          backgroundColor: active
+            ? C.yellow
+            : dark
+              ? "rgba(255,255,255,0.08)"
+              : C.white,
+        }}
         transition={{ type: "timing", duration: 200 }}
-        style={{ borderRadius: 999, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: active ? C.yellow : "rgba(227,235,207,0.3)" }}
+        style={{
+          borderRadius: 999,
+          paddingHorizontal: 14,
+          paddingVertical: 8,
+          borderWidth: 1,
+          borderColor: active ? C.yellow : "rgba(227,235,207,0.3)",
+        }}
       >
-        <Text style={{ fontSize: 13, fontWeight: "600", color: active ? C.ink : "#E3EBCF" }}>{label}</Text>
+        <Text
+          style={{
+            fontSize: 13,
+            fontWeight: "600",
+            color: active ? C.ink : "#E3EBCF",
+          }}
+        >
+          {label}
+        </Text>
       </MotiView>
     </Pressable>
   );

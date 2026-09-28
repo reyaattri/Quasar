@@ -1,3 +1,4 @@
+import { Confetti } from "../components/Reveal";
 import { SatArtwork } from "../components/SatArtwork";
 import { OfficialSatPractice } from "./OfficialSatPractice";
 import { vocabularyCues } from "../data/vocabularyCues";
@@ -63,7 +64,7 @@ export function SatCourse({
   if (session.phase === "done")
     return (
       <Card style={{ backgroundColor: C.sage }}>
-        <Tag>TEN WORDS · TWO CONTEXTS</Tag>
+        <Confetti /><Tag>TEN WORDS · TWO CONTEXTS</Tag>
         <Text style={s.title}>That’s a good day for your vocabulary.</Text>
         <Text style={s.body}>
           You practised ten words and applied them in context. Your recall

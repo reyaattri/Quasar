@@ -1,3 +1,4 @@
+import { Confetti } from "../components/Reveal";
 import React, { useState } from "react";
 import { View } from "react-native";
 import { MotiView } from "moti";
@@ -176,7 +177,7 @@ function Climb({
       ) : (
         <Reveal>
           <Card style={{ backgroundColor: breaks === -1 ? C.sage : "#F4E6B8", gap: 12 }}>
-            <Icon name={breaks === -1 ? "check" : "key"} size={28} />
+            <Confetti /><Icon name={breaks === -1 ? "check" : "key"} size={28} />
             <Text style={s.h2}>
               {breaks === -1
                 ? "All five rungs held."

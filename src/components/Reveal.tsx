@@ -1,6 +1,9 @@
 import React from "react";
 import {
   Pressable,
+  Platform,
+  Modal,
+  useWindowDimensions,
   View,
   type ViewStyle,
   type PressableProps,
@@ -24,7 +27,7 @@ export function Reveal({
       style={style}
       from={{ opacity: 0, translateY: 14 }}
       animate={{ opacity: 1, translateY: 0 }}
-      transition={{ type: "timing", duration: 480, delay }}
+      transition={{ type: "timing", duration: 150, delay: Math.min(delay, 60) }}
     >
       {children}
     </MotiView>
@@ -167,15 +170,24 @@ const confettiColors = [
 
 // A one-shot burst of paper pieces. Deterministic, so a screenshot or a test sees the same thing.
 export function Confetti({
-  count = 22,
-  height = 260,
+  count = 70,
+  height: requestedHeight,
+  blossom = false,
 }: {
   count?: number;
   height?: number;
+  blossom?: boolean;
 }) {
   const reduced = useReducedMotion();
-  if (reduced) return null;
-  return (
+  const { height: screenHeight } = useWindowDimensions();
+  const height = Math.max(screenHeight, requestedHeight ?? 0);
+  const [visible, setVisible] = React.useState(true);
+  React.useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 2900);
+    return () => clearTimeout(timer);
+  }, []);
+  if (reduced || !visible) return null;
+  const burst = (
     <View
       pointerEvents="none"
       style={{
@@ -185,6 +197,7 @@ export function Confetti({
         top: 0,
         height,
         overflow: "hidden",
+        zIndex: 99999,
       }}
     >
       {Array.from({ length: count }, (_, i) => {
@@ -210,17 +223,47 @@ export function Confetti({
               top: 0,
               width: size,
               height: size * (i % 3 ? 1 : 0.5),
-              borderRadius: i % 4 === 0 ? size : 2,
-              backgroundColor: confettiColors[i % confettiColors.length],
+              borderRadius: blossom ? size : i % 4 === 0 ? size : 2,
+              borderTopLeftRadius: blossom ? 0 : 2,
+              backgroundColor: blossom
+                ? ["#F7AFC4", "#FAD3DF", "#EFA0B8"][i % 3]
+                : confettiColors[i % confettiColors.length],
             }}
           />
         );
       })}
     </View>
   );
+  if (Platform.OS === "web" && typeof document !== "undefined") {
+    const { createPortal } = require("react-dom");
+    return createPortal(
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          pointerEvents: "none",
+          zIndex: 99999,
+        }}
+        aria-hidden="true"
+      >
+        {burst}
+      </div>,
+      document.body,
+    );
+  }
+  return (
+    <Modal
+      transparent
+      visible
+      animationType="none"
+      onRequestClose={() => setVisible(false)}
+    >
+      {burst}
+    </Modal>
+  );
 }
 
-// A card turning over: it squashes edge-on, then springs open with the new face.
+// A brief crossfade keeps card text readable without stretching it.
 export function Flip({
   children,
   style,
@@ -233,9 +276,9 @@ export function Flip({
   return (
     <MotiView
       style={style}
-      from={{ scaleX: 0.04, rotate: "-2deg" }}
-      animate={{ scaleX: 1, rotate: "0deg" }}
-      transition={{ type: "spring", damping: 11, stiffness: 190 }}
+      from={{ opacity: 0.7 }}
+      animate={{ opacity: 1 }}
+      transition={{ type: "timing", duration: 100 }}
     >
       {children}
     </MotiView>

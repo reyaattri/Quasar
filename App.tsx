@@ -1,6 +1,6 @@
 import { ProgressMobile } from "./src/components/ProgressMobile";
 import { VIOLET, WelcomeScene } from "./src/components/WelcomeScene";
-import { Reveal, Pulse, PressableScale } from "./src/components/Reveal";
+import { Confetti, Reveal, Pulse, PressableScale } from "./src/components/Reveal";
 import { TeachBack } from "./src/features/TeachBack";
 import { WhyLadder } from "./src/features/WhyLadder";
 import { CaseLab } from "./src/features/CaseLab";
@@ -1159,6 +1159,7 @@ function Quasar() {
                   <Icon name="check" size={34} color={C.green} />
                 </View>
               </Pulse>
+              <Confetti />
               <Text style={s.h2}>Review complete.</Text>
               <Text style={s.body}>
                 You reviewed {reviewQueue.length} cards. Your next reviews are

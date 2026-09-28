@@ -1,3 +1,4 @@
+import { Confetti } from "../components/Reveal";
 import React, { useState } from "react";
 import { View } from "react-native";
 import { Button, C, Card, s, Tag, Text } from "../components/ui";
@@ -253,7 +254,7 @@ function Round<T>({
   if (done || i >= queue.length)
     return (
       <Card style={{ backgroundColor: C.sage, alignItems: "flex-start" }}>
-        <Text style={s.h3}>Round complete.</Text>
+        <Confetti blossom /><Text style={s.h3}>Round complete.</Text>
         <Text style={s.body}>Each answer is scheduled for review; the ones you missed come back first.</Text>
       </Card>
     );

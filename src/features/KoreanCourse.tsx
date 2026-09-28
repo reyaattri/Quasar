@@ -1,6 +1,16 @@
+import { KoreanSentences } from "./KoreanSentences";
+import { Confetti } from "../components/Reveal";
 import React, { useEffect, useRef, useState } from "react";
 import { Image, PanResponder, View, Linking } from "react-native";
-import Svg, { Path, Circle, Text as SvgText, Rect, Image as SvgImage, Defs, ClipPath } from "react-native-svg";
+import Svg, {
+  Path,
+  Circle,
+  Text as SvgText,
+  Rect,
+  Image as SvgImage,
+  Defs,
+  ClipPath,
+} from "react-native-svg";
 import { Button, C, Card, s, Tag, Text } from "../components/ui";
 import { readingPractice } from "../data/koreanPractice";
 import { VoicePractice } from "../components/VoicePractice";
@@ -304,10 +314,20 @@ function Host({ index }: { index: number }) {
 function StoryBeatSketch({ index }: { index: number }) {
   // Artwork has hand-composed gutters, not mathematically equal atlas cells.
   const frames = [
-    [0, 0, 320, 306], [326, 0, 302, 306], [630, 0, 315, 306], [949, 0, 298, 306],
-    [0, 308, 320, 299], [326, 308, 302, 299], [630, 308, 315, 299], [949, 308, 298, 299],
-    [0, 610, 320, 300], [326, 610, 302, 300], [630, 610, 315, 300], [949, 610, 298, 300],
-    [0, 913, 323, 348], [325, 913, 306, 348],
+    [0, 0, 320, 306],
+    [326, 0, 302, 306],
+    [630, 0, 315, 306],
+    [949, 0, 298, 306],
+    [0, 308, 320, 299],
+    [326, 308, 302, 299],
+    [630, 308, 315, 299],
+    [949, 308, 298, 299],
+    [0, 610, 320, 300],
+    [326, 610, 302, 300],
+    [630, 610, 315, 300],
+    [949, 610, 298, 300],
+    [0, 913, 323, 348],
+    [325, 913, 306, 348],
   ];
   const [x, y, width, height] = frames[index];
   return (
@@ -315,12 +335,37 @@ function StoryBeatSketch({ index }: { index: number }) {
       accessibilityLabel={storyBeats[index].title + " illustrated memory scene"}
       style={{ width: "100%", minWidth: 0, gap: 12 }}
     >
-      {index === 7 ? <Image source={require("../../assets/korean-summit-moon.png")} resizeMode="contain" style={{ width: "100%", height: 300 }} /> : <View style={{ padding: 12, width: "100%", overflow: "hidden" }}>
-        <Svg width="100%" height={260} viewBox={`${x} ${y} ${width} ${height}`} preserveAspectRatio="xMidYMid meet" style={{ overflow: "hidden" }}>
-          <Defs><ClipPath id={`story-frame-${index}`}><Rect x={x} y={y} width={width} height={height} /></ClipPath></Defs>
-          <SvgImage href={require("../../assets/korean-webtoon-story.png")} x={0} y={0} width={1247} height={1261} clipPath={`url(#story-frame-${index})`} />
-        </Svg>
-      </View>}
+      {index === 7 ? (
+        <Image
+          source={require("../../assets/korean-summit-moon.png")}
+          resizeMode="contain"
+          style={{ width: "100%", height: 300 }}
+        />
+      ) : (
+        <View style={{ padding: 12, width: "100%", overflow: "hidden" }}>
+          <Svg
+            width="100%"
+            height={260}
+            viewBox={`${x} ${y} ${width} ${height}`}
+            preserveAspectRatio="xMidYMid meet"
+            style={{ overflow: "hidden" }}
+          >
+            <Defs>
+              <ClipPath id={`story-frame-${index}`}>
+                <Rect x={x} y={y} width={width} height={height} />
+              </ClipPath>
+            </Defs>
+            <SvgImage
+              href={require("../../assets/korean-webtoon-story.png")}
+              x={0}
+              y={0}
+              width={1247}
+              height={1261}
+              clipPath={`url(#story-frame-${index})`}
+            />
+          </Svg>
+        </View>
+      )}
       <Svg width="100%" height={130} viewBox="0 0 280 280">
         <Path
           d={storyBeats[index].path}
@@ -343,37 +388,92 @@ export function KoreanCourse({
   onAttempt: (a: Omit<Attempt, "at">) => void;
 }) {
   const [mode, setMode] = useState<
-      "story" | "conversation" | "recall" | "reading" | "lab"
+      "story" | "conversation" | "recall" | "reading" | "lab" | "sentences"
     >("story"),
     [index, setIndex] = useState(0);
   const [readingDone, setReadingDone] = useState(false);
   const scene = scenes[index % scenes.length];
   return (
     <View style={{ gap: 18 }}>
-      <Tag color={C.peach}>THE KOREAN NEIGHBOURHOOD</Tag>
-      <Text style={s.title}>See it. Trace it. Say it.</Text>
+      <View
+        style={{
+          borderTopWidth: 5,
+          borderTopColor: "#315D55",
+          borderBottomWidth: 1,
+          borderBottomColor: "#DDA4B5",
+          paddingVertical: 14,
+          gap: 5,
+        }}
+      >
+        <Text style={{ fontSize: 30, color: "#315D55" }}>우리 동네</Text>
+        <Text style={s.label}>OUR KOREAN NEIGHBOURHOOD</Text>
+      </View>
+      <Text style={s.title}>A sound becomes a story.</Text>
       <Text style={s.body}>
         Follow the picture story, hear each Korean sound, and trace its shape.
         Then put the pictures away and draw what you remember.
       </Text>
-      {mode !== "lab" && (
+      {mode === "sentences" ? (
+        <Button secondary onPress={() => setMode("story")}>
+          Back to letters and pronunciation
+        </Button>
+      ) : (
+        <Button secondary onPress={() => setMode("sentences")}>
+          Sentence trail · from hello to a café order
+        </Button>
+      )}
+      {mode !== "lab" && mode !== "sentences" && (
         <PressableScale
           accessibilityRole="button"
           accessibilityLabel="Open the Hangul Lab: vowels, syllable blocks, sound twins and real words"
           onPress={() => setMode("lab")}
-          style={{ backgroundColor: C.green, borderRadius: 24, padding: 20, gap: 8, flexDirection: "row", alignItems: "center" }}
+          style={{
+            backgroundColor: C.green,
+            borderRadius: 24,
+            padding: 20,
+            gap: 8,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
         >
-          <View style={{ width: 58, height: 58, borderRadius: 16, backgroundColor: "rgba(242,203,108,0.18)", alignItems: "center", justifyContent: "center" }}>
+          <View
+            style={{
+              width: 58,
+              height: 58,
+              borderRadius: 16,
+              backgroundColor: "rgba(242,203,108,0.18)",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <Text style={{ fontSize: 32, color: C.yellow }}>한</Text>
           </View>
           <View style={{ flex: 1, gap: 4, marginLeft: 12 }}>
-            <Text style={{ color: "#E3EBCF", fontSize: 11, letterSpacing: 2, fontWeight: "700" }}>HANGUL LAB</Text>
-            <Text style={[s.h3, { color: C.paper }]}>Vowels, blocks, sound twins and real words</Text>
-            <Text style={{ color: "#C8D3C0", fontSize: 13 }}>Build any syllable and practise what you mix up.</Text>
+            <Text
+              style={{
+                color: "#E3EBCF",
+                fontSize: 11,
+                letterSpacing: 2,
+                fontWeight: "700",
+              }}
+            >
+              HANGUL LAB
+            </Text>
+            <Text style={[s.h3, { color: C.paper }]}>
+              Vowels, blocks, sound twins and real words
+            </Text>
+            <Text style={{ color: "#C8D3C0", fontSize: 13 }}>
+              Build any syllable and practise what you mix up.
+            </Text>
           </View>
         </PressableScale>
       )}
-      <View style={{ gap: 10, display: mode === "lab" ? "none" : "flex" }}>
+      <View
+        style={{
+          gap: 10,
+          display: mode === "lab" || mode === "sentences" ? "none" : "flex",
+        }}
+      >
         <Button
           secondary
           onPress={() => {
@@ -396,22 +496,59 @@ export function KoreanCourse({
             : "Conversations unlock after reading practice"}
         </Button>
       </View>
-      {mode === "lab" ? (
-        <HangulLab progress={progress} onAttempt={onAttempt} onBack={() => setMode("story")} />
+      {mode === "sentences" ? (
+        <KoreanSentences progress={progress} onAttempt={onAttempt} />
+      ) : mode === "lab" ? (
+        <HangulLab
+          progress={progress}
+          onAttempt={onAttempt}
+          onBack={() => setMode("story")}
+        />
       ) : mode === "story" ? (
-        <Card style={{ gap: 16, backgroundColor: C.paper, minWidth: 0, padding: 18 }}>
+        <Card
+          style={{
+            gap: 16,
+            backgroundColor: C.paper,
+            minWidth: 0,
+            padding: 18,
+          }}
+        >
           <Tag>
             PICTURE STORY · {index + 1} OF {storyBeats.length}
           </Tag>
           <StoryBeatSketch index={index} />
-          <Text style={[s.h2, { flexShrink: 1 }]}>{storyBeats[index].title}</Text>
-          <Text style={[s.body, { flexShrink: 1 }]}>{storyBeats[index].action}</Text>
+          <Text style={[s.h2, { flexShrink: 1 }]}>
+            {storyBeats[index].title}
+          </Text>
+          <Text style={[s.body, { flexShrink: 1 }]}>
+            {storyBeats[index].action}
+          </Text>
           <VoicePractice
             key={`story-audio-${index}`}
-            phrase={["가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하"][index]}
+            phrase={
+              [
+                "가",
+                "나",
+                "다",
+                "라",
+                "마",
+                "바",
+                "사",
+                "아",
+                "자",
+                "차",
+                "카",
+                "타",
+                "파",
+                "하",
+              ][index]
+            }
             listeningOnly
           />
-          <TracePad key={`story-trace-${index}`} paths={[storyBeats[index].path]} />
+          <TracePad
+            key={`story-trace-${index}`}
+            paths={[storyBeats[index].path]}
+          />
           <Button
             onPress={() => {
               if (index === storyBeats.length - 1) {
@@ -484,7 +621,9 @@ function DrawingRecall({ onDone }: { onDone: () => void }) {
       <Tag>
         DRAW FROM MEMORY · {step + 1} / {storyBeats.length}
       </Tag>
-      <Text style={s.h2}>Draw the letter for {item.title.split(" · ")[0].toLowerCase()}.</Text>
+      <Text style={s.h2}>
+        Draw the letter for {item.title.split(" · ")[0].toLowerCase()}.
+      </Text>
       <Text style={s.body}>
         Remember its shape and sound. No picture or tracing guide this time.
       </Text>
@@ -527,7 +666,11 @@ function ReadingSteps({ onDone }: { onDone: () => void }) {
     correct = answer === q.answer;
   return (
     <Card style={{ gap: 16, backgroundColor: C.sage }}>
-      <Text style={s.body}>A quick reading key: ㅏ sounds like “ah”, ㅓ is eo, and ㅣ sounds like “ee”. Put a consonant beside a vowel: ㄴ + ㅏ = 나. An initial ㅇ is silent, so 아 starts with the vowel sound. Listen before choosing.</Text>
+      <Text style={s.body}>
+        A quick reading key: ㅏ sounds like “ah”, ㅓ is eo, and ㅣ sounds like
+        “ee”. Put a consonant beside a vowel: ㄴ + ㅏ = 나. An initial ㅇ is
+        silent, so 아 starts with the vowel sound. Listen before choosing.
+      </Text>
       <Tag>
         READING ROUND {round + 1} · QUESTION {step + 1} OF{" "}
         {readingPractice.length}
@@ -575,6 +718,7 @@ function ReadingSteps({ onDone }: { onDone: () => void }) {
             : "Next reading question"}
         </Button>
       )}
+      {correct && step === readingPractice.length - 1 && <Confetti blossom />}
       {correct && step === readingPractice.length - 1 && (
         <Button secondary onPress={onDone}>
           I can read these words · try a conversation

@@ -370,7 +370,7 @@ function QuizRun({
               overflow: "hidden",
             }}
           >
-            {score / queue.length >= 0.75 && <Confetti />}
+            <Confetti />
             <Icon name="check" size={30} color={C.green} />
             <Text style={s.h2}>
               {score} of {queue.length} right.

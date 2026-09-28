@@ -1,3 +1,4 @@
+import { CellCityMap } from "./CellCityMap";
 import React, { useEffect, useState } from "react";
 import { Image, Pressable, TextInput, View } from "react-native";
 import { Button, C, Card, Icon, s, Tag, Text } from "../components/ui";
@@ -102,64 +103,7 @@ export function CellCity({
         </View>
       </Reveal>
 
-      <Reveal delay={80}>
-        <View
-          style={{
-            backgroundColor: NIGHT,
-            borderRadius: 28,
-            padding: 18,
-            gap: 14,
-            overflow: "hidden",
-          }}
-        >
-          <View style={{ paddingTop: 8, paddingHorizontal: 4 }}>
-            <CityCrowd
-              ids={["ribo", "gly", "mara", "osei"]}
-              max={136}
-              perRow={4}
-            />
-          </View>
-          <View style={s.between}>
-            <Text style={[s.label, { color: LAMP }]}>CITY POWER</Text>
-            <Text style={[s.small, { color: "#E6E1D2" }]}>
-              {lit} of {cellCity.length} districts lit
-            </Text>
-          </View>
-          <Meter
-            value={lit / cellCity.length}
-            color={LAMP}
-            track="#3A465E"
-            height={10}
-          />
-          <View style={[s.row, { justifyContent: "space-between" }]}>
-            {cellCity.map((e) => (
-              <View
-                key={e.n}
-                accessibilityLabel={`Episode ${e.n} ${done.includes(e.n) ? "complete" : "not complete"}`}
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 15,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: done.includes(e.n) ? LAMP : "#2C3850",
-                  borderWidth: 1,
-                  borderColor: done.includes(e.n) ? LAMP : "#56627C",
-                }}
-              >
-                <Text
-                  style={{
-                    color: done.includes(e.n) ? NIGHT : "#C9CEDA",
-                    fontWeight: "700",
-                  }}
-                >
-                  {e.n}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-      </Reveal>
+      <CellCityMap done={done} onEnter={setOpen} />
 
       {due.length > 0 && (
         <Reveal delay={120}>
@@ -301,7 +245,7 @@ function Badge({ id, size = 44 }: { id: CharacterId; size?: number }) {
 }
 
 function EpisodeArt({ n }: { n: number }) {
-  const height = 190;
+  const height = 280;
   return (
     <View
       accessibilityLabel={sceneLabels[n]}

@@ -1,3 +1,4 @@
+import { Confetti } from "./Reveal";
 import React, { useEffect, useRef } from "react";
 import { Animated, Text, View } from "react-native";
 import { C } from "./ui";
@@ -35,6 +36,7 @@ export function SuccessBurst({
         overflow: "hidden",
       }}
     >
+      <Confetti />
       {dots.map((color, index) => {
         const angle = (Math.PI * 2 * index) / dots.length;
         return (
