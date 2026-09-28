@@ -70,7 +70,7 @@ export function CellCityMap({
     <View style={{ gap: 16 }}>
       <View
         style={{
-          backgroundColor: "#202A3B",
+          backgroundColor: "#E5EFF5",
           padding: 12,
           borderRadius: 28,
           gap: 12,
@@ -83,15 +83,15 @@ export function CellCityMap({
             justifyContent: "space-between",
           }}
         >
-          <Text style={[s.label, { color: C.yellow }]}>CELL CITY ATLAS</Text>
-          <Text style={[s.small, { color: C.paper }]}>
+          <Text style={[s.label, { color: "#46677D" }]}>CELL CITY ATLAS</Text>
+          <Text style={[s.small, { color: C.ink }]}>
             {done.length} / 6 restored
           </Text>
         </View>
-        <View style={{ height: 430, borderRadius: 20, overflow: "hidden" }}>
+        <View style={{ aspectRatio: 16 / 9, borderRadius: 20, overflow: "hidden" }}>
           <Image
             source={sceneStills[done.length === 6 ? 6 : 1]}
-            resizeMode="cover"
+            resizeMode="contain"
             style={{ width: "100%", height: "100%" }}
           />
           {districts.map((district, i) => (
@@ -103,45 +103,34 @@ export function CellCityMap({
               onPress={() => setSelected(i)}
               style={{
                 position: "absolute",
-                left: `${district.x - 14}%`,
-                top: `${district.y - 7}%`,
-                width: "29%",
+                left: `${district.x - 6}%`,
+                top: `${district.y - 12}%`,
+                width: 44, height: 44, justifyContent: "center",
                 alignItems: "center",
                 gap: 3,
               }}
             >
               <View
                 style={{
-                  width: 40,
-                  height: 40,
+                  width: 26,
+                  height: 26,
                   borderRadius: 12,
-                  borderWidth: 3,
+                  borderWidth: 2,
                   borderColor: selected === i ? C.yellow : C.paper,
-                  backgroundColor: done.includes(i + 1) ? C.green : "#202A3B",
+                  backgroundColor: done.includes(i + 1) ? "#CDE0CF" : "#F5FAFD",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <Text style={[s.h3, { color: C.paper }]}>
+                <Text style={[s.small, { color: C.ink, fontWeight: "700" }]}>
                   {done.includes(i + 1) ? "✓" : i + 1}
                 </Text>
               </View>
-              <Text
-                style={{
-                  backgroundColor: "#202A3BEF",
-                  color: "#FFFDF4",
-                  padding: 5,
-                  borderRadius: 6,
-                  fontSize: 12,
-                  textAlign: "center",
-                }}
-              >
-                {district.name}
-              </Text>
             </Pressable>
           ))}
         </View>
-        <Text style={[s.small, { color: "#D8E2DC", textAlign: "center" }]}>
+        <View style={{flexDirection:'row',flexWrap:'wrap',gap:8}}>{districts.map((d,i)=><Pressable key={d.name} accessibilityRole="button" accessibilityState={{selected:selected===i}} onPress={()=>setSelected(i)} style={{paddingHorizontal:10,paddingVertical:10,borderRadius:12,backgroundColor:selected===i ? '#BDD5E4' : '#F5FAFD'}}><Text style={s.small}>{i+1} · {d.name}</Text></Pressable>)}</View>
+        <Text style={[s.small, { color: C.muted, textAlign: "center" }]}>
           Choose a district to meet its resident and inspect the clue.
         </Text>
       </View>

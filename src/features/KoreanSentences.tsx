@@ -195,7 +195,7 @@ export function KoreanSentences({
     setChecked(correct);
     setFeedback(
       correct
-        ? "That’s it. Say the whole sentence once."
+        ? "Correct · 잘했어요! Say the whole sentence once."
         : "Not quite. Try once more, or revisit the memory scene.",
     );
     if (!correct) setHinted(true);
@@ -341,7 +341,7 @@ export function KoreanSentences({
               </Button>
             )}
             {!!feedback && (
-              <Text accessibilityLiveRegion="polite" style={s.body}>
+              <Text accessibilityLiveRegion="polite" style={[s.body,{padding:18,borderRadius:16,backgroundColor:checked ? "#CEE5D6" : "#F9E5DC",fontSize:20,fontWeight:"700"}]}>
                 {feedback}
               </Text>
             )}

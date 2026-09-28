@@ -1,7 +1,7 @@
 import { KoreanSentences } from "./KoreanSentences";
 import { Confetti } from "../components/Reveal";
 import React, { useEffect, useRef, useState } from "react";
-import { Image, PanResponder, View, Linking } from "react-native";
+import { Image, PanResponder, View, Linking, Pressable } from "react-native";
 import Svg, {
   Path,
   Circle,
@@ -265,50 +265,7 @@ function TracePad({
 }
 
 function Host({ index }: { index: number }) {
-  return (
-    <Svg
-      width="100%"
-      height={180}
-      viewBox="0 0 300 180"
-      accessibilityLabel={
-        index === 1
-          ? "A café worker in a yellow apron"
-          : "Your smiling conversation partner"
-      }
-    >
-      <Rect
-        x={0}
-        y={0}
-        width={300}
-        height={180}
-        rx={24}
-        fill={index === 1 ? C.peach : C.sage}
-      />
-      <Path
-        d="M95 180Q95 115 150 115Q205 115 205 180"
-        fill={index === 1 ? C.yellow : "#7B9E98"}
-      />
-      <Circle cx={150} cy={76} r={45} fill="#E5B994" />
-      <Path
-        d="M105 72Q100 15 151 25Q205 20 195 76L180 51Q146 74 122 48Z"
-        fill={C.ink}
-      />
-      <Circle cx={135} cy={79} r={3} fill={C.ink} />
-      <Circle cx={167} cy={79} r={3} fill={C.ink} />
-      <Path
-        d="M139 99Q151 109 163 99"
-        stroke={C.ink}
-        strokeWidth={3}
-        fill="none"
-      />
-      <Path
-        d="M96 165L67 122M204 165L232 114"
-        stroke="#E5B994"
-        strokeWidth={15}
-        strokeLinecap="round"
-      />
-    </Svg>
-  );
+ return <Image source={require('../../assets/korean-conversation-cafe.png')} resizeMode="contain" accessibilityLabel="Korean friends in hanbok greeting each other and offering water" style={{width:'100%',aspectRatio:1.5}} />;
 }
 
 function StoryBeatSketch({ index }: { index: number }) {
@@ -569,7 +526,11 @@ export function KoreanCourse({
           <Text style={s.h2}>{scene.person}</Text>
           <Text style={s.h2}>{scene.line}</Text>
           <Text style={s.body}>{scene.meaning}</Text>
-          <Text style={s.body}>{scene.tip}</Text>
+          <Text style={s.body}>{scene.tip}</Text><View style={{padding:16,borderRadius:16,backgroundColor:'#F4E6DF',gap:6}}><Text style={s.label}>REMEMBER THE EXCHANGE</Text><Text style={s.body}>{[
+'At the door, imagine your greeting making every cup bow. Say 안녕하세요 in three rhythm chunks: 안녕 / 하 / 세요. Then cover the reply and greet the host.',
+'A thirsty mule delivers a mountain of water: MUL is an approximate sound hook for 물, water. Add 주세요, please give me. Picture the glass as you say 물 주세요.',
+'The glass arrives and three thank-you parcels tumble out: 감 / 사 / 합니다. Say them together as 감사합니다. This is a rhythm cue, not the meaning of the individual parts.'
+][index]}</Text></View>
           <Tag>YOUR TURN</Tag>
           <Text style={s.h2}>{scene.reply}</Text>
           <VoicePractice key={`scene-${index}`} phrase={scene.reply} />
@@ -662,21 +623,24 @@ function ReadingSteps({ onDone }: { onDone: () => void }) {
     [answer, setAnswer] = useState<number | null>(null),
     [round, setRound] = useState(0);
   const [hint, setHint] = useState(false);
+  const [readingHelp, setReadingHelp] = useState(false);
   const q = readingPractice[step],
     correct = answer === q.answer;
   return (
     <Card style={{ gap: 16, backgroundColor: C.sage }}>
-      <Text style={s.body}>
+      <Pressable accessibilityRole="button" accessibilityState={{expanded:readingHelp}} onPress={()=>setReadingHelp(!readingHelp)} style={{paddingVertical:12}}><Text style={s.link}>{readingHelp ? 'Hide reading help' : 'Need a reading key?'}</Text></Pressable>
+      {readingHelp && <Text style={s.body}>
         A quick reading key: ㅏ sounds like “ah”, ㅓ is eo, and ㅣ sounds like
         “ee”. Put a consonant beside a vowel: ㄴ + ㅏ = 나. An initial ㅇ is
         silent, so 아 starts with the vowel sound. Listen before choosing.
-      </Text>
+      </Text>}
       <Tag>
         READING ROUND {round + 1} · QUESTION {step + 1} OF{" "}
         {readingPractice.length}
       </Tag>
       <Text style={s.h2}>{q.prompt}</Text>
-      {(hint || correct) && <Text style={s.body}>{q.explain}</Text>}
+      {!correct && !hint && ['아이','이마'].includes(q.hear) && <Button secondary onPress={()=>setHint(true)}>Learn the word’s memory story</Button>}
+      {(hint || correct) && <View style={{gap:12}}>{['아이','이마'].includes(q.hear) && <Image source={q.hear==='아이' ? require('../../assets/korean-word-child.png') : require('../../assets/korean-word-forehead.png')} resizeMode="contain" style={{width:'100%',height:230}} />}<Text style={s.body}>{q.explain}</Text></View>}
       <VoicePractice key={q.hear} phrase={q.hear} listeningOnly />
       <Text style={s.label}>
         Listen, then choose the matching shape or word.
@@ -696,9 +660,9 @@ function ReadingSteps({ onDone }: { onDone: () => void }) {
         ))
       )}
       {answer !== null && (
-        <Text accessibilityLiveRegion="polite" style={s.body}>
+        <Text accessibilityLiveRegion="polite" style={[s.body,{padding:18,borderRadius:16,backgroundColor:correct ? "#CEE5D6" : "#F9E5DC",fontWeight:"700",fontSize:20}]}>
           {correct
-            ? "That’s the connection."
+            ? "Correct · 잘했어요!"
             : "Try again. Say the parts slowly and look at where the vowel arm points."}
         </Text>
       )}
@@ -718,7 +682,7 @@ function ReadingSteps({ onDone }: { onDone: () => void }) {
             : "Next reading question"}
         </Button>
       )}
-      {correct && step === readingPractice.length - 1 && <Confetti blossom />}
+      {correct && <Confetti key={step} blossom />}
       {correct && step === readingPractice.length - 1 && (
         <Button secondary onPress={onDone}>
           I can read these words · try a conversation

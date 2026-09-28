@@ -131,10 +131,7 @@ export function VoicePractice({
           Play my recording
         </Button>
       )}
-      <Text accessibilityLiveRegion="polite" style={s.small}>
-        {status ||
-          "No timer. No automatic advance. Compare your voice with the example and retry as often as you like."}
-      </Text>
+      {!!status && <Text accessibilityLiveRegion="polite" style={s.small}>{status}</Text>}
     </View>
   );
 }

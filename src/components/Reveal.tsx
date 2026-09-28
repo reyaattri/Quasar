@@ -8,6 +8,7 @@ import {
   type ViewStyle,
   type PressableProps,
 } from "react-native";
+import Svg, { Path, Defs, LinearGradient, Stop } from "react-native-svg";
 import { MotiView } from "moti";
 import { useReducedMotion } from "react-native-reanimated";
 
@@ -183,9 +184,9 @@ export function Confetti({
   const height = Math.max(screenHeight, requestedHeight ?? 0);
   const [visible, setVisible] = React.useState(true);
   React.useEffect(() => {
-    const timer = setTimeout(() => setVisible(false), 2900);
+    const timer = setTimeout(() => setVisible(false), blossom ? 7200 : 2900);
     return () => clearTimeout(timer);
-  }, []);
+  }, [blossom]);
   if (reduced || !visible) return null;
   const burst = (
     <View
@@ -200,36 +201,37 @@ export function Confetti({
         zIndex: 99999,
       }}
     >
-      {Array.from({ length: count }, (_, i) => {
+      {Array.from({ length: blossom ? Math.min(count, 38) : count }, (_, i) => {
         const left = `${((i * 37) % 100) as number}%` as const;
-        const size = 7 + ((i * 5) % 7);
+        const size = blossom ? 14 + (i % 9) : 7 + ((i * 5) % 7);
         return (
           <MotiView
             key={i}
             from={{ translateY: -20, opacity: 1, rotate: "0deg" }}
             animate={{
               translateY: height,
+              translateX: blossom ? (i % 2 ? 65 : -65) : 0,
               opacity: 0,
               rotate: `${(i % 2 ? 1 : -1) * (160 + i * 23)}deg`,
             }}
             transition={{
               type: "timing",
-              duration: 1500 + (i % 6) * 160,
-              delay: (i % 8) * 70,
+              duration: blossom ? 4800 + (i % 6) * 220 : 1500 + (i % 6) * 160,
+              delay: (i % 8) * (blossom ? 140 : 70),
             }}
             style={{
               position: "absolute",
               left,
               top: 0,
               width: size,
-              height: size * (i % 3 ? 1 : 0.5),
+              height: blossom ? size * 1.5 : size * (i % 3 ? 1 : 0.5),
               borderRadius: blossom ? size : i % 4 === 0 ? size : 2,
               borderTopLeftRadius: blossom ? 0 : 2,
               backgroundColor: blossom
-                ? ["#F7AFC4", "#FAD3DF", "#EFA0B8"][i % 3]
+                ? "transparent"
                 : confettiColors[i % confettiColors.length],
             }}
-          />
+          >{blossom && <Svg width="100%" height="100%" viewBox="0 0 20 30"><Defs><LinearGradient id="petal" x1="0" y1="0" x2="1" y2="1"><Stop offset="0" stopColor="#FFE4EC"/><Stop offset="0.55" stopColor="#F4A8BC"/><Stop offset="1" stopColor="#D96C90"/></LinearGradient></Defs><Path d="M10 29C-1 19-2 5 5 1L10 5L14 0C24 7 18 23 10 29Z" fill="url(#petal)"/><Path d="M10 26Q7 15 10 6" stroke="#FDE1E9" strokeWidth="0.7" fill="none"/></Svg>}</MotiView>
         );
       })}
     </View>

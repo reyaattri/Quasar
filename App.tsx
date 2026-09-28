@@ -666,30 +666,20 @@ function Quasar() {
             {[
               [
                 String(reviewCount),
-                reviewCount
-                  ? reviewCount === 1
-                    ? "memory knocking"
-                    : "memories knocking"
-                  : "all caught up",
+                "Due today",
                 "cards",
               ],
-              streak(p)
-                ? [
-                    String(streak(p)) + " day" + (streak(p) === 1 ? "" : "s"),
-                    "learning streak",
-                    "flame",
-                  ]
-                : ["Day 1", "streak starts today", "flame"],
+              [String(streak(p)), "Day streak", "flame"],
               [
                 String(mastered + bioRecalled),
-                mastered + bioRecalled ? "concepts recalled" : "first one's the hardest",
+                "Recalled",
                 "leaf",
               ],
             ].map(([num, label, icon]) => (
-              <View key={label} style={a.stat}>
+              <View key={label} style={[a.stat,{alignItems:"center",padding:12,minWidth:0}]}>
                 <Icon name={icon} size={20} />
                 <Text style={a.statNumber}>{num}</Text>
-                <Text style={s.small}>{label}</Text>
+                <Text style={[s.small,{textAlign:"center",fontSize:12}]}>{label}</Text>
               </View>
             ))}
           </View>
@@ -701,8 +691,8 @@ function Quasar() {
             onPress={() => nav("review")}
             style={[s.card, { flexDirection: "row", alignItems: "center", gap: 16, padding: 18 }]}
           >
-            <View style={{ width: 76, height: 68 }}>
-              <LearningActivityArt kind={session.repair ? "repair" : "today"} height={68} />
+            <View style={{ width: 112, height: 110 }}>
+              <LearningActivityArt kind={session.repair ? "repair" : "today"} height={110} />
             </View>
             <View style={{ flex: 1, gap: 3 }}>
               <Text style={s.h3}>Today's session</Text>
@@ -723,7 +713,8 @@ function Quasar() {
           >
             <Card
               style={{
-                backgroundColor: C.green,
+                backgroundColor: "#F4EAD2",
+                borderColor: "#B79550", borderWidth: 1.5,
                 flexDirection: "row",
                 alignItems: "center",
                 gap: 16,
@@ -739,19 +730,19 @@ function Quasar() {
                   justifyContent: "center",
                 }}
               >
-                <Icon name="spark" size={22} color={C.yellow} />
+                <Icon name="spark" size={28} color="#A17B34" />
               </View>
               <View style={{ flex: 1, gap: 3 }}>
-                <Text style={[s.h3, { color: C.paper }]}>
-                  {pro ? "Quasar Plus is active" : "Meet Quasar Plus"}
+                <Text style={[s.h3, { color: "#554322" }]}>
+                  {pro ? "Quasar Plus is active" : "Quasar Plus"}
                 </Text>
-                <Text style={[s.small, { color: "#C8D3C0" }]}>
+                <Text style={[s.small, { color: "#716044" }]}>
                   {pro
                     ? "Manage your membership and personalized stories."
                     : "Personalized stories and an AI tutor for your explanations."}
                 </Text>
               </View>
-              <Icon name="arrow" size={18} color={C.paper} />
+              <Icon name="arrow" size={18} color="#A17B34" />
             </Card>
           </Pressable>
         </Reveal>

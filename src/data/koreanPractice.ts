@@ -6,7 +6,7 @@ export const readingPractice = [
  {prompt:'Close your lips for m, then say a. Which block is ma?',choices:['미','머','마'],answer:2,explain:'마 = ㅁ + ㅏ. The square mouth supplies m. The right-facing arm supplies a.',hear:'마'},
  {prompt:'Which block combines m with i?',choices:['미','니','머'],answer:0,explain:'미 = ㅁ + ㅣ. Square mouth m, straight line i: mi.',hear:'미'},
  {prompt:'You want a vowel by itself. Which starting letter stays silent?',choices:['ㄴ','ㅇ','ㅁ'],answer:1,explain:'ㅇ is silent at the beginning of a syllable. So 아 is a, not nga. At the end of a syllable ㅇ instead sounds ng.',hear:'아'},
- {prompt:'Build a + i. Which word means child?',choices:['이마','아이','아니'],answer:1,explain:'아이 = 아 + 이, a + i. Imagine a small child riding from the ah singer to the ee elevator. Two syllables, one word.',hear:'아이'},
- {prompt:'Read i + ma. Which word means forehead?',choices:['이마','아이','나'],answer:0,explain:'이마 = 이 + 마, i + ma. Picture the ee elevator stopping at a giant forehead above the square mouth.',hear:'이마'},
+ {prompt:'Build a + i. Which word means child?',choices:['이마','아이','아니'],answer:1,explain:'아이 = 아 + 이, a + i. Picture a CHILD guiding a traditional kite into the air. Say 아 as it rises and 이 as it glides: 아이, child. Join the two sounds into one word. The scene is a memory association; 아 and 이 do not separately mean child.',hear:'아이'},
+ {prompt:'Read i + ma. Which word means forehead?',choices:['이마','아이','나'],answer:0,explain:'이마 = 이 + 마, i + ma. Mum has a little rice flour on her FOREHEAD. She points to it and says 이마, i-ma. Picture the white mark, tap your own forehead and say 이마. This is a visual association, not the word’s origin.',hear:'이마'},
  {prompt:'Read a + ni. Which word means no in an informal reply?',choices:['아이','아니','이마'],answer:1,explain:'아니 = 아 + 니, a + ni. This is an informal no. 아니요 is the polite form; it adds sounds we have not studied yet.',hear:'아니'},
 ];

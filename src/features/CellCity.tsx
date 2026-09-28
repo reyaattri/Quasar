@@ -33,7 +33,7 @@ import { dueIds, type Attempt, type Progress } from "../lib/progress";
 
 type Log = (a: Omit<Attempt, "at">) => void;
 
-const NIGHT = "#202A3B";
+const NIGHT = "#E5EFF5";
 const LAMP = "#F2CB6C";
 function shuffled<T>(items: T[]) {
   const a = [...items];
@@ -220,10 +220,10 @@ export function CellCity({
   );
 }
 
-function Badge({ id, size = 44 }: { id: CharacterId; size?: number }) {
+function Badge({ id, size = 64 }: { id: CharacterId; size?: number }) {
   const c = characters[id];
   // A round portrait: the character's picture, scaled up and pinned to the head and shoulders.
-  const big = size * 2.3;
+  const big = size - 8;
   return (
     <View
       accessibilityLabel={c.name}
@@ -237,7 +237,7 @@ function Badge({ id, size = 44 }: { id: CharacterId; size?: number }) {
         overflow: "hidden",
       }}
     >
-      <View style={{ marginLeft: -(big - size) / 2, marginTop: -size * 0.02 }}>
+      <View style={{ margin: 3 }}>
         <CityCharacter id={id} size={big} still />
       </View>
     </View>
@@ -371,7 +371,7 @@ function EpisodeRun({
                   gap: 10,
                 }}
               >
-                <Text style={[s.label, { color: LAMP }]}>
+                <Text style={[s.label, { color: "#46677D" }]}>
                   THEN, HOW CELL CITY SHOWS IT
                 </Text>
                 {episode.mapping.map(([real, city]) => (
@@ -384,10 +384,10 @@ function EpisodeRun({
                       paddingLeft: 10,
                     }}
                   >
-                    <Text style={{ color: "#FFFDF4", fontWeight: "700" }}>
+                    <Text style={{ color: C.ink, fontWeight: "700" }}>
                       {real}
                     </Text>
-                    <Text style={{ color: "#D8DCE6" }}>{city}</Text>
+                    <Text style={{ color: C.muted }}>{city}</Text>
                   </View>
                 ))}
               </View>
@@ -512,17 +512,16 @@ function EpisodeRun({
             <View style={{ alignItems: "center" }}>
               <CityCharacter id={hostOf[episode.n]} mood="happy" size={190} />
             </View>
-            <Icon name="sun" size={30} color={LAMP} />
-            <Text style={[s.h2, { color: "#FFFDF4" }]}>
+            <Text style={[s.h2, { color: C.ink }]}>
               {episode.title}: solved.
             </Text>
-            <Text style={{ color: "#D8DCE6", fontSize: 16, lineHeight: 24 }}>
+            <Text style={{ color: C.muted, fontSize: 16, lineHeight: 24 }}>
               {right} of {episode.clues.length} clues right. Every clue comes
               back for review, and its cue fades as you keep getting it right.
             </Text>
             <Text
               style={{
-                color: LAMP,
+                color: "#46677D",
                 fontSize: 17,
                 lineHeight: 25,
                 fontStyle: "italic",
@@ -541,35 +540,6 @@ function EpisodeRun({
           </View>
         </Reveal>
       )}
-    </View>
-  );
-}
-
-function CueStrength({ level, off }: { level: CueLevel; off?: boolean }) {
-  const filled = off ? 0 : 3 - level;
-  return (
-    <View
-      style={[s.row, { gap: 4 }]}
-      accessibilityLabel={
-        off
-          ? "No cues in this episode"
-          : ["Full cue", "Cue fading", "Cue gone"][level]
-      }
-    >
-      {[0, 1, 2].map((i) => (
-        <View
-          key={i}
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: 4,
-            backgroundColor: i < filled ? C.green : C.line,
-          }}
-        />
-      ))}
-      <Text style={s.small}>
-        {off ? "no cues" : ["full cue", "cue fading", "on your own"][level]}
-      </Text>
     </View>
   );
 }
@@ -609,7 +579,7 @@ function Readings({ readings }: { readings: Reading[] }) {
     <View
       style={{ backgroundColor: NIGHT, borderRadius: 18, padding: 14, gap: 10 }}
     >
-      <Text style={[s.label, { color: LAMP }]}>DISTRICT READINGS</Text>
+      <Text style={[s.label, { color: "#46677D" }]}>DISTRICT READINGS</Text>
       {readings.map((r) => (
         <View
           key={r.label}
@@ -617,10 +587,10 @@ function Readings({ readings }: { readings: Reading[] }) {
           accessibilityLabel={`${r.label}: ${r.level}${r.note ? ", " + r.note : ""}`}
         >
           <View style={s.between}>
-            <Text style={{ color: "#FFFDF4", fontWeight: "600" }}>
+            <Text style={{ color: C.ink, fontWeight: "600" }}>
               {r.label}
             </Text>
-            <Text style={{ color: "#C9CEDA" }}>{r.note ?? r.level}</Text>
+            <Text style={{ color: C.muted }}>{r.note ?? r.level}</Text>
           </View>
           <Meter
             value={readingValue[r.level]}
@@ -662,7 +632,6 @@ function ClueCard({
       <Card style={{ gap: 12 }}>
         <View style={s.between}>
           <Text style={[s.label, { flex: 1 }]}>{q.title.toUpperCase()}</Text>
-          <CueStrength level={level} off={noCues} />
         </View>
         {q.readings && <Readings readings={q.readings} />}
         <Text style={s.h3}>{q.prompt}</Text>
@@ -826,7 +795,6 @@ function RebuildRun({
       <View style={s.between}>
         <Text style={[s.h3, { flex: 1 }]}>{rebuild.prompt}</Text>
       </View>
-      <CueStrength level={level} off={!rebuild.cue} />
       {rebuild.cue && level < 2 ? (
         <CueBox text={rebuild.cue} level={level} />
       ) : null}
