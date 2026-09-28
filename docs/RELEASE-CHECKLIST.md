@@ -1,5 +1,12 @@
 # Release checklist
 
+## Current audit · September 28, 2026
+
+TypeScript, 35 unit tests and web export pass. Historical checks below were not all rerun in this audit. Do not treat this file as proof of a completed submission.
+
+Outstanding: publish current commits; verify public repository visibility; verify a RevenueCat transaction and restore; record and publish the current demo; confirm submission icon and screenshot dimensions; complete entrant eligibility and Devpost submission. See README for current official-rule links.
+
+
 ## Verified locally
 
 - [x] React Native / Expo source compiles with TypeScript.

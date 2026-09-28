@@ -184,7 +184,7 @@ export function Confetti({
   const height = Math.max(screenHeight, requestedHeight ?? 0);
   const [visible, setVisible] = React.useState(true);
   React.useEffect(() => {
-    const timer = setTimeout(() => setVisible(false), blossom ? 8200 : 6200);
+    const timer = setTimeout(() => setVisible(false), blossom ? 7200 : 4200);
     return () => clearTimeout(timer);
   }, [blossom]);
   if (reduced || !visible) return null;
@@ -210,65 +210,28 @@ export function Confetti({
             from={{ translateY: -20, opacity: 1, rotate: "0deg" }}
             animate={{
               translateY: height,
-              translateX: (i % 2 ? 1 : -1) * (35 + (i % 60)),
+              translateX: blossom ? (i % 2 ? 65 : -65) : 0,
               opacity: 0,
               rotate: `${(i % 2 ? 1 : -1) * (160 + i * 23)}deg`,
             }}
             transition={{
               type: "timing",
-              duration: blossom ? 5400 + (i % 6) * 220 : 3800 + (i % 6) * 220,
-              delay: (i % 8) * (blossom ? 140 : 120),
+              duration: blossom ? 4800 + (i % 6) * 220 : 2400 + (i % 6) * 180,
+              delay: (i % 8) * (blossom ? 140 : 70),
             }}
             style={{
               position: "absolute",
               left,
               top: 0,
               width: size,
-              height: blossom
-                ? size * 1.5
-                : i % 5 === 0
-                  ? size * 5
-                  : size * (i % 3 ? 1 : 0.5),
+              height: blossom ? size * 1.5 : size * (i % 3 ? 1 : 0.5),
               borderRadius: blossom ? size : i % 4 === 0 ? size : 2,
               borderTopLeftRadius: blossom ? 0 : 2,
-              backgroundColor:
-                blossom || i % 5 === 0
-                  ? "transparent"
-                  : confettiColors[i % confettiColors.length],
+              backgroundColor: blossom
+                ? "transparent"
+                : confettiColors[i % confettiColors.length],
             }}
-          >
-            {!blossom && i % 5 === 0 && (
-              <Svg width="100%" height="100%" viewBox="0 0 16 70">
-                <Path
-                  d="M8 0C-5 10 22 16 8 25S-3 41 8 47S20 63 8 70"
-                  stroke={confettiColors[i % confettiColors.length]}
-                  strokeWidth="3"
-                  fill="none"
-                />
-              </Svg>
-            )}
-            {blossom && (
-              <Svg width="100%" height="100%" viewBox="0 0 20 30">
-                <Defs>
-                  <LinearGradient id="petal" x1="0" y1="0" x2="1" y2="1">
-                    <Stop offset="0" stopColor="#FFE4EC" />
-                    <Stop offset="0.55" stopColor="#F4A8BC" />
-                    <Stop offset="1" stopColor="#D96C90" />
-                  </LinearGradient>
-                </Defs>
-                <Path
-                  d="M10 29C-1 19-2 5 5 1L10 5L14 0C24 7 18 23 10 29Z"
-                  fill="url(#petal)"
-                />
-                <Path
-                  d="M10 26Q7 15 10 6"
-                  stroke="#FDE1E9"
-                  strokeWidth="0.7"
-                  fill="none"
-                />
-              </Svg>
-            )}
-          </MotiView>
+          >{blossom && <Svg width="100%" height="100%" viewBox="0 0 20 30"><Defs><LinearGradient id="petal" x1="0" y1="0" x2="1" y2="1"><Stop offset="0" stopColor="#FFE4EC"/><Stop offset="0.55" stopColor="#F4A8BC"/><Stop offset="1" stopColor="#D96C90"/></LinearGradient></Defs><Path d="M10 29C-1 19-2 5 5 1L10 5L14 0C24 7 18 23 10 29Z" fill="url(#petal)"/><Path d="M10 26Q7 15 10 6" stroke="#FDE1E9" strokeWidth="0.7" fill="none"/></Svg>}</MotiView>
         );
       })}
     </View>

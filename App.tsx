@@ -1,4 +1,3 @@
-import { PlusSignature } from "./src/components/PlusSignature";
 import { ProgressMobile } from "./src/components/ProgressMobile";
 import { VIOLET, WelcomeScene } from "./src/components/WelcomeScene";
 import {
@@ -759,35 +758,38 @@ function Quasar() {
           >
             <Card
               style={{
-                backgroundColor: "#203738",
-                borderColor: "#BC9659",
+                backgroundColor: "#F4EAD2",
+                borderColor: "#B79550",
                 borderWidth: 1.5,
-                padding: 22,
-                gap: 18,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 16,
               }}
             >
-              <PlusSignature compact />
-              <Text style={{ color: "#DFD9C7", fontSize: 14, lineHeight: 21 }}>
-                {pro
-                  ? "Your membership and personalized stories."
-                  : "Personalized memory stories. Thoughtful tutor feedback."}
-              </Text>
               <View
                 style={{
-                  alignSelf: "flex-start",
-                  paddingHorizontal: 16,
-                  paddingVertical: 10,
-                  backgroundColor: "#E4C486",
-                  borderWidth: 1,
-                  borderColor: "#F8E5B5",
-                  borderRadius: 4,
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  backgroundColor: "rgba(242,203,108,0.16)",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <Text style={{ color: "#293B30", fontWeight: "700" }}>
-                  {pro ? "Manage membership" : "Discover Plus"}
+                <Icon name="spark" size={28} color="#A17B34" />
+              </View>
+              <View style={{ flex: 1, gap: 3 }}>
+                <Text style={[s.h3, { color: "#554322" }]}>
+                  {pro ? "Quasar Plus is active" : "Quasar Plus"}
+                </Text>
+                <Text style={[s.small, { color: "#716044" }]}>
+                  {pro
+                    ? "Manage your membership and personalized stories."
+                    : "Personalized stories and an AI tutor for your explanations."}
                 </Text>
               </View>
-            </Card>{" "}
+              <Icon name="arrow" size={18} color="#A17B34" />
+            </Card>
           </Pressable>
         </Reveal>
         <View style={s.section}>
@@ -1631,9 +1633,7 @@ function Quasar() {
       <Reveal>
         <View
           style={{
-            backgroundColor: "#203738",
-            borderColor: "#BC9659",
-            borderWidth: 1.5,
+            backgroundColor: "#254633",
             borderRadius: 30,
             padding: 26,
             overflow: "hidden",
@@ -1652,7 +1652,33 @@ function Quasar() {
               backgroundColor: "rgba(242,203,108,0.09)",
             }}
           />
-          <PlusSignature />
+          <View style={s.between}>
+            <Text
+              style={{
+                color: "#E3EBCF",
+                fontSize: 11,
+                letterSpacing: 2,
+                fontWeight: "700",
+              }}
+            >
+              QUASAR PLUS
+            </Text>
+            <Pulse>
+              <View
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  borderWidth: 1,
+                  borderColor: C.yellow,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Icon name="spark" size={22} color={C.yellow} />
+              </View>
+            </Pulse>
+          </View>
           <Text
             style={{
               color: C.paper,

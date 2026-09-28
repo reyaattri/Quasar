@@ -371,7 +371,7 @@ export function KoreanCourse({
         Then put the pictures away and draw what you remember.
       </Text>
       {mode === "sentences" ? (
-        <Button secondary onPress={() => setMode("story")}>
+        <Button secondary color={C.peach} onPress={() => setMode("story")}>
           Back to letters and pronunciation
         </Button>
       ) : (

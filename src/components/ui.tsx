@@ -121,7 +121,7 @@ export function Button({
   color?: string;
 }) {
   const [size, setSize] = React.useState({ w: 0, h: 0 });
-  const face = secondary ? C.white : (color ?? C.green);
+  const face = secondary ? (color ?? C.sage) : (color ?? C.green);
   const ink = secondary ? C.ink : C.white;
   const st = small ? 4 : 5;
   return (
@@ -134,7 +134,8 @@ export function Button({
     >
       {({ pressed }) => {
         const down = pressed && !disabled ? DEPTH - 1 : 0;
-        const w = size.w, h = size.h;
+        const w = size.w,
+          h = size.h;
         return (
           <View>
             {w > 0 && (
@@ -144,20 +145,57 @@ export function Button({
                 height={h + DEPTH}
                 style={{ position: "absolute", left: 0, top: 0 }}
               >
-                <Path d={pixelOutline(w, h, st)} fill={C.ink} transform={`translate(0 ${DEPTH})`} />
-                <Path d={pixelOutline(w, h, st)} fill={face} stroke={C.ink} strokeWidth={2.5} transform={`translate(0 ${down})`} />
-                <Rect x={st * 2} y={3 + down} width={Math.max(0, w - st * 4)} height={3} fill={C.white} opacity={secondary ? 0.9 : 0.16} />
+                <Path
+                  d={pixelOutline(w, h, st)}
+                  fill={C.ink}
+                  transform={`translate(0 ${DEPTH})`}
+                />
+                <Path
+                  d={pixelOutline(w, h, st)}
+                  fill={face}
+                  stroke={C.ink}
+                  strokeWidth={2.5}
+                  transform={`translate(0 ${down})`}
+                />
+                <Rect
+                  x={st * 2}
+                  y={3 + down}
+                  width={Math.max(0, w - st * 4)}
+                  height={3}
+                  fill={C.white}
+                  opacity={secondary ? 0.9 : 0.16}
+                />
               </Svg>
             )}
             <View
-              onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}
+              onLayout={(e) =>
+                setSize({
+                  w: e.nativeEvent.layout.width,
+                  h: e.nativeEvent.layout.height,
+                })
+              }
               style={[
                 s.button,
-                { backgroundColor: "transparent", borderRadius: 0, transform: [{ translateY: down }] },
-                small && { paddingVertical: 10, paddingHorizontal: 16, minHeight: 40 },
+                {
+                  backgroundColor: "transparent",
+                  borderRadius: 0,
+                  transform: [{ translateY: down }],
+                },
+                small && {
+                  paddingVertical: 10,
+                  paddingHorizontal: 16,
+                  minHeight: 40,
+                },
               ]}
             >
-              <Text style={[s.buttonText, { color: ink, fontWeight: "700", letterSpacing: 0.2 }]}>{children}</Text>
+              <Text
+                style={[
+                  s.buttonText,
+                  { color: ink, fontWeight: "700", letterSpacing: 0.2 },
+                ]}
+              >
+                {children}
+              </Text>
               {icon && <Icon name={icon} size={18} color={ink} />}
             </View>
           </View>
@@ -285,7 +323,7 @@ export const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: C.line,
     borderRadius: 26,
-    padding: 22,
+    padding: 18,
     gap: 14,
     shadowColor: C.ink,
     shadowOffset: { width: 0, height: 5 },

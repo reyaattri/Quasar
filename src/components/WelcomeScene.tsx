@@ -2,7 +2,14 @@ import React from "react";
 import { View } from "react-native";
 import { MotiView } from "moti";
 import { useReducedMotion } from "react-native-reanimated";
-import Svg, { Defs, Image as SvgImage, LinearGradient, Mask, Rect, Stop } from "react-native-svg";
+import Svg, {
+  Defs,
+  Image as SvgImage,
+  LinearGradient,
+  Mask,
+  Rect,
+  Stop,
+} from "react-native-svg";
 import { C, Text } from "./ui";
 
 // The landing hero: a notebook on a desk whose pages grow into a path through three memory worlds,
@@ -17,7 +24,7 @@ const HERO = {
 };
 
 // The landing's own accents: twilight violet and warm gold, on the app's cream.
-export const VIOLET = "#6B52B5";
+export const VIOLET = "#356C61";
 const GOLD = "#D9A441";
 
 // The painting, faded at top and bottom with a real transparency mask, so whatever is behind it
@@ -33,7 +40,14 @@ function FadedPainting({ width }: { width: number }) {
           <Stop offset="0.8" stopColor="#fff" stopOpacity={1} />
           <Stop offset="1" stopColor="#fff" stopOpacity={0} />
         </LinearGradient>
-        <Mask id="heroMask" x="0" y="0" width={width} height={h} maskUnits="userSpaceOnUse">
+        <Mask
+          id="heroMask"
+          x="0"
+          y="0"
+          width={width}
+          height={h}
+          maskUnits="userSpaceOnUse"
+        >
           <Rect x="0" y="0" width={width} height={h} fill="url(#heroFade)" />
         </Mask>
       </Defs>
@@ -50,7 +64,13 @@ function FadedPainting({ width }: { width: number }) {
   );
 }
 
-function Rise({ delay, children }: { delay: number; children: React.ReactNode }) {
+function Rise({
+  delay,
+  children,
+}: {
+  delay: number;
+  children: React.ReactNode;
+}) {
   const reduced = useReducedMotion();
   if (reduced) return <>{children}</>;
   return (
@@ -84,16 +104,15 @@ export function WelcomeScene({
           : { maxWidth: 560, width: "100%", alignSelf: "center" },
       ]}
     >
-      <View style={{ alignItems: "center", paddingHorizontal: 22, paddingTop: 30, gap: 12, zIndex: 2 }}>
-        <Rise delay={100}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            <View style={{ width: 22, height: 1.5, backgroundColor: GOLD }} />
-            <Text style={{ color: VIOLET, fontSize: 11, letterSpacing: 3.2, fontWeight: "700" }}>
-              WELCOME TO QUASAR
-            </Text>
-            <View style={{ width: 22, height: 1.5, backgroundColor: GOLD }} />
-          </View>
-        </Rise>
+      <View
+        style={{
+          alignItems: "center",
+          paddingHorizontal: 22,
+          paddingTop: 16,
+          gap: 12,
+          zIndex: 2,
+        }}
+      >
         <Rise delay={260}>
           <Text
             accessibilityRole="header"
@@ -111,7 +130,15 @@ export function WelcomeScene({
           </Text>
         </Rise>
         <Rise delay={440}>
-          <Text style={{ textAlign: "center", color: C.muted, fontSize: 16, lineHeight: 23, maxWidth: 330 }}>
+          <Text
+            style={{
+              textAlign: "center",
+              color: C.muted,
+              fontSize: 16,
+              lineHeight: 23,
+              maxWidth: 330,
+            }}
+          >
             Turn what you learn into places you can walk back through.
           </Text>
         </Rise>
@@ -121,16 +148,31 @@ export function WelcomeScene({
       <MotiView
         from={{ opacity: reduced ? 1 : 0, scale: reduced ? 1 : 1.03 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ type: "timing", duration: reduced ? 0 : 1400, delay: 200 }}
+        transition={{
+          type: "timing",
+          duration: reduced ? 0 : 1400,
+          delay: 200,
+        }}
         style={{ width: "100%", aspectRatio: HERO.aspect, marginTop: 6 }}
       >
-        <View accessible accessibilityRole="image" accessibilityLabel={HERO.label}>
+        <View
+          accessible
+          accessibilityRole="image"
+          accessibilityLabel={HERO.label}
+        >
           {w > 0 && <FadedPainting width={w} />}
         </View>
       </MotiView>
 
       {children ? (
-        <View style={{ paddingHorizontal: bleed ? 22 : 0, paddingBottom: 30, marginTop: 14, gap: 18 }}>
+        <View
+          style={{
+            paddingHorizontal: bleed ? 22 : 0,
+            paddingBottom: 30,
+            marginTop: 14,
+            gap: 18,
+          }}
+        >
           {children}
         </View>
       ) : null}
