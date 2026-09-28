@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 import { MotiView } from "moti";
 import { Button, C, Card, s, Text } from "../components/ui";
 import { PressableScale, Reveal } from "../components/Reveal";
@@ -193,14 +193,19 @@ export function TodayPlan({
               onPress={() => onStart(t)}
               style={{ gap: 12, padding: 18, paddingTop: 36 }}
             >
-              <View
-                style={{
-                  width: "100%",
-                  height: 152,
-                }}
-              >
+              {tasks.slice(0, i).filter((x) => x.type === t.type).length ===
+              0 ? (
                 <LearningActivityArt kind={look[t.type].art} height={152} />
-              </View>
+              ) : t.type === "recall" &&
+                tasks.slice(0, i).filter((x) => x.type === "recall").length ===
+                  1 ? (
+                <Image
+                  accessibilityLabel="An owl retrieves a blueprint from a tiny archive"
+                  source={require("../../assets/learning-recall-owl.png")}
+                  resizeMode="contain"
+                  style={{ width: "100%", height: 152 }}
+                />
+              ) : null}
               <View style={{ flex: 1, gap: 5 }}>
                 <Text
                   style={[

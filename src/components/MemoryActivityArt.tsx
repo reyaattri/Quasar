@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Image as NativeImage } from "react-native";
 import { AtlasArt } from "./StudyShelf";
 import Svg, { Defs, ClipPath, Rect, Image } from "react-native-svg";
 import { deck } from "../data/funGames";
@@ -60,6 +60,15 @@ export function ExploreMemoryArt({
 }: {
   kind: "cards" | "pairs" | "phrase" | "calculus" | "names";
 }) {
+  if (kind === "calculus")
+    return (
+      <NativeImage
+        accessibilityLabel="A detective investigates a snail climbing a slope"
+        source={require("../../assets/calculus-detective-cutout.png")}
+        resizeMode="contain"
+        style={{ width: "100%", height: 220 }}
+      />
+    );
   const artwork = {
     cards: ["spades", 13, "A librarian opens a cabinet of card stories"],
     pairs: ["hearts", 13, "Clara’s clarinet makes Cara’s car bounce"],
@@ -72,12 +81,29 @@ export function ExploreMemoryArt({
     ],
   } as const;
   const [group, index, label] = artwork[kind];
-  if (kind === "phrase") return <View accessibilityLabel={label} style={{ width: "100%", padding: 10 }}>
-    <Svg width="100%" height={205} viewBox="310 910 323 344" preserveAspectRatio="xMidYMid meet">
-      <Defs><ClipPath id="secret-story-thumbnail"><Rect x={310} y={910} width={323} height={344} /></ClipPath></Defs>
-      <Image href={sources.diamonds} width={1254} height={1254} clipPath="url(#secret-story-thumbnail)" />
-    </Svg>
-  </View>;
+  if (kind === "phrase")
+    return (
+      <View accessibilityLabel={label} style={{ width: "100%", padding: 10 }}>
+        <Svg
+          width="100%"
+          height={205}
+          viewBox="310 910 323 344"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <Defs>
+            <ClipPath id="secret-story-thumbnail">
+              <Rect x={310} y={910} width={323} height={344} />
+            </ClipPath>
+          </Defs>
+          <Image
+            href={sources.diamonds}
+            width={1254}
+            height={1254}
+            clipPath="url(#secret-story-thumbnail)"
+          />
+        </Svg>
+      </View>
+    );
   return (
     <GeneratedMemoryArt
       group={group}

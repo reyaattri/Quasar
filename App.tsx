@@ -1,6 +1,12 @@
+import { PlusSignature } from "./src/components/PlusSignature";
 import { ProgressMobile } from "./src/components/ProgressMobile";
 import { VIOLET, WelcomeScene } from "./src/components/WelcomeScene";
-import { Confetti, Reveal, Pulse, PressableScale } from "./src/components/Reveal";
+import {
+  Confetti,
+  Reveal,
+  Pulse,
+  PressableScale,
+} from "./src/components/Reveal";
 import { TeachBack } from "./src/features/TeachBack";
 import { WhyLadder } from "./src/features/WhyLadder";
 import { CaseLab } from "./src/features/CaseLab";
@@ -110,7 +116,12 @@ import {
   deleteAccount,
   webPurchases,
 } from "./src/lib/services";
-import { gradeExplanation, generateQuiz, personalizeStory, newHook } from "./src/lib/ai";
+import {
+  gradeExplanation,
+  generateQuiz,
+  personalizeStory,
+  newHook,
+} from "./src/lib/ai";
 type Page =
   | "home"
   | "library"
@@ -337,7 +348,10 @@ function Quasar() {
     setBioStart({ module, phase, n: Date.now() });
     nav("medicine");
   };
-  const openTeach = (conceptId?: string, mode: "teach" | "recall" = "teach") => {
+  const openTeach = (
+    conceptId?: string,
+    mode: "teach" | "recall" = "teach",
+  ) => {
     setFocus({ conceptId, mode });
     nav("teach");
   };
@@ -346,15 +360,24 @@ function Quasar() {
     nav("cases");
   };
   const saveDeck = (deck: NoteDeck) =>
-    setP((v) => ({ ...v, notes: [...(v.notes ?? []).filter((d) => d.id !== deck.id), deck].slice(-20) }));
+    setP((v) => ({
+      ...v,
+      notes: [...(v.notes ?? []).filter((d) => d.id !== deck.id), deck].slice(
+        -20,
+      ),
+    }));
   const deleteDeck = (id: string) =>
     setP((v) => {
       const prefix = `note-${id}-`;
       return {
         ...v,
         notes: (v.notes ?? []).filter((d) => d.id !== id),
-        cards: Object.fromEntries(Object.entries(v.cards).filter(([k]) => !k.startsWith(prefix))),
-        attempts: (v.attempts ?? []).filter((a) => !a.conceptId.startsWith(prefix)),
+        cards: Object.fromEntries(
+          Object.entries(v.cards).filter(([k]) => !k.startsWith(prefix)),
+        ),
+        attempts: (v.attempts ?? []).filter(
+          (a) => !a.conceptId.startsWith(prefix),
+        ),
       };
     });
   const openWhy = (module?: number) => {
@@ -393,7 +416,11 @@ function Quasar() {
                 ...v.hooks,
                 [e.conceptId]: [
                   ...(v.hooks?.[e.conceptId] ?? []),
-                  { text: res.hook, why: res.why, at: new Date().toISOString() },
+                  {
+                    text: res.hook,
+                    why: res.why,
+                    at: new Date().toISOString(),
+                  },
                 ],
               },
             }));
@@ -613,9 +640,13 @@ function Quasar() {
       minutes: plan.reduce((m, t) => m + t.minutes, 0),
       repair: errorMemory(p).filter((e) => !e.resolved).length,
     };
-    const bioRecalled = allConceptIds.filter((id) => gardenStage(p, id) >= 2).length;
+    const bioRecalled = allConceptIds.filter(
+      (id) => gardenStage(p, id) >= 2,
+    ).length;
     const reviewCount =
-      due.length + dueIds(p).filter((id) => /^(bio|note|ko|city)-/.test(id)).length + session.repair;
+      due.length +
+      dueIds(p).filter((id) => /^(bio|note|ko|city)-/.test(id)).length +
+      session.repair;
     return (
       <View style={{ gap: 30 }}>
         <View style={s.between}>
@@ -634,7 +665,9 @@ function Quasar() {
             <View style={{ flex: 1, gap: 15, padding: 24 }}>
               <Tag color="#D4DFB9">CONTINUE LEARNING</Tag>
               <Text style={[s.h2, { fontSize: 30, lineHeight: 35 }]}>
-                {cont.id === "market" ? "Your vocabulary sketchbook" : cont.title}
+                {cont.id === "market"
+                  ? "Your vocabulary sketchbook"
+                  : cont.title}
               </Text>
               <Text style={[s.body, { color: C.ink }]}>
                 {n
@@ -664,22 +697,22 @@ function Quasar() {
         <Reveal delay={90}>
           <View style={a.statsRow}>
             {[
-              [
-                String(reviewCount),
-                "Due today",
-                "cards",
-              ],
+              [String(reviewCount), "Due today", "cards"],
               [String(streak(p)), "Day streak", "flame"],
-              [
-                String(mastered + bioRecalled),
-                "Recalled",
-                "leaf",
-              ],
+              [String(mastered + bioRecalled), "Recalled", "leaf"],
             ].map(([num, label, icon]) => (
-              <View key={label} style={[a.stat,{alignItems:"center",padding:12,minWidth:0}]}>
+              <View
+                key={label}
+                style={[
+                  a.stat,
+                  { alignItems: "center", padding: 12, minWidth: 0 },
+                ]}
+              >
                 <Icon name={icon} size={20} />
                 <Text style={a.statNumber}>{num}</Text>
-                <Text style={[s.small,{textAlign:"center",fontSize:12}]}>{label}</Text>
+                <Text style={[s.small, { textAlign: "center", fontSize: 12 }]}>
+                  {label}
+                </Text>
               </View>
             ))}
           </View>
@@ -689,10 +722,21 @@ function Quasar() {
             accessibilityRole="button"
             accessibilityLabel={`Open today's session: ${session.tasks.length} ${session.tasks.length === 1 ? "task" : "tasks"}, ${session.minutes} minutes`}
             onPress={() => nav("review")}
-            style={[s.card, { flexDirection: "row", alignItems: "center", gap: 16, padding: 18 }]}
+            style={[
+              s.card,
+              {
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 16,
+                padding: 18,
+              },
+            ]}
           >
             <View style={{ width: 112, height: 110 }}>
-              <LearningActivityArt kind={session.repair ? "repair" : "today"} height={110} />
+              <LearningActivityArt
+                kind={session.repair ? "repair" : "today"}
+                height={110}
+              />
             </View>
             <View style={{ flex: 1, gap: 3 }}>
               <Text style={s.h3}>Today's session</Text>
@@ -708,42 +752,42 @@ function Quasar() {
         <Reveal delay={160}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={pro ? "Manage Quasar Plus" : "Explore Quasar Plus"}
+            accessibilityLabel={
+              pro ? "Manage Quasar Plus" : "Explore Quasar Plus"
+            }
             onPress={() => nav("paywall")}
           >
             <Card
               style={{
-                backgroundColor: "#F4EAD2",
-                borderColor: "#B79550", borderWidth: 1.5,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 16,
+                backgroundColor: "#203738",
+                borderColor: "#BC9659",
+                borderWidth: 1.5,
+                padding: 22,
+                gap: 18,
               }}
             >
+              <PlusSignature compact />
+              <Text style={{ color: "#DFD9C7", fontSize: 14, lineHeight: 21 }}>
+                {pro
+                  ? "Your membership and personalized stories."
+                  : "Personalized memory stories. Thoughtful tutor feedback."}
+              </Text>
               <View
                 style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 22,
-                  backgroundColor: "rgba(242,203,108,0.16)",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  alignSelf: "flex-start",
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  backgroundColor: "#E4C486",
+                  borderWidth: 1,
+                  borderColor: "#F8E5B5",
+                  borderRadius: 4,
                 }}
               >
-                <Icon name="spark" size={28} color="#A17B34" />
-              </View>
-              <View style={{ flex: 1, gap: 3 }}>
-                <Text style={[s.h3, { color: "#554322" }]}>
-                  {pro ? "Quasar Plus is active" : "Quasar Plus"}
-                </Text>
-                <Text style={[s.small, { color: "#716044" }]}>
-                  {pro
-                    ? "Manage your membership and personalized stories."
-                    : "Personalized stories and an AI tutor for your explanations."}
+                <Text style={{ color: "#293B30", fontWeight: "700" }}>
+                  {pro ? "Manage membership" : "Discover Plus"}
                 </Text>
               </View>
-              <Icon name="arrow" size={18} color="#A17B34" />
-            </Card>
+            </Card>{" "}
           </Pressable>
         </Reveal>
         <View style={s.section}>
@@ -833,9 +877,7 @@ function Quasar() {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={s.h3}>{item.title}</Text>
-                <Text style={s.small}>
-                  {item.type}
-                </Text>
+                <Text style={s.small}>{item.type}</Text>
               </View>
             </Pressable>
           ))}
@@ -850,16 +892,29 @@ function Quasar() {
           accessibilityRole="button"
           accessibilityLabel="Enter Cell City"
           onPress={() => nav("city")}
-          style={{ backgroundColor: "#202A3B", borderRadius: 28, padding: 20, gap: 14 }}
+          style={{
+            backgroundColor: "#202A3B",
+            borderRadius: 28,
+            padding: 20,
+            gap: 14,
+          }}
         >
           <Tag color={C.yellow}>MEMORY WORLD · CELL CITY</Tag>
-          <View style={{ height: 112, marginHorizontal: -4, overflow: "hidden" }}>
-            <CityCrowd ids={["ribo", "gly", "mara", "osei"]} max={108} perRow={4} />
+          <View
+            style={{ height: 112, marginHorizontal: -4, overflow: "hidden" }}
+          >
+            <CityCrowd
+              ids={["ribo", "gly", "mara", "osei"]}
+              max={108}
+              perRow={4}
+            />
           </View>
-          <Text style={[s.h2, { color: "#FFFDF4" }]}>The city is losing power.</Text>
+          <Text style={[s.h2, { color: "#FFFDF4" }]}>
+            The city is losing power.
+          </Text>
           <Text style={[s.body, { color: "#D8DCE6" }]}>
-            Six episodes inside a living cell. Follow the fuel from glycolysis to
-            ATP synthase, then find out what caused the blackout.
+            Six episodes inside a living cell. Follow the fuel from glycolysis
+            to ATP synthase, then find out what caused the blackout.
           </Text>
           <Text style={[s.label, { color: C.yellow }]}>
             {(p.city?.done.length ?? 0) > 0
@@ -872,14 +927,43 @@ function Quasar() {
         <Tag color={C.sage}>STUDY LABS</Tag>
         <Text style={s.h2}>Different ways to prove you know it.</Text>
         <Text style={s.body}>
-          Explain, question, apply or build a quiz. Pick the kind of practice your idea needs.
+          Explain, question, apply or build a quiz. Pick the kind of practice
+          your idea needs.
         </Text>
         {(
           [
-            ["teach", "Teach-Back Studio", "Explain the idea with the lesson hidden.", "#E8F1F5", "#8BAFC0", () => openTeach(undefined)],
-            ["why", "The Why Ladder", "Climb from what happens to why it matters.", "#F0E8F4", "#B194BF", () => openWhy(undefined)],
-            ["case", "Case Lab", "Use the idea on a strange new problem.", "#E6EEE9", "#78998A", () => openCase(undefined)],
-            ["notes", "Notes to Quiz", "Turn your own notes into a study deck.", "#FAE5D7", "#D98D6E", () => nav("notes")],
+            [
+              "teach",
+              "Teach-Back Studio",
+              "Explain the idea with the lesson hidden.",
+              "#E8F1F5",
+              "#8BAFC0",
+              () => openTeach(undefined),
+            ],
+            [
+              "why",
+              "The Why Ladder",
+              "Climb from what happens to why it matters.",
+              "#F0E8F4",
+              "#B194BF",
+              () => openWhy(undefined),
+            ],
+            [
+              "case",
+              "Case Lab",
+              "Use the idea on a strange new problem.",
+              "#E6EEE9",
+              "#78998A",
+              () => openCase(undefined),
+            ],
+            [
+              "notes",
+              "Notes to Quiz",
+              "Turn your own notes into a study deck.",
+              "#FAE5D7",
+              "#D98D6E",
+              () => nav("notes"),
+            ],
           ] as const
         ).map(([kind, title, body, color, edge, go], index) => (
           <Reveal key={title} delay={90 + index * 45}>
@@ -902,7 +986,10 @@ function Quasar() {
               ]}
             >
               <View style={{ width: 116, height: 96 }}>
-                <LearningActivityArt kind={kind as ActivityArtKind} height={96} />
+                <LearningActivityArt
+                  kind={kind as ActivityArtKind}
+                  height={96}
+                />
               </View>
               <View style={{ flex: 1, gap: 5 }}>
                 <Text style={s.h3}>{title}</Text>
@@ -1001,11 +1088,7 @@ function Quasar() {
           <Icon name="back" size={18} />
           <Text style={s.link}>All scenes</Text>
         </Pressable>
-        {heading(
-          scene.subject,
-          scene.title,
-          undefined,
-        )}
+        {heading(scene.subject, scene.title, undefined)}
 
         <Scene
           scene={scene}
@@ -1084,7 +1167,15 @@ function Quasar() {
               accessibilityRole="button"
               accessibilityLabel={`Your notes: ${noteDue} questions due`}
               onPress={() => nav("notes")}
-              style={[s.card, { flexDirection: "row", alignItems: "center", gap: 16, padding: 18 }]}
+              style={[
+                s.card,
+                {
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 16,
+                  padding: 18,
+                },
+              ]}
             >
               <View style={{ width: 76, height: 68 }}>
                 <LearningActivityArt kind="notes" height={68} />
@@ -1093,7 +1184,9 @@ function Quasar() {
                 <Text style={s.h3}>Your notes</Text>
                 <Text style={s.small}>
                   {p.notes!.length} {p.notes!.length === 1 ? "deck" : "decks"}
-                  {noteDue ? ` · ${noteDue} ${noteDue === 1 ? "question" : "questions"} due` : " · nothing due"}
+                  {noteDue
+                    ? ` · ${noteDue} ${noteDue === 1 ? "question" : "questions"} due`
+                    : " · nothing due"}
                 </Text>
               </View>
               <Icon name="arrow" size={18} />
@@ -1104,7 +1197,13 @@ function Quasar() {
           <Reveal delay={120}>
             <View style={{ gap: 24 }}>
               <Text style={s.h2}>Vocabulary deck</Text>
-              <Card style={{ backgroundColor: "#EEF1F8", borderColor: "#AEBBD5", overflow: "hidden" }}>
+              <Card
+                style={{
+                  backgroundColor: "#EEF1F8",
+                  borderColor: "#AEBBD5",
+                  overflow: "hidden",
+                }}
+              >
                 <View style={{ height: 132, marginHorizontal: -6 }}>
                   <LearningActivityArt kind="recall" height={132} />
                 </View>
@@ -1175,42 +1274,42 @@ function Quasar() {
               </Pressable>
             </View>
             <Reveal key={f.id}>
-            <Card style={{ minHeight: 360, justifyContent: "center" }}>
-              <Text style={a.eyebrow}>RECALL BEFORE REVEALING</Text>
-              <Text style={[s.title, { textAlign: "center" }]}>{f.word}</Text>
-              <Text style={[s.body, { textAlign: "center" }]}>
-                What does it mean? Picture its memory cue.
-              </Text>
-              {flipped ? (
-                <>
-                  <FactImage fact={f} style={p.profile.style} />
-                  <Text style={s.h3}>{f.definition}</Text>
-                  <Text style={s.body}>
-                    {f.sceneId === "market"
-                      ? vocabularyCues[
-                          allFacts
-                            .filter((f) => f.sceneId === "market")
-                            .findIndex((item) => item.id === f.id)
-                        ].story
-                      : f.story}
-                  </Text>
-                  <View style={s.row}>
-                    <View style={{ flex: 1 }}>
-                      <Button secondary onPress={() => rateReview(false)}>
-                        Need another look
-                      </Button>
+              <Card style={{ minHeight: 360, justifyContent: "center" }}>
+                <Text style={a.eyebrow}>RECALL BEFORE REVEALING</Text>
+                <Text style={[s.title, { textAlign: "center" }]}>{f.word}</Text>
+                <Text style={[s.body, { textAlign: "center" }]}>
+                  What does it mean? Picture its memory cue.
+                </Text>
+                {flipped ? (
+                  <>
+                    <FactImage fact={f} style={p.profile.style} />
+                    <Text style={s.h3}>{f.definition}</Text>
+                    <Text style={s.body}>
+                      {f.sceneId === "market"
+                        ? vocabularyCues[
+                            allFacts
+                              .filter((f) => f.sceneId === "market")
+                              .findIndex((item) => item.id === f.id)
+                          ].story
+                        : f.story}
+                    </Text>
+                    <View style={s.row}>
+                      <View style={{ flex: 1 }}>
+                        <Button secondary onPress={() => rateReview(false)}>
+                          Need another look
+                        </Button>
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Button onPress={() => rateReview(true)}>Got it</Button>
+                      </View>
                     </View>
-                    <View style={{ flex: 1 }}>
-                      <Button onPress={() => rateReview(true)}>Got it</Button>
-                    </View>
-                  </View>
-                </>
-              ) : (
-                <Button onPress={() => setFlipped(true)}>
-                  Reveal the memory
-                </Button>
-              )}
-            </Card>
+                  </>
+                ) : (
+                  <Button onPress={() => setFlipped(true)}>
+                    Reveal the memory
+                  </Button>
+                )}
+              </Card>
             </Reveal>
             <Text style={s.small}>
               Be honest with yourself. “Need another look” brings this card back
@@ -1347,7 +1446,11 @@ function Quasar() {
             </Button>
             {confirmDelete ? (
               <View style={{ gap: 10 }}>
-                <Text style={[s.body, { color: C.red }]}>This permanently deletes your Quasar account and cloud learning data. Store subscriptions must still be cancelled through the App Store or Google Play.</Text>
+                <Text style={[s.body, { color: C.red }]}>
+                  This permanently deletes your Quasar account and cloud
+                  learning data. Store subscriptions must still be cancelled
+                  through the App Store or Google Play.
+                </Text>
                 <Button
                   disabled={busy}
                   onPress={async () => {
@@ -1355,14 +1458,19 @@ function Quasar() {
                     try {
                       const formerUserId = userId;
                       await deleteAccount();
-                      if (formerUserId) await AsyncStorage.removeItem(storageKey + "." + formerUserId);
+                      if (formerUserId)
+                        await AsyncStorage.removeItem(
+                          storageKey + "." + formerUserId,
+                        );
                       await identifyPurchases(null);
                       storageReady.current = true;
                       setP(initialProgress());
                       setConfirmDelete(false);
                       setOnboarding(0);
                       nav("home");
-                      setNotice("Your account and cloud learning data were deleted.");
+                      setNotice(
+                        "Your account and cloud learning data were deleted.",
+                      );
                     } catch (e) {
                       setNotice(message(e));
                     } finally {
@@ -1372,11 +1480,18 @@ function Quasar() {
                 >
                   Permanently delete account
                 </Button>
-                <Button secondary onPress={() => setConfirmDelete(false)}>Keep my account</Button>
+                <Button secondary onPress={() => setConfirmDelete(false)}>
+                  Keep my account
+                </Button>
               </View>
             ) : (
-              <Pressable accessibilityRole="button" onPress={() => setConfirmDelete(true)}>
-                <Text style={[s.link, { color: C.red, textAlign: "center" }]}>Delete account and cloud data</Text>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setConfirmDelete(true)}
+              >
+                <Text style={[s.link, { color: C.red, textAlign: "center" }]}>
+                  Delete account and cloud data
+                </Text>
               </Pressable>
             )}
           </>
@@ -1474,15 +1589,38 @@ function Quasar() {
         Quasar 1.0 · Original illustrations and educational content.
       </Text>
       <View style={[s.row, { justifyContent: "center", flexWrap: "wrap" }]}>
-        <Pressable accessibilityRole="link" onPress={() => Linking.openURL(process.env.EXPO_PUBLIC_PRIVACY_URL ?? "https://quasar-memory-garden.reyaattri4.chatgpt.site/privacy.html")}>
+        <Pressable
+          accessibilityRole="link"
+          onPress={() =>
+            Linking.openURL(
+              process.env.EXPO_PUBLIC_PRIVACY_URL ??
+                "https://quasar-memory-garden.reyaattri4.chatgpt.site/privacy.html",
+            )
+          }
+        >
           <Text style={s.link}>Privacy</Text>
         </Pressable>
         <Text style={s.small}>·</Text>
-        <Pressable accessibilityRole="link" onPress={() => Linking.openURL(process.env.EXPO_PUBLIC_TERMS_URL ?? "https://quasar-memory-garden.reyaattri4.chatgpt.site/terms.html")}>
+        <Pressable
+          accessibilityRole="link"
+          onPress={() =>
+            Linking.openURL(
+              process.env.EXPO_PUBLIC_TERMS_URL ??
+                "https://quasar-memory-garden.reyaattri4.chatgpt.site/terms.html",
+            )
+          }
+        >
           <Text style={s.link}>Terms</Text>
         </Pressable>
         <Text style={s.small}>·</Text>
-        <Pressable accessibilityRole="link" onPress={() => Linking.openURL("https://quasar-memory-garden.reyaattri4.chatgpt.site/support.html")}>
+        <Pressable
+          accessibilityRole="link"
+          onPress={() =>
+            Linking.openURL(
+              "https://quasar-memory-garden.reyaattri4.chatgpt.site/support.html",
+            )
+          }
+        >
           <Text style={s.link}>Support</Text>
         </Pressable>
       </View>
@@ -1493,7 +1631,9 @@ function Quasar() {
       <Reveal>
         <View
           style={{
-            backgroundColor: "#254633",
+            backgroundColor: "#203738",
+            borderColor: "#BC9659",
+            borderWidth: 1.5,
             borderRadius: 30,
             padding: 26,
             overflow: "hidden",
@@ -1512,33 +1652,7 @@ function Quasar() {
               backgroundColor: "rgba(242,203,108,0.09)",
             }}
           />
-          <View style={s.between}>
-            <Text
-              style={{
-                color: "#E3EBCF",
-                fontSize: 11,
-                letterSpacing: 2,
-                fontWeight: "700",
-              }}
-            >
-              QUASAR PLUS
-            </Text>
-            <Pulse>
-              <View
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 24,
-                  borderWidth: 1,
-                  borderColor: C.yellow,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Icon name="spark" size={22} color={C.yellow} />
-              </View>
-            </Pulse>
-          </View>
+          <PlusSignature />
           <Text
             style={{
               color: C.paper,
@@ -1547,7 +1661,9 @@ function Quasar() {
               lineHeight: 36,
             }}
           >
-            {pro ? "Your Plus membership\nis active." : "Make the story\nyours."}
+            {pro
+              ? "Your Plus membership\nis active."
+              : "Make the story\nyours."}
           </Text>
           <Text style={{ color: "#DBE6D6", fontSize: 15, lineHeight: 22 }}>
             {pro
@@ -1559,8 +1675,16 @@ function Quasar() {
       <Reveal delay={90}>
         <View style={[s.row, { flexWrap: "wrap" }]}>
           {[
-            ["spark", "Personalized stories", "Built around your interests, with optional pictures"],
-            ["smile", "AI tutor feedback", "On how you explain, not just which ideas"],
+            [
+              "spark",
+              "Personalized stories",
+              "Built around your interests, with optional pictures",
+            ],
+            [
+              "smile",
+              "AI tutor feedback",
+              "On how you explain, not just which ideas",
+            ],
             ["check", "Core content stays free", "Scenes, review and progress"],
           ].map(([icon, title, body]) => (
             <View key={title} style={{ flex: 1, minWidth: 150 }}>
@@ -1611,7 +1735,8 @@ function Quasar() {
         ) : packages.length ? (
           <View style={{ gap: 12 }}>
             {packages.map((pack) => {
-              const featured = pack.packageType === "ANNUAL" || packages.length === 1;
+              const featured =
+                pack.packageType === "ANNUAL" || packages.length === 1;
               return (
                 <Card
                   key={pack.identifier}
@@ -1621,7 +1746,9 @@ function Quasar() {
                       : undefined
                   }
                 >
-                  {pack.packageType === "ANNUAL" && packages.length > 1 && <Tag color={C.yellow}>BEST VALUE</Tag>}
+                  {pack.packageType === "ANNUAL" && packages.length > 1 && (
+                    <Tag color={C.yellow}>BEST VALUE</Tag>
+                  )}
                   <Text style={s.h3}>{pack.product.title}</Text>
                   <Text style={s.body}>{pack.product.description}</Text>
                   <Button
@@ -1633,7 +1760,8 @@ function Quasar() {
                     }
                     onPress={() => pay(pack)}
                   >
-                    {pack.product.priceString} · {pack.packageType.toLowerCase()}
+                    {pack.product.priceString} ·{" "}
+                    {pack.packageType.toLowerCase()}
                   </Button>
                 </Card>
               );
@@ -1646,7 +1774,11 @@ function Quasar() {
         )}
       </Reveal>
       {!webPurchases && (
-        <Button secondary disabled={busy || !purchaseReady} onPress={() => pay()}>
+        <Button
+          secondary
+          disabled={busy || !purchaseReady}
+          onPress={() => pay()}
+        >
           Restore purchases
         </Button>
       )}
@@ -1809,7 +1941,16 @@ function Quasar() {
                       </Text>
                     </Reveal>
                     <Reveal delay={650}>
-                      <View style={[s.row, { flexWrap: "wrap", gap: 10, justifyContent: "center" }]}>
+                      <View
+                        style={[
+                          s.row,
+                          {
+                            flexWrap: "wrap",
+                            gap: 10,
+                            justifyContent: "center",
+                          },
+                        ]}
+                      >
                         {(
                           [
                             ["SAT vocabulary", "book"],
@@ -1827,17 +1968,33 @@ function Quasar() {
                                 updateProfile(
                                   "subjects",
                                   active
-                                    ? p.profile.subjects.filter((x) => x !== sub)
+                                    ? p.profile.subjects.filter(
+                                        (x) => x !== sub,
+                                      )
                                     : [...p.profile.subjects, sub],
                                 )
                               }
                               style={[
                                 a.landingChip,
-                                active && { backgroundColor: VIOLET, borderColor: VIOLET },
+                                active && {
+                                  backgroundColor: VIOLET,
+                                  borderColor: VIOLET,
+                                },
                               ]}
                             >
-                              <Icon name={active ? "check" : icon} size={16} color={active ? C.white : VIOLET} />
-                              <Text style={[s.label, { color: active ? C.white : C.ink }]}>{sub}</Text>
+                              <Icon
+                                name={active ? "check" : icon}
+                                size={16}
+                                color={active ? C.white : VIOLET}
+                              />
+                              <Text
+                                style={[
+                                  s.label,
+                                  { color: active ? C.white : C.ink },
+                                ]}
+                              >
+                                {sub}
+                              </Text>
                             </PressableScale>
                           );
                         })}
@@ -1951,18 +2108,24 @@ function Quasar() {
                   mode={focus.mode}
                   onAttempt={logAttempt}
                   onDone={() => nav("review")}
-                  tutor={supabase && userId && pro ? gradeExplanation : undefined}
+                  tutor={
+                    supabase && userId && pro ? gradeExplanation : undefined
+                  }
                   onUpgrade={pro ? undefined : () => nav("paywall")}
                 />
               ) : page === "city" ? (
                 <CellCity
                   progress={p}
-                  onTop={() => scroll.current?.scrollTo({ y: 0, animated: false })}
+                  onTop={() =>
+                    scroll.current?.scrollTo({ y: 0, animated: false })
+                  }
                   onAttempt={logAttempt}
                   onComplete={(n) =>
                     setP((v) => ({
                       ...v,
-                      city: { done: [...new Set([...(v.city?.done ?? []), n])].sort() },
+                      city: {
+                        done: [...new Set([...(v.city?.done ?? []), n])].sort(),
+                      },
                     }))
                   }
                 />
@@ -1981,7 +2144,9 @@ function Quasar() {
                   progress={p}
                   focus={focus.conceptId}
                   onAttempt={logAttempt}
-                  onNext={(kind, m) => (kind === "teach" ? openTeach(undefined) : openWhy(m))}
+                  onNext={(kind, m) =>
+                    kind === "teach" ? openTeach(undefined) : openWhy(m)
+                  }
                 />
               ) : page === "why" ? (
                 <WhyLadder
@@ -1999,9 +2164,7 @@ function Quasar() {
                   cityDone={p.city?.done.length ?? 0}
                   onAttempt={logAttempt}
                   onNext={(kind, m) =>
-                    kind === "teach"
-                      ? openTeach(undefined)
-                      : openWhy(m)
+                    kind === "teach" ? openTeach(undefined) : openWhy(m)
                   }
                   recalled={p.medicalRecalled ?? []}
                   onRecall={(index, correct) =>
@@ -2117,10 +2280,7 @@ function Quasar() {
                           onPress={async () => {
                             setBusy(true);
                             try {
-                              const result = await personalizeStory(
-                                fact.id,
-                                p,
-                              );
+                              const result = await personalizeStory(fact.id, p);
                               setPersonalStory(result.story);
                               setPersonalImage(result.imageUrl);
                             } catch (e) {
