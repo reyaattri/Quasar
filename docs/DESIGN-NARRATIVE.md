@@ -10,10 +10,20 @@ Quasar is designed around one idea: **a memory needs somewhere to live, and a le
 
 ## Screens worth a closer look
 
-### 1. Landing: the worlds introduce themselves
-`src/components/WelcomeScene.tsx` · `docs/landing-worlds-mobile.png`
+### 1. Landing: a notebook that turns into a world
+`src/components/WelcomeScene.tsx` · `docs/landing-mobile.png`
 
-The first screen shows no feature list. The hero glides from world to world (a quiet dojo, ancient ruins, neon rooftops) while a caption and progress dots follow along. Each world fills the frame exactly, so the image never shows a seam. The heading follows immediately: *Learn it once. Remember it longer.* Subject chips have spring-scaled press feedback, and no account is needed to start.
+The first screen shows no feature list. A centered headline (*Learn it once. Remember it longer.*) sits above a single painting: a notebook whose pages grow into a path through the three memory worlds, past the app's first memory cues (an apple, a milk bottle on a chair, a loaf of bread waving from a window). The painting fades out at both ends through a transparency mask, so it floats on the dotted paper with no frame. Subject chips and a pixel-style button sit below it, and no account is needed to start.
+
+### Buttons that press like a game
+`src/components/ui.tsx`
+
+Every button has stepped pixel corners and a hard shadow it sinks into when pressed. They're drawn in SVG from the button's measured size, so the label stays native text that screen readers and tests can find.
+
+### Cell City: characters in their own styles
+`src/features/CellCity.tsx` · `docs/cell-city-mobile.png`, `docs/cell-city-scene-mobile.png`
+
+Each of the six characters is drawn in a different style, chosen to match their role: a hand-painted mayor, an ink-sketch archivist, pixel-art builders and courier, lo-fi neon for the power station and the city wall. Each has an idle, worried and happy pose, and after every answer the episode's host reacts in their own voice. An illustrated atlas lets you open each district of the city before its episode. The real biology is always stated before the city metaphor.
 
 ### 2. Today: a plan with its reasons shown
 `src/features/TodayPlan.tsx` · `docs/today-plan-mobile.png`

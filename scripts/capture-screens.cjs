@@ -14,8 +14,8 @@ const out = (name) => `docs/${name}.png`;
   await page.goto("http://localhost:8081");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await settle(4000);
-  await page.screenshot({ path: out("landing-worlds-mobile") });
+  await settle(5000);
+  await page.screenshot({ path: out("landing-mobile") });
 
   await page.evaluate((key) => {
     const p = JSON.parse(localStorage.getItem(key));
@@ -66,17 +66,35 @@ const out = (name) => `docs/${name}.png`;
 
   await button("Explore").click();
   await settle();
-  await page.getByRole("button", { name: /^Notes → Quiz/ }).click();
+  await page.getByRole("button", { name: /Notes (→|to) Quiz/ }).click();
   await settle();
   await page.getByLabel("Deck title").fill("Cells · week 3");
   await page.getByLabel("Your notes").fill(
     "Mitochondria: transfer energy from sugar into ATP\nRibosome: builds proteins by reading mRNA codons\nChloroplast: captures light energy to make sugar\nNucleus: stores DNA behind a double membrane\nHelicase: separates the two DNA strands",
   );
-  await button("Make a quick quiz").click();
+  await button("Study these notes").click();
+  await settle(2500);
+  await page.screenshot({ path: out("notes-study-mobile") });
+  await page.getByRole("button", { name: /^Skip to the quiz/ }).click();
   await settle();
   await page.locator('[role="button"]').filter({ hasText: /^(Mitochondria|Ribosome|Chloroplast|Nucleus|Helicase|transfer|builds|captures|stores|separates)/ }).first().click();
   await settle();
   await page.screenshot({ path: out("notes-quiz-mobile") });
+
+  await button("Explore").click();
+  await settle();
+  await button("Enter Cell City").click();
+  await settle(3000);
+  await page.screenshot({ path: out("cell-city-mobile") });
+  await page.getByRole("button", { name: /^Episode 1: Welcome to Cell City$/ }).click();
+  await settle();
+  await button("Enter the scene").click();
+  await settle();
+  await button("Continue").click();
+  await settle(2500);
+  await page.evaluate(() => document.querySelectorAll("div").forEach((d) => { if (d.scrollTop > 0) d.scrollTop = 0; }));
+  await settle(800);
+  await page.screenshot({ path: out("cell-city-scene-mobile") });
 
   await button("Explore").click();
   await settle();
