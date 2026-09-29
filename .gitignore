@@ -18,3 +18,4 @@ dist-android/
 .tmp-korean-video/
 .tmp-video-tools/
 .local-home/
+.npm-cache/
