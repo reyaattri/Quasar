@@ -14,7 +14,10 @@ export async function requireUser(req: Request, db: SupabaseClient) {
 }
 
 // Entitlement comes from RevenueCat on the server; a client-supplied flag is never trusted.
+// AI_OPEN_ACCESS is a temporary launch-window secret: set it to "true" to let every signed-in
+// user use AI features without a RevenueCat subscription. Unset it (or set "false") to require one.
 export async function requirePlus(userId: string) {
+  if (Deno.env.get("AI_OPEN_ACCESS") === "true") return;
   const res = await fetch(
     "https://api.revenuecat.com/v1/subscribers/" + encodeURIComponent(userId),
     {

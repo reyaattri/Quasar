@@ -55,10 +55,14 @@ const anon = await ask("Supabase anon (public) key: ", {
   secret: true,
   check: (v) => (v.length > 30 ? "" : "That looks too short for a Supabase key."),
 });
-const rcWeb = await ask("RevenueCat Web Billing public API key (rcb_…): ", {
-  secret: true,
-  check: (v) => (v.startsWith("rcb_") ? "" : "Web Billing public keys start with rcb_ (sandbox keys with rcb_sb_)."),
-});
+const rcWeb = await ask(
+  "RevenueCat Web Billing public API key (rcb_…, optional — Enter to skip and add it later): ",
+  {
+    secret: true,
+    optional: true,
+    check: (v) => (v.startsWith("rcb_") ? "" : "Web Billing public keys start with rcb_ (sandbox keys with rcb_sb_)."),
+  },
+);
 
 const base = existsSync(".env") ? readFileSync(".env", "utf8") : readFileSync(".env.example", "utf8");
 const values = {
@@ -80,15 +84,28 @@ if (serverNow) {
     secret: true,
     check: (v) => (v.startsWith("sk-ant-") ? "" : "Anthropic keys start with sk-ant-."),
   });
-  const rcSecret = await ask("RevenueCat secret API key (sk_…): ", {
-    secret: true,
-    check: (v) => (v.startsWith("sk_") ? "" : "RevenueCat secret keys start with sk_."),
-  });
+  const openAccess = (
+    await ask(
+      "Skip the RevenueCat subscription check for now, so every signed-in user can use AI? (y/n): ",
+    )
+  )
+    .toLowerCase()
+    .startsWith("y");
+  const rcSecret = openAccess
+    ? ""
+    : await ask("RevenueCat secret API key (sk_…): ", {
+        secret: true,
+        check: (v) => (v.startsWith("sk_") ? "" : "RevenueCat secret keys start with sk_."),
+      });
   const replicate = await ask("Replicate token for story pictures (optional, Enter to skip): ", { secret: true, optional: true });
   const file = "supabase/.env.secrets.local";
   writeFileSync(
     file,
-    [`ANTHROPIC_API_KEY=${anthropic}`, `REVENUECAT_SECRET_KEY=${rcSecret}`, replicate && `REPLICATE_API_TOKEN=${replicate}`]
+    [
+      `ANTHROPIC_API_KEY=${anthropic}`,
+      openAccess ? `AI_OPEN_ACCESS=true` : `REVENUECAT_SECRET_KEY=${rcSecret}`,
+      replicate && `REPLICATE_API_TOKEN=${replicate}`,
+    ]
       .filter(Boolean)
       .join("\n") + "\n",
   );

@@ -206,6 +206,9 @@ function Quasar() {
   const [accountEmail, setAccountEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [pro, setPro] = useState(false);
+  // Open access for the Shipaton launch window: every Plus tool unlocks without a purchase.
+  // Flip to `pro` once real subscriptions should gate access again.
+  const isPlus = true;
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -396,7 +399,7 @@ function Quasar() {
     onAngle: (id, angle) =>
       setP((v) => ({ ...v, cues: { ...v.cues, [id]: angle } })),
     onNewHook:
-      supabase && userId && pro
+      isPlus
         ? async (e) => {
             const at = parseConcept(e.conceptId);
             if (!at || at.isCase) return;
@@ -425,7 +428,7 @@ function Quasar() {
             }));
           }
         : undefined,
-    onUpgrade: pro ? undefined : () => nav("paywall"),
+    onUpgrade: isPlus ? undefined : () => nav("paywall"),
   };
   const openScene = (id: string) => {
     if (id === "market") {
@@ -1661,7 +1664,7 @@ function Quasar() {
                 fontWeight: "700",
               }}
             >
-              QUASAR PLUS
+              QUASAR PLUS · OPEN ACCESS
             </Text>
             <Pulse>
               <View
@@ -1687,43 +1690,36 @@ function Quasar() {
               lineHeight: 36,
             }}
           >
-            {pro
-              ? "Your Plus membership\nis active."
-              : "Make the story\nyours."}
+            Make the story{"\n"}yours.
           </Text>
           <Text style={{ color: "#DBE6D6", fontSize: 15, lineHeight: 22 }}>
-            {pro
-              ? "Thank you for supporting Quasar. Personalized stories are unlocked."
-              : "Support Quasar and unlock personalized mnemonic stories and an AI tutor that reads your explanations."}
+            All Plus tools are free for now. No subscription needed.
           </Text>
         </View>
       </Reveal>
       <Reveal delay={90}>
-        <View style={[s.row, { flexWrap: "wrap" }]}>
-          {[
-            [
-              "spark",
-              "Personalized stories",
-              "Built around your interests, with optional pictures",
-            ],
-            [
-              "smile",
-              "AI tutor feedback",
-              "On how you explain, not just which ideas",
-            ],
-            ["check", "Core content stays free", "Scenes, review and progress"],
-          ].map(([icon, title, body]) => (
-            <View key={title} style={{ flex: 1, minWidth: 150 }}>
-              <Card style={{ gap: 8, padding: 16 }}>
-                <Icon name={icon} size={20} />
-                <Text style={[s.label, { fontSize: 13 }]}>{title}</Text>
-                <Text style={[s.small, { fontSize: 11, lineHeight: 15 }]}>
-                  {body}
-                </Text>
-              </Card>
-            </View>
-          ))}
-        </View>
+        <Card style={{ gap: 14, padding: 22 }}>
+          <Text style={s.h2}>A little help that goes further</Text>
+          <Text style={s.body}>
+            Personalize a story with your interests, get guidance on an
+            explanation, turn notes into questions, or try a new memory hook.
+          </Text>
+          <Text style={s.small}>
+            On-device tools and browser PDF quizzes work without an account.
+            Cloud AI needs a connected service and sign-in.
+          </Text>
+          <View style={{ gap: 10, marginTop: 4 }}>
+            <Button icon="arrow" onPress={() => nav("teach")}>
+              Try tutor guidance
+            </Button>
+            <Button secondary icon="arrow" onPress={() => nav("notes")}>
+              Turn notes into a quiz
+            </Button>
+            <Button secondary icon="arrow" onPress={() => nav("review")}>
+              Write a new memory hook
+            </Button>
+          </View>
+        </Card>
       </Reveal>
       <Reveal delay={160}>
         {!purchaseReady ? (
@@ -1739,10 +1735,11 @@ function Quasar() {
             }}
           >
             <Icon name="clock" size={22} />
-            <Text style={s.h3}>Purchases open once Plus is connected.</Text>
+            <Text style={s.h3}>Store pricing lands with the app release.</Text>
             <Text style={s.body}>
-              Keep exploring the complete learning demo. This screen will show
-              real pricing the moment Quasar is connected to the app store.
+              Plus tools stay unlocked for everyone during the open-access
+              window. This card will show real store pricing once Quasar is
+              connected to the app store.
             </Text>
           </View>
         ) : webPurchases && !userId ? (
@@ -2134,10 +2131,8 @@ function Quasar() {
                   mode={focus.mode}
                   onAttempt={logAttempt}
                   onDone={() => nav("review")}
-                  tutor={
-                    supabase && userId && pro ? gradeExplanation : undefined
-                  }
-                  onUpgrade={pro ? undefined : () => nav("paywall")}
+                  tutor={isPlus ? gradeExplanation : undefined}
+                  onUpgrade={isPlus ? undefined : () => nav("paywall")}
                 />
               ) : page === "city" ? (
                 <CellCity
@@ -2161,8 +2156,8 @@ function Quasar() {
                   onSave={saveDeck}
                   onDelete={deleteDeck}
                   onAttempt={logAttempt}
-                  aiQuiz={supabase && userId && pro ? generateQuiz : undefined}
-                  onUpgrade={pro ? undefined : () => nav("paywall")}
+                  aiQuiz={isPlus ? generateQuiz : undefined}
+                  onUpgrade={isPlus ? undefined : () => nav("paywall")}
                 />
               ) : page === "cases" ? (
                 <CaseLab
@@ -2299,7 +2294,7 @@ function Quasar() {
                       <Button icon="arrow" onPress={() => setQuiz(true)}>
                         Try recalling it
                       </Button>
-                      {pro && (
+                      {isPlus && (
                         <Button
                           secondary
                           disabled={busy}

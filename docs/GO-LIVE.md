@@ -9,6 +9,8 @@ No real money moves.
 
 You create the accounts and paste the keys yourself; nobody else should see them. Keys go into `npm run setup:live`, which hides them as you type.
 
+**Short on time? Skip straight to a working AI.** Quasar Plus is open access right now — every Plus tool is unlocked in the app without a purchase. To make the AI calls themselves real, you only need steps 1 and 2 below (Supabase + Anthropic), then `npm run setup:live`, answering **yes** when it asks to skip the RevenueCat check. That sets the `AI_OPEN_ACCESS` server secret, so the tutor, AI quizzes, personalized stories and new memory hooks all call Claude for real without Stripe or RevenueCat configured. Come back to steps 3–4 later to wire up a real subscription purchase for the app-store release.
+
 ## 1. Supabase (you already have an account)
 
 1. Create a project (or use an existing one). Note the **Project URL** and the **anon public key** under *Project Settings → API*.
