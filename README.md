@@ -4,7 +4,7 @@
 
 Quasar is a visual memory-learning app that gives every hard idea a place to live: a room, a character, a strange little story you can walk back through. It doesn't stop at showing you the idea once. It asks you to recall it without help, explain it in your own words, and then use it on a problem you haven't seen before. That's the whole loop, repeated across every subject in the app.
 
-It's built with Expo and React Native, so the same codebase runs on iOS, Android and the web. The source is public here under the MIT license, and this is my entry for the RevenueCat Shipaton 2026 Next Gen Award. You can try it right now in the browser at quasar-memory-garden.reyaattri4.chatgpt.site, no account needed.
+It's built with Expo and React Native, so the same codebase runs on iOS, Android and the web. The source is public here under the MIT license, and this is my entry for the RevenueCat Shipaton 2026 Next Gen Award. You can try it right now in the browser at reyaattri.github.io/Quasar, no account needed.
 
 <p>
   <img src="docs/landing-mobile.png" width="24%" alt="The landing screen: a notebook whose pages grow into a path through three memory worlds">
