@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node scripts/test.cjs",
     "export:web": "expo export --platform web",
+    "export:gh-pages": "expo export --platform web && node scripts/rewrite-base-path.cjs",
     "seed:sql": "node scripts/seed.cjs",
     "test:e2e": "playwright test",
     "setup:live": "node scripts/setup-live.mjs"
