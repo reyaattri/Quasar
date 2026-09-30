@@ -1,6 +1,6 @@
 # Quasar handoff
 
-This repository is the complete Expo/React Native source for Quasar. Start with `README.md`, then `App.tsx`, `src/features/`, and `src/data/`. The intended web preview is https://quasar-memory-garden.reyaattri4.chatgpt.site/, deployed through the OpenAI Sites project below; it can go stale if that redeploy step is skipped. A working mirror, rebuilt directly from this repository, is kept live on the `gh-pages` branch at https://reyaattri.github.io/Quasar/. The same source builds the mobile app; `android/`, `ios/`, `dist/`, and `node_modules/` are generated and intentionally excluded from Git.
+This repository is the complete Expo/React Native source for Quasar. Start with `README.md`, then `App.tsx`, `src/features/`, and `src/data/`. The public web preview is https://reyaattri.github.io/Quasar/, built straight from this repository and deployed to the `gh-pages` branch (see "Deployment" below). The same source builds the mobile app; `android/`, `ios/`, `dist/`, and `node_modules/` are generated and intentionally excluded from Git.
 
 ## Product intent
 
@@ -28,7 +28,7 @@ Use Node 22+ and `npm ci`. `npm run web` serves the browser app; `npm start` sta
 
 ## Deployment and accounts
 
-`.openai/hosting.json` identifies the existing OpenAI Sites project; preserve its `project_id`. Build with `npm run export:web` and deploy that exact committed source through that Sites dashboard; Claude Code has no credential for it and cannot trigger that redeploy itself. The GitHub Pages mirror doesn't have that limitation: `npm run export:gh-pages` (export, then `scripts/rewrite-base-path.cjs` to fix root-absolute asset paths for the `/Quasar/` subpath) produces a `dist/` that can be pushed straight to the `gh-pages` branch. Neither URL is an Android/iOS store release. `origin` points to `https://github.com/reyaattri/Quasar.git`; push authenticated commits there. GitHub, Supabase, RevenueCat, Expo/EAS, and app-store accounts are separate. Public app access does not configure paid features or account backups. See `docs/RELEASE-CHECKLIST.md` for those remaining steps.
+`npm run export:gh-pages` (export, then `scripts/rewrite-base-path.cjs` to fix the root-absolute asset paths Expo's web export bakes in for the `/Quasar/` subpath) produces the `dist/` that gets pushed straight to the `gh-pages` branch: build it, copy it into a worktree checked out on `gh-pages`, commit, push. This is not an Android/iOS store release. `origin` points to `https://github.com/reyaattri/Quasar.git`; push authenticated commits there. GitHub, Supabase, RevenueCat, Expo/EAS, and app-store accounts are separate. Public app access does not configure paid features or account backups. See `docs/RELEASE-CHECKLIST.md` for those remaining steps.
 
 ## Working safely
 
