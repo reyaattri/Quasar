@@ -148,6 +148,14 @@ const tabs = [
   ["progress", "chart", "Ready"],
 ] as const;
 
+// The same bundled, hashed asset Metro already serves correctly wherever the app is
+// deployed, including from a non-root path like a GitHub Pages project site.
+const spaceGroteskFont = require("./assets/fonts/SpaceGrotesk.ttf");
+const spaceGroteskFontUrl =
+  typeof spaceGroteskFont === "string"
+    ? spaceGroteskFont
+    : (spaceGroteskFont?.uri ?? spaceGroteskFont?.default ?? "/fonts/SpaceGrotesk.ttf");
+
 if (Platform.OS === "web" && typeof document !== "undefined") {
   const id = "quasar-font-face";
   if (!document.getElementById(id)) {
@@ -156,7 +164,7 @@ if (Platform.OS === "web" && typeof document !== "undefined") {
     style.textContent = `
       @font-face {
         font-family: "QuasarGrotesk";
-        src: url("/fonts/SpaceGrotesk.ttf") format("truetype");
+        src: url("${spaceGroteskFontUrl}") format("truetype");
         font-style: normal;
         font-weight: 300 700;
         font-display: block;
@@ -169,7 +177,7 @@ if (Platform.OS === "web" && typeof document !== "undefined") {
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
-    QuasarGrotesk: require("./assets/fonts/SpaceGrotesk.ttf"),
+    QuasarGrotesk: spaceGroteskFont,
   });
   if (!fontsLoaded && !fontError)
     return <ActivityIndicator accessibilityLabel="Loading Quasar" />;
