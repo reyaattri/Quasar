@@ -170,6 +170,13 @@ if (Platform.OS === "web" && typeof document !== "undefined") {
         font-display: block;
       }
       html, body, #root { font-family: "QuasarGrotesk", sans-serif; }
+      body { background: #2b2b27; }
+      #root {
+        max-width: 480px;
+        min-height: 100vh;
+        margin: 0 auto;
+        box-shadow: 0 0 60px rgba(0,0,0,0.35);
+      }
     `;
     document.head.appendChild(style);
   }
@@ -189,7 +196,9 @@ export default function App() {
 }
 function Quasar() {
   const { width } = useWindowDimensions();
-  const wide = width >= 900;
+  // The web build always presents as a fixed-ratio phone frame, never the desktop
+  // sidebar layout, regardless of how wide the browser window actually is.
+  const wide = Platform.OS === "web" ? false : width >= 900;
   const [p, setP] = useState<Progress>(initialProgress);
   const [loaded, setLoaded] = useState(false);
   const [page, setPage] = useState<Page>("home");
