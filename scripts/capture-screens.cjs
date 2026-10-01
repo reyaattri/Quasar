@@ -1,0 +1,118 @@
+// Captures phone-sized README screenshots of the learning loop.
+// Run with Metro serving the web build on port 8081: node scripts/capture-screens.cjs
+const { chromium } = require("@playwright/test");
+
+const KEY = "quasar.progress.v1";
+const out = (name) => `docs/${name}.png`;
+
+(async () => {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  const settle = (ms = 1800) => page.waitForTimeout(ms);
+  const button = (name) => page.getByRole("button", { name, exact: true });
+
+  await page.goto("http://localhost:8081");
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await settle(5000);
+  await page.screenshot({ path: out("landing-mobile") });
+
+  await page.evaluate((key) => {
+    const p = JSON.parse(localStorage.getItem(key));
+    const t = Date.now() - 3600_000;
+    const at = (s) => new Date(t + s * 1000).toISOString();
+    p.onboarded = true;
+    p.profile.name = "Reya";
+    p.attempts = [];
+    for (let c = 0; c < 6; c++)
+      p.attempts.push({ conceptId: "bio-0-" + c, mode: "recall", correct: c !== 5, hinted: false, at: at(c),
+        ...(c === 5 ? { chose: "To manufacture sunlight", truth: "To transfer usable energy into ATP" } : {}) });
+    p.attempts.push({ conceptId: "bio-0-5", mode: "why", correct: false, hinted: false, rung: 2, at: at(10),
+      chose: "It is converted directly into ATP", truth: "It is the final electron acceptor at the end of the electron transport chain" });
+    p.attempts.push({ conceptId: "bio-case-0", mode: "case", correct: true, hinted: false, at: at(12) });
+    p.attempts.push({ conceptId: "bio-0-2", mode: "teach", correct: true, hinted: false, at: at(13) });
+    p.attempts.push({ conceptId: "bio-0-2", mode: "recall", correct: true, hinted: false, at: new Date(t - 86_400_000 * 2).toISOString() });
+    p.attempts.push({ conceptId: "bio-0-0", mode: "why", correct: true, hinted: false, rung: 0, at: at(14) });
+    p.exam = { label: "Biology exam", date: new Date(Date.now() + 12 * 86_400_000).toISOString() };
+    localStorage.setItem(key, JSON.stringify(p));
+  }, KEY);
+  await page.reload();
+  await settle(3500);
+  await button("Review").click();
+  await settle(2500);
+  await page.screenshot({ path: out("today-plan-mobile") });
+
+  const center = (text) =>
+    page.getByText(text, { exact: false }).first().evaluate((el) => el.scrollIntoView({ block: "center" }));
+  await center("YOU KEEP CHOOSING");
+  await settle();
+  await page.screenshot({ path: out("error-memory-mobile") });
+
+  await button("Explain it back").first().click();
+  await settle();
+  await page.getByLabel("Your explanation").fill("Respiration moves energy from sugar into ATP, which the cell then uses for work.");
+  await button("Check my explanation").click();
+  await settle();
+  await center("KEY IDEAS FOUND");
+  await settle();
+  await page.screenshot({ path: out("teach-back-mobile") });
+
+  await button("Ready").click();
+  await settle(2500);
+  await page.screenshot({ path: out("ready-mobile") });
+  await center("MEMORY GARDEN");
+  await settle(2200);
+  await page.screenshot({ path: out("memory-garden-mobile") });
+
+  await button("Explore").click();
+  await settle();
+  await page.getByRole("button", { name: /Notes (→|to) Quiz/ }).click();
+  await settle();
+  await page.getByLabel("Deck title").fill("Cells · week 3");
+  await page.getByLabel("Your notes").fill(
+    "Mitochondria: transfer energy from sugar into ATP\nRibosome: builds proteins by reading mRNA codons\nChloroplast: captures light energy to make sugar\nNucleus: stores DNA behind a double membrane\nHelicase: separates the two DNA strands",
+  );
+  await button("Study these notes").click();
+  await settle(2500);
+  await page.screenshot({ path: out("notes-study-mobile") });
+  await page.getByRole("button", { name: /^Skip to the quiz/ }).click();
+  await settle();
+  await page.locator('[role="button"]').filter({ hasText: /^(Mitochondria|Ribosome|Chloroplast|Nucleus|Helicase|transfer|builds|captures|stores|separates)/ }).first().click();
+  await settle();
+  await page.screenshot({ path: out("notes-quiz-mobile") });
+
+  await button("Explore").click();
+  await settle();
+  await button("Enter Cell City").click();
+  await settle(3000);
+  await page.screenshot({ path: out("cell-city-mobile") });
+  await page.getByRole("button", { name: /^Episode 1: Welcome to Cell City$/ }).click();
+  await settle();
+  await button("Enter the scene").click();
+  await settle();
+  await button("Continue").click();
+  await settle(2500);
+  await page.evaluate(() => document.querySelectorAll("div").forEach((d) => { if (d.scrollTop > 0) d.scrollTop = 0; }));
+  await settle(800);
+  await page.screenshot({ path: out("cell-city-scene-mobile") });
+
+  await button("Explore").click();
+  await settle();
+  await button("Open Korean practice").click();
+  await settle();
+  await page.getByRole("button", { name: /^Open the Hangul Lab/ }).click();
+  await settle();
+  await button("Build a block").click();
+  await page.getByRole("button", { name: "ㅎ", exact: true }).first().click();
+  await page.getByRole("button", { name: "ㅏ", exact: true }).click();
+  await page.getByRole("button", { name: "ㄴ", exact: true }).last().click();
+  await center("HOW IT STACKS");
+  await page.mouse.wheel(0, -220);
+  await settle();
+  await page.screenshot({ path: out("hangul-lab-mobile") });
+
+  await browser.close();
+})().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

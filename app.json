@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Quasar",
+    "slug": "quasar",
+    "scheme": "quasar",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.reyaattri.quasar"
+    },
+    "android": {
+      "package": "com.reyaattri.quasar",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#FBF8EF"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "name": "Quasar",
+      "description": "Little stories. Lasting memories.",
+      "favicon": "./assets/icon.png"
+    },
+    "plugins": [
+      "expo-dev-client",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow Quasar to record your practice phrase so you can listen back.",
+          "enableBackgroundRecording": false
+        }
+      ]
+    ],
+    "icon": "./assets/icon.png"
+  }
+}

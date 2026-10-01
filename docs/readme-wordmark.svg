@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="160" viewBox="0 0 900 160" role="img" aria-label="quasar — little stories, lasting memories">
+  <rect width="900" height="160" rx="26" fill="#FBF8EF"/>
+  <path d="M66 74C70 49 93 35 117 39M117 116C92 119 70 105 66 89" fill="none" stroke="#294D3B" stroke-width="7" stroke-linecap="round"/>
+  <path d="M91 47C96 67 104 73 128 80C104 87 96 94 91 113C86 94 78 87 54 80C78 73 86 67 91 47Z" fill="#F2CB6C" stroke="#294D3B" stroke-width="3"/>
+  <defs>
+    <clipPath id="reveal"><rect x="157" y="17" width="0" height="119"><animate attributeName="width" from="0" to="600" dur="1.5s" fill="freeze"/></rect></clipPath>
+  </defs>
+  <g clip-path="url(#reveal)">
+    <text x="158" y="91" fill="#294D3B" font-family="Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="-5">quasar</text>
+    <text x="162" y="128" fill="#596355" font-family="Arial, sans-serif" font-size="18" letter-spacing="2">LITTLE STORIES. LASTING MEMORIES.</text>
+  </g>
+</svg>

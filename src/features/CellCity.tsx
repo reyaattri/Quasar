@@ -1,0 +1,1149 @@
+import { CellCityMap } from "./CellCityMap";
+import React, { useEffect, useState } from "react";
+import { Image, Pressable, TextInput, View } from "react-native";
+import { Button, C, Card, Icon, s, Tag, Text } from "../components/ui";
+import {
+  Confetti,
+  Feedback,
+  Meter,
+  PressableScale,
+  Reveal,
+} from "../components/Reveal";
+import {
+  CityCharacter,
+  CityCrowd,
+  type Mood,
+} from "../components/CityCharacter";
+import { sceneLabels, sceneStills } from "../data/cellCityScenes";
+import {
+  cellCity,
+  characters,
+  cityQuestions,
+  cueLevel,
+  explainCovered,
+  hostOf,
+  type CharacterId,
+  type CityQuestion,
+  type CueLevel,
+  type Episode,
+  type Reading,
+  type Rebuild,
+} from "../data/cellCity";
+import { dueIds, type Attempt, type Progress } from "../lib/progress";
+
+type Log = (a: Omit<Attempt, "at">) => void;
+
+const NIGHT = "#E5EFF5";
+const LAMP = "#F2CB6C";
+function shuffled<T>(items: T[]) {
+  const a = [...items];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+export function CellCity({
+  progress,
+  onAttempt,
+  onComplete,
+  onTop,
+}: {
+  progress: Progress;
+  onAttempt: Log;
+  onComplete: (episode: number) => void;
+  onTop?: () => void;
+}) {
+  const done = progress.city?.done ?? [];
+  const [open, setOpen] = useState<number | "revisit" | null>(null);
+  useEffect(() => onTop?.(), [open]);
+  const due = dueIds(progress).filter((id) => /^city-e\d-q\d$/.test(id));
+
+  if (open === "revisit")
+    return (
+      <Revisit
+        ids={due}
+        progress={progress}
+        onAttempt={onAttempt}
+        onDone={() => setOpen(null)}
+      />
+    );
+  if (typeof open === "number")
+    return (
+      <EpisodeRun
+        key={open}
+        episode={cellCity[open]}
+        progress={progress}
+        onAttempt={onAttempt}
+        onFinish={() => onComplete(cellCity[open].n)}
+        onNext={
+          open < cellCity.length - 1 ? () => setOpen(open + 1) : undefined
+        }
+        onExit={() => setOpen(null)}
+        onTop={onTop}
+      />
+    );
+
+  const lit = done.length;
+  const next = cellCity.findIndex((e) => !done.includes(e.n));
+  return (
+    <View style={{ gap: 22 }}>
+      <Reveal>
+        <View style={{ gap: 9 }}>
+          <Tag color={LAMP}>MEMORY WORLD · CELL CITY</Tag>
+          <Text accessibilityRole="header" style={s.title}>
+            The Secrets of Cell City
+          </Text>
+          <Text style={s.body}>
+            A power shortage is spreading through a living city. Investigate
+            glycolysis, the citric acid cycle and oxidative phosphorylation to
+            find out where the energy supply broke down.
+          </Text>
+        </View>
+      </Reveal>
+
+      <CellCityMap done={done} onEnter={setOpen} />
+
+      {due.length > 0 && (
+        <Reveal delay={120}>
+          <PressableScale
+            accessibilityRole="button"
+            accessibilityLabel={`Revisit ${due.length} Cell City clues`}
+            onPress={() => setOpen("revisit")}
+            style={[
+              s.card,
+              {
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 14,
+                backgroundColor: "#F4E6B8",
+                borderColor: "#E6D49A",
+              },
+            ]}
+          >
+            <Icon name="clock" size={24} />
+            <View style={{ flex: 1 }}>
+              <Text style={s.h3}>
+                {due.length === 1
+                  ? "1 clue to revisit"
+                  : `${due.length} clues to revisit`}
+              </Text>
+              <Text style={s.small}>
+                Spaced so they come back just as they start to fade.
+              </Text>
+            </View>
+            <Icon name="arrow" size={20} />
+          </PressableScale>
+        </Reveal>
+      )}
+
+      <View style={{ gap: 12 }}>
+        <Text style={s.label}>THE EPISODES</Text>
+        {cellCity.map((e, i) => {
+          const complete = done.includes(e.n);
+          const unlocked =
+            i === 0 || done.includes(cellCity[i - 1].n) || complete;
+          return (
+            <Reveal key={e.n} delay={140 + i * 50}>
+              <PressableScale
+                accessibilityRole="button"
+                accessibilityLabel={`Episode ${e.n}: ${e.title}${unlocked ? "" : ", locked"}`}
+                accessibilityState={{ disabled: !unlocked }}
+                disabled={!unlocked}
+                onPress={() => setOpen(i)}
+                style={[
+                  s.card,
+                  {
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 14,
+                    opacity: unlocked ? 1 : 0.55,
+                    borderColor: i === next ? C.ink : C.line,
+                    borderWidth: i === next ? 1.5 : 1,
+                  },
+                ]}
+              >
+                <View
+                  style={{
+                    width: 46,
+                    height: 46,
+                    borderRadius: 23,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: complete
+                      ? LAMP
+                      : unlocked
+                        ? C.sage
+                        : C.line,
+                  }}
+                >
+                  {complete ? (
+                    <Icon name="check" size={22} />
+                  ) : unlocked ? (
+                    <Text style={s.h3}>{e.n}</Text>
+                  ) : (
+                    <Icon name="lock" size={18} color={C.muted} />
+                  )}
+                </View>
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text style={s.h3}>{e.title}</Text>
+                  <Text style={s.small}>
+                    {e.topic}
+                    {unlocked ? "" : ` · finish episode ${e.n - 1} first`}
+                  </Text>
+                </View>
+                {unlocked && <Icon name="arrow" size={18} />}
+              </PressableScale>
+            </Reveal>
+          );
+        })}
+      </View>
+
+      <Reveal delay={200}>
+        <View style={[s.paper, { gap: 12 }]}>
+          <Text style={s.label}>WHO'S WHO IN CELL CITY</Text>
+          {Object.values(characters).map((c) => (
+            <View key={c.id} style={[s.row, { alignItems: "flex-start" }]}>
+              <Badge id={c.id} />
+              <View style={{ flex: 1 }}>
+                <Text style={[s.body, { color: C.ink, fontWeight: "700" }]}>
+                  {c.name}
+                </Text>
+                <Text style={s.small}>{c.real}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </Reveal>
+    </View>
+  );
+}
+
+function Badge({ id, size = 64 }: { id: CharacterId; size?: number }) {
+  const c = characters[id];
+  // A round portrait: the character's picture, scaled up and pinned to the head and shoulders.
+  const big = size - 8;
+  return (
+    <View
+      accessibilityLabel={c.name}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: c.color,
+        borderWidth: 1.5,
+        borderColor: C.ink,
+        overflow: "hidden",
+      }}
+    >
+      <View style={{ margin: 3 }}>
+        <CityCharacter id={id} size={big} still />
+      </View>
+    </View>
+  );
+}
+
+function EpisodeArt({ n }: { n: number }) {
+  const height = 280;
+  return (
+    <View
+      accessibilityLabel={sceneLabels[n]}
+      style={{
+        borderRadius: 22,
+        overflow: "hidden",
+        backgroundColor: NIGHT,
+        height,
+      }}
+    >
+      <Image
+        source={sceneStills[n]}
+        resizeMode="cover"
+        style={{ width: "100%", height }}
+      />
+    </View>
+  );
+}
+
+type Phase = "brief" | "scene" | "rebuild" | "clues" | "explain" | "done";
+const phaseNames: Record<Phase, string> = {
+  brief: "THE REAL BIOLOGY",
+  scene: "THE SCENE",
+  rebuild: "REBUILD IT",
+  clues: "THE CLUES",
+  explain: "EXPLAIN IT",
+  done: "EPISODE COMPLETE",
+};
+
+function EpisodeRun({
+  episode,
+  progress,
+  onAttempt,
+  onFinish,
+  onNext,
+  onExit,
+  onTop,
+}: {
+  episode: Episode;
+  progress: Progress;
+  onAttempt: Log;
+  onFinish: () => void;
+  onNext?: () => void;
+  onExit: () => void;
+  onTop?: () => void;
+}) {
+  const [phase, setPhase] = useState<Phase>("brief");
+  const [beat, setBeat] = useState(0);
+  const [clue, setClue] = useState(0);
+  const [right, setRight] = useState(0);
+  useEffect(() => onTop?.(), [phase, clue]);
+  const phases: Phase[] = [
+    "brief",
+    "scene",
+    "rebuild",
+    "clues",
+    ...(episode.explain ? (["explain"] as Phase[]) : []),
+    "done",
+  ];
+  const finish = () => {
+    onFinish();
+    setPhase("done");
+  };
+  const afterClues = () => (episode.explain ? setPhase("explain") : finish());
+
+  return (
+    <View style={{ gap: 18 }}>
+      <View style={s.between}>
+        <Tag color={LAMP}>
+          EPISODE {episode.n} · {phaseNames[phase]}
+        </Tag>
+        <Pressable accessibilityRole="button" onPress={onExit}>
+          <Text style={s.link}>Back to the city</Text>
+        </Pressable>
+      </View>
+      <View
+        style={[s.row, { gap: 6 }]}
+        accessibilityLabel={`Step ${phases.indexOf(phase) + 1} of ${phases.length}`}
+      >
+        {phases.map((p, i) => (
+          <View
+            key={p}
+            style={{
+              flex: 1,
+              height: 5,
+              borderRadius: 3,
+              backgroundColor: i <= phases.indexOf(phase) ? C.green : C.line,
+            }}
+          />
+        ))}
+      </View>
+
+      {phase === "brief" && (
+        <>
+          <Reveal>
+            <View style={{ gap: 6 }}>
+              <Text accessibilityRole="header" style={s.title}>
+                {episode.title}
+              </Text>
+              <Text style={s.small}>
+                {episode.topic} · {episode.place}
+              </Text>
+            </View>
+          </Reveal>
+          <Reveal delay={60}>
+            <View style={[s.paper, { gap: 12 }]}>
+              <Text style={s.label}>FIRST, WHAT'S REALLY HAPPENING</Text>
+              {episode.science.map((p, i) => (
+                <View key={i} style={[s.row, { alignItems: "flex-start" }]}>
+                  <Text style={[s.body, { color: C.green }]}>•</Text>
+                  <Text style={[s.body, { color: C.ink, flex: 1 }]}>{p}</Text>
+                </View>
+              ))}
+            </View>
+          </Reveal>
+          {episode.mapping.length > 0 && (
+            <Reveal delay={120}>
+              <View
+                style={{
+                  backgroundColor: NIGHT,
+                  borderRadius: 24,
+                  padding: 18,
+                  gap: 10,
+                }}
+              >
+                <Text style={[s.label, { color: "#46677D" }]}>
+                  THEN, HOW CELL CITY SHOWS IT
+                </Text>
+                {episode.mapping.map(([real, city]) => (
+                  <View
+                    key={real}
+                    style={{
+                      gap: 2,
+                      borderLeftWidth: 2,
+                      borderLeftColor: LAMP,
+                      paddingLeft: 10,
+                    }}
+                  >
+                    <Text style={{ color: C.ink, fontWeight: "700" }}>
+                      {real}
+                    </Text>
+                    <Text style={{ color: C.muted }}>{city}</Text>
+                  </View>
+                ))}
+              </View>
+            </Reveal>
+          )}
+          <Button icon="arrow" onPress={() => setPhase("scene")}>
+            Enter the scene
+          </Button>
+        </>
+      )}
+
+      {phase === "scene" && (
+        <>
+          <EpisodeArt n={episode.n} />
+          {episode.scene.slice(0, beat + 1).map((b, i) => (
+            <Reveal key={i}>
+              <View style={[s.row, { alignItems: "flex-start", gap: 12 }]}>
+                <Badge id={b.who} />
+                <View
+                  style={{
+                    flex: 1,
+                    backgroundColor: C.white,
+                    borderRadius: 18,
+                    borderTopLeftRadius: 4,
+                    padding: 14,
+                    borderWidth: 1,
+                    borderColor: C.line,
+                    gap: 4,
+                  }}
+                >
+                  <Text style={[s.small, { fontWeight: "700", color: C.ink }]}>
+                    {characters[b.who].name}
+                  </Text>
+                  <Text style={[s.body, { color: C.ink }]}>{b.line}</Text>
+                </View>
+              </View>
+            </Reveal>
+          ))}
+          {beat < episode.scene.length - 1 ? (
+            <View style={{ gap: 12 }}>
+              <Button icon="arrow" onPress={() => setBeat(beat + 1)}>
+                Continue
+              </Button>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Skip the scene"
+                onPress={() => setPhase("rebuild")}
+                style={{ alignSelf: "center" }}
+                hitSlop={10}
+              >
+                <Text style={s.link}>Skip scene</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <Button icon="arrow" onPress={() => setPhase("rebuild")}>
+              Rebuild it from memory
+            </Button>
+          )}
+        </>
+      )}
+
+      {phase === "rebuild" && (
+        <RebuildRun
+          rebuild={episode.rebuild}
+          level={
+            episode.noCues
+              ? 2
+              : cueLevel(progress.attempts ?? [], episode.rebuild.id)
+          }
+          onAttempt={onAttempt}
+          onDone={() => setPhase("clues")}
+        />
+      )}
+
+      {phase === "clues" && (
+        <>
+          <Text style={s.label}>
+            CLUE {clue + 1} OF {episode.clues.length}
+          </Text>
+          <ClueCard
+            key={episode.clues[clue].id}
+            q={episode.clues[clue]}
+            level={
+              episode.noCues
+                ? 2
+                : cueLevel(progress.attempts ?? [], episode.clues[clue].id)
+            }
+            noCues={episode.noCues}
+            host={hostOf[episode.n]}
+            onAttempt={(a) => {
+              if (a.correct) setRight((n) => n + 1);
+              onAttempt(a);
+            }}
+            last={clue === episode.clues.length - 1}
+            onNext={() =>
+              clue < episode.clues.length - 1 ? setClue(clue + 1) : afterClues()
+            }
+          />
+        </>
+      )}
+
+      {phase === "explain" && episode.explain && (
+        <ExplainRun
+          explain={episode.explain}
+          onAttempt={onAttempt}
+          onDone={finish}
+        />
+      )}
+
+      {phase === "done" && (
+        <Reveal>
+          <View
+            style={{
+              backgroundColor: NIGHT,
+              borderRadius: 28,
+              padding: 22,
+              gap: 14,
+              overflow: "hidden",
+            }}
+          >
+            <Confetti />
+            <View style={{ alignItems: "center" }}>
+              <CityCharacter id={hostOf[episode.n]} mood="happy" size={190} />
+            </View>
+            <Text style={[s.h2, { color: C.ink }]}>
+              {episode.title}: solved.
+            </Text>
+            <Text style={{ color: C.muted, fontSize: 16, lineHeight: 24 }}>
+              {right} of {episode.clues.length} clues right. Every clue comes
+              back for review, and its cue fades as you keep getting it right.
+            </Text>
+            <Text
+              style={{
+                color: "#46677D",
+                fontSize: 17,
+                lineHeight: 25,
+                fontStyle: "italic",
+              }}
+            >
+              {episode.wrap}
+            </Text>
+            {onNext ? (
+              <Button icon="arrow" onPress={onNext}>
+                {`Episode ${episode.n + 1}: ${cellCity[episode.n].title}`}
+              </Button>
+            ) : null}
+            <Button secondary onPress={onExit}>
+              Back to the city
+            </Button>
+          </View>
+        </Reveal>
+      )}
+    </View>
+  );
+}
+
+function CueBox({ text, level }: { text: string; level: CueLevel }) {
+  return (
+    <View
+      style={{
+        backgroundColor: level === 0 ? "#F4E6B8" : "transparent",
+        borderRadius: 14,
+        padding: 12,
+        borderWidth: 1,
+        borderStyle: level === 0 ? "solid" : "dashed",
+        borderColor: "#D9C27E",
+        opacity: level === 0 ? 1 : 0.7,
+        gap: 3,
+      }}
+    >
+      <Text style={[s.small, { fontWeight: "700", letterSpacing: 1.2 }]}>
+        {level === 0 ? "CITY CUE" : "FADING CUE"}
+      </Text>
+      <Text style={[s.body, { color: C.ink }]}>{text}</Text>
+    </View>
+  );
+}
+
+const readingValue: Record<Reading["level"], number> = {
+  none: 0.04,
+  low: 0.25,
+  normal: 0.5,
+  high: 0.78,
+  "very high": 1,
+};
+
+function Readings({ readings }: { readings: Reading[] }) {
+  return (
+    <View
+      style={{ backgroundColor: NIGHT, borderRadius: 18, padding: 14, gap: 10 }}
+    >
+      <Text style={[s.label, { color: "#46677D" }]}>DISTRICT READINGS</Text>
+      {readings.map((r) => (
+        <View
+          key={r.label}
+          style={{ gap: 4 }}
+          accessibilityLabel={`${r.label}: ${r.level}${r.note ? ", " + r.note : ""}`}
+        >
+          <View style={s.between}>
+            <Text style={{ color: C.ink, fontWeight: "600" }}>
+              {r.label}
+            </Text>
+            <Text style={{ color: C.muted }}>{r.note ?? r.level}</Text>
+          </View>
+          <Meter
+            value={readingValue[r.level]}
+            color={LAMP}
+            track="#3A465E"
+            height={7}
+          />
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function ClueCard({
+  q,
+  level,
+  noCues,
+  host,
+  onAttempt,
+  onNext,
+  last,
+}: {
+  q: CityQuestion;
+  level: CueLevel;
+  noCues?: boolean;
+  host: CharacterId;
+  onAttempt: Log;
+  onNext: () => void;
+  last: boolean;
+}) {
+  const [choice, setChoice] = useState<number | null>(null);
+  const [hint, setHint] = useState(false);
+  const [another, setAnother] = useState(false);
+  // Authored with the answer first; shown in a fresh order each time.
+  const [order] = useState(() => shuffled(q.choices.map((_, i) => i)));
+  const cueText = level === 0 || hint ? q.cue : q.nudge;
+  return (
+    <Reveal>
+      <Card style={{ gap: 12 }}>
+        <View style={s.between}>
+          <Text style={[s.label, { flex: 1 }]}>{q.title.toUpperCase()}</Text>
+        </View>
+        {q.readings && <Readings readings={q.readings} />}
+        <Text style={s.h3}>{q.prompt}</Text>
+        {!noCues && choice === null && (level < 2 || hint) && cueText ? (
+          <CueBox text={cueText} level={hint ? 0 : level} />
+        ) : null}
+        {!noCues && level === 2 && !hint && choice === null && (
+          <Pressable accessibilityRole="button" onPress={() => setHint(true)}>
+            <Text style={s.link}>Need a hint? (It'll come back sooner.)</Text>
+          </Pressable>
+        )}
+        {order.map((i) => {
+          const c = q.choices[i];
+          return (
+            <Feedback
+              key={c}
+              kind={
+                choice === null
+                  ? null
+                  : i === q.answer
+                    ? "right"
+                    : choice === i
+                      ? "wrong"
+                      : null
+              }
+            >
+              <PressableScale
+                accessibilityRole="button"
+                accessibilityState={{ disabled: choice !== null }}
+                disabled={choice !== null}
+                onPress={() => {
+                  setChoice(i);
+                  onAttempt({
+                    conceptId: q.id,
+                    mode: "recall",
+                    correct: i === q.answer,
+                    hinted: !noCues && (level === 0 || hint),
+                    chose: i === q.answer ? undefined : c,
+                    truth: q.choices[q.answer],
+                  });
+                }}
+                style={[
+                  s.input,
+                  { justifyContent: "center" },
+                  choice !== null &&
+                    i === q.answer && {
+                      backgroundColor: C.sage,
+                      borderColor: C.green,
+                    },
+                  choice === i &&
+                    i !== q.answer && {
+                      backgroundColor: "#FBEFE3",
+                      borderColor: C.red,
+                    },
+                ]}
+              >
+                <Text style={[s.body, { color: C.ink }]}>{c}</Text>
+              </PressableScale>
+            </Feedback>
+          );
+        })}
+        {choice !== null && (
+          <View style={{ gap: 10 }}>
+            <Reaction host={host} right={choice === q.answer} seed={q.id} />
+            <Text style={[s.body, { color: C.ink }]}>{q.why}</Text>
+            {another ? (
+              <View
+                style={{
+                  backgroundColor: C.sage,
+                  borderRadius: 14,
+                  padding: 12,
+                  gap: 3,
+                }}
+              >
+                <Text
+                  style={[s.small, { fontWeight: "700", letterSpacing: 1.2 }]}
+                >
+                  ANOTHER WAY TO SEE IT
+                </Text>
+                <Text style={[s.body, { color: C.ink }]}>{q.another}</Text>
+              </View>
+            ) : (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setAnother(true)}
+              >
+                <Text style={s.link}>Explain it another way</Text>
+              </Pressable>
+            )}
+            <Button icon="arrow" onPress={onNext}>
+              {last ? "Continue" : "Next clue"}
+            </Button>
+          </View>
+        )}
+      </Card>
+    </Reveal>
+  );
+}
+
+function RebuildRun({
+  rebuild,
+  level,
+  onAttempt,
+  onDone,
+}: {
+  rebuild: Rebuild;
+  level: CueLevel;
+  onAttempt: Log;
+  onDone: () => void;
+}) {
+  const [mistakes, setMistakes] = useState(0);
+  const [wrong, setWrong] = useState<string | null>(null);
+  const [placed, setPlaced] = useState<string[]>([]);
+  const [pick, setPick] = useState<number | null>(null);
+  const [pool] = useState(() =>
+    shuffled(rebuild.kind === "order" ? rebuild.steps : rebuild.right),
+  );
+  const total =
+    rebuild.kind === "order" ? rebuild.steps.length : rebuild.left.length;
+  const complete = placed.length === total;
+
+  const settle = (next: string[], errors: number) => {
+    if (next.length === total)
+      onAttempt({
+        conceptId: rebuild.id,
+        mode: "recall",
+        correct: errors === 0,
+        hinted: level === 0 && !!rebuild.cue,
+      });
+  };
+
+  const tapOrder = (step: string) => {
+    if (rebuild.kind !== "order" || complete) return;
+    if (step === rebuild.steps[placed.length]) {
+      const next = [...placed, step];
+      setPlaced(next);
+      setWrong(null);
+      settle(next, mistakes);
+    } else {
+      setMistakes(mistakes + 1);
+      setWrong(step);
+    }
+  };
+
+  const tapMatch = (answer: string) => {
+    if (rebuild.kind !== "match" || pick === null || complete) return;
+    if (rebuild.right.indexOf(answer) === pick) {
+      const next = [...placed, answer];
+      setPlaced(next);
+      setPick(null);
+      setWrong(null);
+      settle(next, mistakes);
+    } else {
+      setMistakes(mistakes + 1);
+      setWrong(answer);
+    }
+  };
+
+  return (
+    <View style={{ gap: 14 }}>
+      <View style={s.between}>
+        <Text style={[s.h3, { flex: 1 }]}>{rebuild.prompt}</Text>
+      </View>
+      {rebuild.cue && level < 2 ? (
+        <CueBox text={rebuild.cue} level={level} />
+      ) : null}
+
+      {rebuild.kind === "order" ? (
+        <>
+          {placed.length > 0 && (
+            <View style={[s.paper, { gap: 8 }]}>
+              {placed.map((p, i) => (
+                <Reveal key={p}>
+                  <View style={[s.row, { alignItems: "flex-start" }]}>
+                    <View
+                      style={{
+                        width: 26,
+                        height: 26,
+                        borderRadius: 13,
+                        backgroundColor: C.green,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: C.white, fontWeight: "700" }}>
+                        {i + 1}
+                      </Text>
+                    </View>
+                    <Text style={[s.body, { color: C.ink, flex: 1 }]}>{p}</Text>
+                  </View>
+                </Reveal>
+              ))}
+            </View>
+          )}
+          {!complete &&
+            pool
+              .filter((p) => !placed.includes(p))
+              .map((p) => (
+                <PressableScale
+                  key={p}
+                  accessibilityRole="button"
+                  onPress={() => tapOrder(p)}
+                  style={[
+                    s.input,
+                    { justifyContent: "center" },
+                    wrong === p && {
+                      borderColor: C.red,
+                      backgroundColor: "#FBEFE3",
+                    },
+                  ]}
+                >
+                  <Text style={[s.body, { color: C.ink }]}>{p}</Text>
+                </PressableScale>
+              ))}
+          {wrong && !complete && (
+            <Text accessibilityRole="alert" style={[s.small, { color: C.red }]}>
+              Not yet. What has to happen before that?
+            </Text>
+          )}
+        </>
+      ) : (
+        <>
+          <View style={{ gap: 8 }}>
+            {rebuild.left.map((l, i) => {
+              const matched = placed.includes(rebuild.right[i]);
+              return (
+                <PressableScale
+                  key={l}
+                  accessibilityRole="button"
+                  accessibilityState={{
+                    selected: pick === i,
+                    disabled: matched,
+                  }}
+                  disabled={matched || complete}
+                  onPress={() => {
+                    setPick(i);
+                    setWrong(null);
+                  }}
+                  style={[
+                    s.input,
+                    { gap: 4 },
+                    pick === i && {
+                      borderColor: C.ink,
+                      borderWidth: 2,
+                      backgroundColor: "#F4E6B8",
+                    },
+                    matched && {
+                      backgroundColor: C.sage,
+                      borderColor: C.green,
+                    },
+                  ]}
+                >
+                  <Text style={[s.body, { color: C.ink, fontWeight: "700" }]}>
+                    {l}
+                  </Text>
+                  {matched && <Text style={s.small}>{rebuild.right[i]}</Text>}
+                </PressableScale>
+              );
+            })}
+          </View>
+          {!complete && (
+            <>
+              <Text style={s.label}>
+                {pick === null
+                  ? "CHOOSE ONE ABOVE, THEN ITS MATCH"
+                  : `WHICH ONE GOES WITH ${rebuild.left[pick].toUpperCase()}?`}
+              </Text>
+              {pool
+                .filter((r) => !placed.includes(r))
+                .map((r) => (
+                  <PressableScale
+                    key={r}
+                    accessibilityRole="button"
+                    accessibilityState={{ disabled: pick === null }}
+                    disabled={pick === null}
+                    onPress={() => tapMatch(r)}
+                    style={[
+                      s.input,
+                      {
+                        justifyContent: "center",
+                        opacity: pick === null ? 0.6 : 1,
+                      },
+                      wrong === r && {
+                        borderColor: C.red,
+                        backgroundColor: "#FBEFE3",
+                      },
+                    ]}
+                  >
+                    <Text style={[s.body, { color: C.ink }]}>{r}</Text>
+                  </PressableScale>
+                ))}
+              {wrong && (
+                <Text
+                  accessibilityRole="alert"
+                  style={[s.small, { color: C.red }]}
+                >
+                  Not that one. Try another.
+                </Text>
+              )}
+            </>
+          )}
+        </>
+      )}
+
+      {complete && (
+        <Reveal>
+          <Card style={{ backgroundColor: C.sage, gap: 10 }}>
+            <Text accessibilityLiveRegion="polite" style={s.h3}>
+              {mistakes === 0
+                ? "Rebuilt without a slip."
+                : `Rebuilt, with ${mistakes} ${mistakes === 1 ? "slip" : "slips"}.`}
+            </Text>
+            <Text style={s.body}>
+              {mistakes === 0
+                ? "Next time the cue will be lighter."
+                : "The cue stays until you rebuild it cleanly."}
+            </Text>
+            <Button icon="arrow" onPress={onDone}>
+              On to the clues
+            </Button>
+          </Card>
+        </Reveal>
+      )}
+    </View>
+  );
+}
+
+function ExplainRun({
+  explain,
+  onAttempt,
+  onDone,
+}: {
+  explain: NonNullable<Episode["explain"]>;
+  onAttempt: Log;
+  onDone: () => void;
+}) {
+  const [text, setText] = useState("");
+  const [checked, setChecked] = useState<boolean[] | null>(null);
+  const covered = checked?.filter(Boolean).length ?? 0;
+  return (
+    <View style={{ gap: 14 }}>
+      <Text style={s.h3}>{explain.prompt}</Text>
+      <TextInput
+        accessibilityLabel="Your explanation"
+        multiline
+        value={text}
+        onChangeText={setText}
+        editable={!checked}
+        placeholder="When the oxygen runs out…"
+        placeholderTextColor={C.muted}
+        style={[
+          s.input,
+          {
+            minHeight: 140,
+            textAlignVertical: "top",
+            fontFamily: "QuasarGrotesk",
+          },
+        ]}
+      />
+      {!checked ? (
+        <Button
+          icon="check"
+          disabled={text.trim().split(/\s+/).length < 8}
+          onPress={() => {
+            const result = explainCovered(text, explain);
+            setChecked(result);
+            onAttempt({
+              conceptId: explain.id,
+              mode: "teach",
+              correct: result.filter(Boolean).length >= 3,
+              hinted: false,
+            });
+          }}
+        >
+          Check my explanation
+        </Button>
+      ) : (
+        <Reveal>
+          <Card style={{ gap: 10 }}>
+            <Text style={s.h3}>
+              {covered >= 3
+                ? "The Mayor understands."
+                : "The Mayor needs a little more."}
+            </Text>
+            {explain.ideas.map((idea, i) => (
+              <View
+                key={idea.label}
+                style={[s.row, { alignItems: "flex-start" }]}
+              >
+                <Icon
+                  name={checked[i] ? "check" : "close"}
+                  size={18}
+                  color={checked[i] ? C.green : C.red}
+                />
+                <Text style={[s.body, { color: C.ink, flex: 1 }]}>
+                  {idea.label}
+                </Text>
+              </View>
+            ))}
+            <Text style={s.small}>
+              This checks for the key ideas by their words, so it can miss a
+              good explanation that uses different ones.
+            </Text>
+            {covered < 3 && (
+              <Button
+                small
+                secondary
+                onPress={() => {
+                  setChecked(null);
+                }}
+              >
+                Add to my explanation
+              </Button>
+            )}
+            <Button icon="arrow" onPress={onDone}>
+              Finish the episode
+            </Button>
+          </Card>
+        </Reveal>
+      )}
+    </View>
+  );
+}
+
+function Revisit({
+  ids,
+  progress,
+  onAttempt,
+  onDone,
+}: {
+  ids: string[];
+  progress: Progress;
+  onAttempt: Log;
+  onDone: () => void;
+}) {
+  const [queue] = useState(() =>
+    ids
+      .map((id) => cityQuestions.find((q) => q.id === id))
+      .filter((q): q is CityQuestion => !!q),
+  );
+  const [i, setI] = useState(0);
+  const q = queue[i];
+  if (!q)
+    return (
+      <Card style={{ backgroundColor: C.sage, gap: 12 }}>
+        <Icon name="check" size={28} color={C.green} />
+        <Text style={s.h2}>All caught up in Cell City.</Text>
+        <Button onPress={onDone}>Back to the city</Button>
+      </Card>
+    );
+  return (
+    <View style={{ gap: 16 }}>
+      <View style={s.between}>
+        <Tag color={LAMP}>
+          REVISIT · {i + 1} / {queue.length}
+        </Tag>
+        <Pressable accessibilityRole="button" onPress={onDone}>
+          <Text style={s.link}>Back to the city</Text>
+        </Pressable>
+      </View>
+      <ClueCard
+        key={q.id}
+        q={q}
+        level={q.cue ? cueLevel(progress.attempts ?? [], q.id) : 2}
+        noCues={!q.cue}
+        host={hostOf[Number(/^city-e(\d)/.exec(q.id)?.[1] ?? 1)]}
+        onAttempt={onAttempt}
+        last={i === queue.length - 1}
+        onNext={() => setI(i + 1)}
+      />
+    </View>
+  );
+}
+
+const pickLine = (list: string[], seed: string) =>
+  list[[...seed].reduce((n, ch) => n + ch.charCodeAt(0), 0) % list.length];
+
+// After an answer, the host reacts in their own voice: cheering when it's right, wincing when it isn't.
+function Reaction({
+  host,
+  right,
+  seed,
+}: {
+  host: CharacterId;
+  right: boolean;
+  seed: string;
+}) {
+  const c = characters[host];
+  const mood: Mood = right ? "happy" : "worried";
+  return (
+    <Reveal>
+      <View style={[s.row, { alignItems: "flex-end", gap: 6 }]}>
+        <CityCharacter id={host} mood={mood} size={104} />
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: right ? C.sage : "#FBEFE3",
+            borderRadius: 18,
+            borderBottomLeftRadius: 4,
+            padding: 12,
+            gap: 3,
+            marginBottom: 8,
+          }}
+        >
+          <Text accessibilityLiveRegion="polite" style={s.h3}>
+            {right ? "Right." : "Not quite."}
+          </Text>
+          <Text style={[s.small, { color: C.ink }]}>
+            {c.name}: {pickLine(right ? c.cheer : c.wince, seed)}
+          </Text>
+        </View>
+      </View>
+    </Reveal>
+  );
+}

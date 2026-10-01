@@ -1,0 +1,403 @@
+import React from "react";
+import {
+  View,
+  Text as NativeText,
+  type TextProps,
+  Pressable,
+  StyleSheet,
+  Platform,
+  TextInput,
+  type ViewStyle,
+} from "react-native";
+import Svg, { Path, Circle, Rect, Defs, Pattern } from "react-native-svg";
+export const C = {
+  paper: "#FBF8EF",
+  ink: "#293B30",
+  muted: "#596355",
+  green: "#294D3B",
+  sage: "#E6EBD9",
+  yellow: "#F2CB6C",
+  peach: "#F3D5BC",
+  line: "#DDE0D0",
+  white: "#FFFEF9",
+  red: "#AD4D3F",
+};
+export const serif = "QuasarGrotesk";
+export function Text({ style, ...props }: TextProps) {
+  return <NativeText {...props} style={[{ fontFamily: serif }, style]} />;
+}
+const paths: Record<string, string> = {
+  home: "M3 11 12 3l9 8M5 10v11h5v-7h4v7h5V10",
+  book: "M3 4h7l2 2 2-2h7v16h-7l-2 2-2-2H3zM12 6v16",
+  map: "m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2zM9 3v16M15 5v16",
+  chart: "M4 20V10M12 20V4M20 20v-7",
+  spark: "m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z",
+  arrow: "M4 12h16m-6-6 6 6-6 6",
+  back: "M20 12H4m6-6-6 6 6 6",
+  check: "m4 12 5 5L20 6",
+  close: "m5 5 14 14M19 5 5 19",
+  clock: "M12 6v6l4 2",
+  settings:
+    "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2",
+  pin: "M12 22s8-8 8-13A8 8 0 0 0 4 9c0 5 8 13 8 13z",
+  key: "M14 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12M9 14l-7 7m3-3 2 2",
+  link: "m9 15 6-6M8 17l-2 2a4 4 0 0 1-5-5l5-5a4 4 0 0 1 5 0M16 7l2-2a4 4 0 0 1 5 5l-5 5a4 4 0 0 1-5 0",
+  smile: "M8 9h.01M16 9h.01M7 14q5 6 10 0",
+  leaf: "M4 21C-1 8 8 1 21 3c1 14-7 21-17 18M4 21 16 8",
+  cards: "M5 7h14v15H5zM8 3h14v15",
+  flame: "M13 2c0 7 7 8 7 14a8 8 0 0 1-16 0c0-4 3-7 5-9-1 5 3 5 4-5",
+  lock: "M5 10h14v12H5zM8 10V6a4 4 0 0 1 8 0v4",
+  mic: "M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3M5 11a7 7 0 0 0 14 0M12 18v3",
+  sun: "M12 1v3m0 16v3M1 12h3m16 0h3M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2",
+};
+export function Icon({
+  name,
+  size = 24,
+  color = C.ink,
+}: {
+  name: string;
+  size?: number;
+  color?: string;
+}) {
+  return (
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {["clock", "smile", "sun"].includes(name) && (
+        <Circle cx="12" cy="12" r={name === "sun" ? 5 : 10} />
+      )}
+      <Path d={paths[name] ?? paths.spark} />
+    </Svg>
+  );
+}
+export function Dots() {
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <Svg width="100%" height="100%">
+        <Defs>
+          <Pattern
+            id="dots"
+            width="20"
+            height="20"
+            patternUnits="userSpaceOnUse"
+          >
+            <Circle cx="2" cy="2" r="0.7" fill="#D5D8C6" />
+          </Pattern>
+        </Defs>
+        <Rect width="100%" height="100%" fill="url(#dots)" />
+      </Svg>
+    </View>
+  );
+}
+// A chunky pixel-game button: stepped corners, a dark outline and a hard shadow it presses down into.
+// Drawn in SVG from the button's measured size, so the text and icon stay native and accessible.
+function pixelOutline(w: number, h: number, st: number) {
+  const s2 = st * 2;
+  return `M${s2} 0H${w - s2}V${st}H${w - st}V${s2}H${w}V${h - s2}H${w - st}V${h - st}H${w - s2}V${h}H${s2}V${h - st}H${st}V${h - s2}H0V${s2}H${st}V${st}H${s2}Z`;
+}
+const DEPTH = 4;
+export function Button({
+  children,
+  onPress,
+  secondary = false,
+  disabled = false,
+  icon,
+  small = false,
+  color,
+}: {
+  children: React.ReactNode;
+  onPress: () => void;
+  secondary?: boolean;
+  disabled?: boolean;
+  icon?: string;
+  small?: boolean;
+  color?: string;
+}) {
+  const [size, setSize] = React.useState({ w: 0, h: 0 });
+  const face = secondary ? (color ?? C.sage) : (color ?? C.green);
+  const ink = secondary ? C.ink : C.white;
+  const st = small ? 4 : 5;
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={{ paddingBottom: DEPTH, opacity: disabled ? 0.45 : 1 }}
+    >
+      {({ pressed }) => {
+        const down = pressed && !disabled ? DEPTH - 1 : 0;
+        const w = size.w,
+          h = size.h;
+        return (
+          <View>
+            {w > 0 && (
+              <Svg
+                pointerEvents="none"
+                width={w}
+                height={h + DEPTH}
+                style={{ position: "absolute", left: 0, top: 0 }}
+              >
+                <Path
+                  d={pixelOutline(w, h, st)}
+                  fill={C.ink}
+                  transform={`translate(0 ${DEPTH})`}
+                />
+                <Path
+                  d={pixelOutline(w, h, st)}
+                  fill={face}
+                  stroke={C.ink}
+                  strokeWidth={2.5}
+                  transform={`translate(0 ${down})`}
+                />
+                <Rect
+                  x={st * 2}
+                  y={3 + down}
+                  width={Math.max(0, w - st * 4)}
+                  height={3}
+                  fill={C.white}
+                  opacity={secondary ? 0.9 : 0.16}
+                />
+              </Svg>
+            )}
+            <View
+              onLayout={(e) =>
+                setSize({
+                  w: e.nativeEvent.layout.width,
+                  h: e.nativeEvent.layout.height,
+                })
+              }
+              style={[
+                s.button,
+                {
+                  backgroundColor: "transparent",
+                  borderRadius: 0,
+                  transform: [{ translateY: down }],
+                },
+                small && {
+                  paddingVertical: 10,
+                  paddingHorizontal: 16,
+                  minHeight: 40,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  s.buttonText,
+                  { color: ink, fontWeight: "700", letterSpacing: 0.2 },
+                ]}
+              >
+                {children}
+              </Text>
+              {icon && <Icon name={icon} size={18} color={ink} />}
+            </View>
+          </View>
+        );
+      }}
+    </Pressable>
+  );
+}
+export function Tag({
+  children,
+  color = C.sage,
+}: {
+  children: React.ReactNode;
+  color?: string;
+}) {
+  return (
+    <View style={[s.tag, { backgroundColor: color }]}>
+      <Text style={s.tagText}>{children}</Text>
+    </View>
+  );
+}
+export function Card({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: ViewStyle;
+}) {
+  return <View style={[s.card, style]}>{children}</View>;
+}
+export function Field({
+  label,
+  value,
+  onChangeText,
+  placeholder = "",
+  multiline = false,
+  secureTextEntry = false,
+  keyboardType = "default",
+}: {
+  label: string;
+  value: string;
+  onChangeText: (v: string) => void;
+  placeholder?: string;
+  multiline?: boolean;
+  secureTextEntry?: boolean;
+  keyboardType?: "default" | "number-pad";
+}) {
+  return (
+    <View style={{ gap: 7 }}>
+      <Text style={s.label}>{label}</Text>
+      <TextInput
+        accessibilityLabel={label}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor={C.muted}
+        multiline={multiline}
+        secureTextEntry={secureTextEntry}
+        keyboardType={keyboardType}
+        autoCapitalize={
+          secureTextEntry || label.toLowerCase().includes("email")
+            ? "none"
+            : "sentences"
+        }
+        style={[
+          s.input,
+          multiline && { minHeight: 100, textAlignVertical: "top" },
+        ]}
+      />
+    </View>
+  );
+}
+export const s = StyleSheet.create({
+  title: {
+    fontWeight: "700",
+    fontFamily: "QuasarGrotesk",
+    fontSize: 36,
+    lineHeight: 41,
+    color: C.ink,
+    letterSpacing: -1,
+  },
+  h2: {
+    fontWeight: "600",
+    fontFamily: "QuasarGrotesk",
+    fontSize: 26,
+    lineHeight: 32,
+    color: C.ink,
+    letterSpacing: -0.5,
+  },
+  h3: {
+    fontWeight: "600",
+    fontFamily: "QuasarGrotesk",
+    fontSize: 22,
+    lineHeight: 28,
+    color: C.ink,
+  },
+  body: {
+    fontFamily: "QuasarGrotesk",
+    fontSize: 16,
+    lineHeight: 25,
+    color: C.muted,
+  },
+  small: {
+    fontFamily: "QuasarGrotesk",
+    fontSize: 12,
+    lineHeight: 18,
+    color: C.muted,
+  },
+  label: {
+    fontFamily: "QuasarGrotesk",
+    fontSize: 13,
+    fontWeight: "600",
+    color: C.ink,
+  },
+  row: { flexDirection: "row", alignItems: "center", gap: 10 },
+  between: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  card: {
+    minWidth: 0,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.line,
+    borderRadius: 26,
+    padding: 18,
+    gap: 14,
+    shadowColor: C.ink,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.07,
+    shadowRadius: 12,
+    elevation: 2,
+  },
+  button: {
+    backgroundColor: C.green,
+    paddingHorizontal: 22,
+    paddingVertical: 15,
+    borderRadius: 28,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
+    minHeight: 46,
+  },
+  secondary: { backgroundColor: C.white, borderWidth: 1, borderColor: C.line },
+  buttonText: {
+    flexShrink: 1,
+    textAlign: "center",
+    lineHeight: 20,
+    color: C.white,
+    fontFamily: "QuasarGrotesk",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  tag: {
+    borderRadius: 999,
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    alignSelf: "flex-start",
+    borderWidth: 1,
+    borderColor: "rgba(41,59,48,0.08)",
+  },
+  tagText: {
+    fontFamily: "QuasarGrotesk",
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    color: C.ink,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: C.line,
+    borderRadius: 12,
+    padding: 14,
+    color: C.ink,
+    fontFamily: "QuasarGrotesk",
+    fontSize: 15,
+    backgroundColor: C.white,
+    minHeight: 49,
+  },
+  divider: { height: 1, backgroundColor: C.line },
+  paper: {
+    backgroundColor: C.white,
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: C.line,
+  },
+  section: { gap: 16 },
+  link: {
+    fontFamily: "QuasarGrotesk",
+    fontSize: 13,
+    fontWeight: "600",
+    color: C.green,
+  },
+  progress: {
+    height: 6,
+    borderRadius: 4,
+    backgroundColor: C.line,
+    overflow: "hidden",
+  },
+});

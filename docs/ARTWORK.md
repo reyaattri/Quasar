@@ -1,0 +1,71 @@
+# Artwork provenance and prompts
+
+## Current welcome and brand
+
+`assets/welcome-hero.webp` is the landing hero (September 27, 2026). It was generated with Higgsfield (GPT Image 2.5, high quality, 4:5) in two passes: a dusk version from the prompt below, then a light morning repaint of the chosen dusk image ("same composition… bright, airy, enchanting early-morning light; the upper third a very pale luminous sky of lavender mist melting into peach and cream"), which is the one shipped, resized to 1200×1500. First prompt:
+
+> Hero illustration for the first screen of a memory-learning app. Soft hand-painted Japanese animated-film look, rich gouache and watercolor, fine pencil detail, warm paper texture. Portrait composition. The upper third is a calm, softly gradated dusk sky (deep forest teal fading to warm peach) with one bright four-pointed guiding star high in the center, left clear and uncluttered as space for a title. Below it, a big open notebook resting on a wooden desk by a window unfolds upward into a tiny walkable paper world: a winding path rises out of the pages through three small places stacked into the distance, a quiet Japanese garden with a red bridge and cherry blossom, sunlit sandstone ruins, and a glowing neon rooftop city, each with one oversized impossible object on the path (a giant glossy apple, a milk bottle sitting on a stone chair, a loaf of bread waving from a lit window). A small student with a satchel walks the path, looking up at the star. Palette: deep forest green, sage, warm yellow, peach, cream, soft lamplight. Main subject readable at small phone size. No text, no letters, no logos, no UI, no watermark.
+
+The Cell City characters (`assets/cell-city/chars/`) and episode pictures (`assets/cell-city/scenes/`) were also generated with Higgsfield in September 2026; their prompts are summarised in `docs/ART-PIPELINE.md`.
+
+`assets/welcome-garden.png` is an original generated illustration from a later landing experiment, made with the built-in image generation tool. The user then requested the earlier landing back, so this asset remains in the repository but is not rendered. The final prompt was:
+
+> Create a polished editorial illustration for a whimsical memory-learning mobile app landing hero, single image, portrait 4:5 composition. An open forest-green storybook doorway at bottom foreground leads along a glowing winding path through a tiny impossible greenhouse-at-night: a curious warm-yellow lantern, a giant playful apple balancing in a tree, a paper boat drifting on a little stream, floating cream blossoms and subtle golden stars, an inviting small human explorer in a mustard coat viewed from behind. A cohesive evocative scene, not separate cards or collage. Tactile cut-paper and risograph print texture mixed with hand-painted gouache, sophisticated illustrated children's book art, charming but not generic AI fantasy. Palette deep pine green, butter yellow, terracotta, pale sage, cream. Strong focal silhouette, rich detail in center, spacious dark green edges for responsive cropping. Absolutely no text, letters, numerals, icons, logos, captions, speech bubbles, UI, or border. No space suit. Original artwork.
+
+`assets/icon.svg` is an original code-drawn Quasar mark with two orbital arcs and a hollow four-point flare, with no punctuation dot. `scripts/render-icon.cjs` renders its matching `assets/icon.png` for Expo; `src/components/QuasarMark.tsx` draws the same geometry in the app header. `docs/readme-wordmark.svg` animates a brief text reveal in the repository README.
+
+Original learning illustrations were produced with the built-in image generation tool during this project. The pixel-button sheet was supplied by the user. No Gemini, Flux or Replicate execution is claimed for bundled images. The server includes a separately configurable Flux.2 integration.
+
+The user explicitly selected the exact watercolor computing scene. assets/cs-storybook.png is a direct copy of that attached image, unchanged. The anonymous figures in the original approved scene remain part of that image; named guide context has been removed.
+
+## Final asset set
+
+- assets/cs-storybook.png — exact user-approved watercolor computing memory route.
+- assets/sat-storybook.png — matching watercolor vocabulary memory route.
+- assets/cs-doodle.png — optional Doodle treatment of the same computing cues.
+- assets/sat-doodle.png — optional Doodle treatment of the same vocabulary cues.
+
+## Prompt specifications
+
+SAT Storybook: landscape 1536×1024, gentle hand-painted animation / watercolor, pale ivory and sage, six spaced memory cues: clear lantern, magnifier with watch, fading butterfly; recovering sapling, grasped treasure chest, opposing arrow sign. A small tan-coated investigator connects the route. Minimal scenery, no text or UI.
+
+Computing Storybook: landscape 1536×1024, matching watercolor and open spacing. Arrow steps, parcel conveyor, top plate lifted from a stack; nested doorways ending in a base case, sorted cubes over a halving ramp, key-to-drawer cabinet. Small curly-haired courier at center. No labels, UI or extraneous objects. This is the generation selected and reattached by the user.
+
+Doodle edits: preserve the six object positions, route and character; change only treatment to confident dark-green hand-drawn outlines, flat sage/coral/yellow/blue fills, warm cream background and reduced shading. No new cues or labels.
+
+Rejected earlier cyberpunk and dense market experiments are not part of the final app.
+
+## September 10 assets
+
+- assets/palace-worlds.png: original three-panel dojo, Egyptian ruins and neon rooftop atlas.
+- The earlier cat-only atlas was superseded and moved outside the app. The current deck uses assets/sat-ink-cartoons.png.
+- assets/pi-cartoons.png: six original illustrated major-system objects.
+- assets/dojo.wav, egypt.wav, neon.wav: original procedural melodies; generated by scripts/create-music.cjs, no samples.
+- assets/fonts/SpaceGrotesk.ttf: Google Fonts Space Grotesk; SIL Open Font License bundled beside the font.
+
+All three new raster atlases use the built-in image-generation tool. The uploaded pixel art ZIP contained EPS/JPG. The user subsequently explicitly requested its use; assets/pixel-buttons-user.jpg is the original supplied JPEG, rendered through measured frames with animated press feedback. It is user-provided artwork, not claimed as original Quasar art. Book covers informed the idea of visual mnemonic cartoons, not copied book illustrations or text.
+
+## Latest reference-led update
+
+- assets/sat-ink-cartoons.png replaces the cat-only deck with ten original ink cartoons.
+- assets/medical-harbor.png contains three original symbolic immunity scenes.
+- assets/pixel-buttons-user.jpg retains the supplied sheet unchanged. Native rendering requests downsampling; no bitmap edits were made.
+- The player is an original code-native SVG character, with moving legs and a following camera. Encounter illustrations use gentle transforms that respect reduced motion.
+
+Prompt specification for the vocabulary atlas: exact 5-column by 2-row layout, hand-inked crosshatched cartoons with warm paper and ochre accents; loose-lid chef, meticulous tick inspecting a sock, ephemeral bubble wedding, resilient inflatable knight, avaricious rice king, ambiguous hedgehog shadow, candid tin-can confession, pragmatic wizard using a ladder, tenacious poker player, elusive eel escaping on skates. No cats, copied book panels, or named guide lore.
+
+Prompt specification for medical art: three equal panels forming an original defense harbor; harbor wall symbolizes skin barrier, round cleanup worker enclosing a germ symbolizes phagocytosis, Y-shaped matching tool symbolizes antibody specificity. Loose ink/gouache, warm paper, original human characters; no clinical procedure or literal-anatomy claim.
+
+## Illustrated learning update
+
+SAT now uses ten original human-led comic panels in assets/sat-human-cartoons.png. Each card pairs a sound or picture hook with a definition, caption and hidden recall. Five successful word recalls lead into an original SAT-style context question. These are not claimed to be released 2026 SAT questions or reproductions of Vocabulary Cartoons.
+
+The illustrated palace navigation is restored. Entering a numbered stop opens the supplied conservatory interior and floating memory card. World-specific peg objects, personal hooks, plant anchors and delayed route review support stable location cues and retrieval. The current interface is an illustrated walking map, not a first-person 3D environment.
+
+The three 96-second music loops are original synthesized arrangements with multiple sections and parts; no third-party recordings were sampled. Arrangement details are in music-scores.json. Pixel button silhouettes clip the supplied sprite sheet's white exterior without erasing its lettering.
+
+New artwork: sat-human-cartoons.png, medical-hooks.png, lesson-stories.png and world-cues-v2.png. palace-interiors.png preserves the user's selected attachment. Prompt records are in ARTWORK-UPDATE.json. Original illustrations are educational metaphors, not anatomical depictions.
+
+The active SAT atlas is `assets/sat-cartoons-user-selected.png`, copied byte-for-byte from the user's selected attachment. Its Resilient panel uses the flattened-and-repaired soldier; its Ambiguous panel uses the small porcupine with two possible shadow interpretations.
+
+Memory references: https://pmc.ncbi.nlm.nih.gov/articles/PMC5439266/ and https://pubmed.ncbi.nlm.nih.gov/21252317/ support location-based mnemonic training and retrieval practice; they do not establish guaranteed results for this app.

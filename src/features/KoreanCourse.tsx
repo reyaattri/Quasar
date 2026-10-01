@@ -1,0 +1,693 @@
+import { KoreanSentences } from "./KoreanSentences";
+import { Confetti } from "../components/Reveal";
+import React, { useEffect, useRef, useState } from "react";
+import { Image, PanResponder, View, Linking, Pressable } from "react-native";
+import Svg, {
+  Path,
+  Circle,
+  Text as SvgText,
+  Rect,
+  Image as SvgImage,
+  Defs,
+  ClipPath,
+} from "react-native-svg";
+import { Button, C, Card, s, Tag, Text } from "../components/ui";
+import { readingPractice } from "../data/koreanPractice";
+import { VoicePractice } from "../components/VoicePractice";
+import { PressableScale } from "../components/Reveal";
+import type { Attempt, Progress } from "../lib/progress";
+import { HangulLab } from "./HangulLab";
+
+const storyBeats = [
+  {
+    title: "The gun · ㄱ",
+    action:
+      "A toy gun starts the story. Follow its barrel across the top, then down its grip. Gun is the g sound reminder.",
+    recall: "ㄱ",
+    atlas: 0,
+    path: "M65 70 H205 V210",
+  },
+  {
+    title: "The nose · ㄴ",
+    action:
+      "You smell something with your nose. Its outline goes down, then right. Nose reminds you of n.",
+    recall: "ㄴ",
+    atlas: 1,
+    path: "M70 60 V205 H210",
+  },
+  {
+    title: "The door · ㄷ",
+    action:
+      "You follow the smell and open the door. Trace its top, left side and bottom. Door reminds you of d.",
+    recall: "ㄷ",
+    atlas: 2,
+    path: "M210 65 H70 V205 H210",
+  },
+  {
+    title: "The rattlesnake · ㄹ",
+    action:
+      "Behind the door is a rattlesnake. Follow its squared bends across, down, back, down and across. Listen for the Korean r/l sound.",
+    recall: "ㄹ",
+    atlas: 3,
+    path: "M65 65 H205 V135 H65 V205 H205",
+  },
+  {
+    title: "The shocked mouth · ㅁ",
+    action:
+      "Your mouth opens wide in surprise: a square. Mouth reminds you of m.",
+    recall: "ㅁ",
+    atlas: -1,
+    path: "M70 65 V205 H210 V65 Z",
+  },
+  {
+    title: "The bucket · ㅂ",
+    action:
+      "You try to trap the snake with a bucket, but it escapes. The upright sides and two bars make the bucket cue for b.",
+    recall: "ㅂ",
+    atlas: 4,
+    path: "M70 55 V210 H210 V55 M70 130 H210",
+  },
+  {
+    title: "The summit · ㅅ",
+    action:
+      "You run up a hill to its summit. The two slopes meet at the top. Summit supplies the s reminder.",
+    recall: "ㅅ",
+    atlas: 5,
+    path: "M65 210 L140 65 L215 210",
+  },
+  {
+    title: "The moon at the summit · ㅇ",
+    action:
+      "At the summit, you stop and quietly watch the round moon: ㅇ. No sound at the start of a syllable; ng at the end. In 아, the moon stays silent and the vowel does the talking.",
+    recall: "ㅇ",
+    atlas: 6,
+    path: "M140 65 C40 65 40 215 140 215 C240 215 240 65 140 65",
+  },
+  {
+    title: "The jump · ㅈ",
+    action:
+      "Finding nothing, you jump. The outstretched arms sit above the two sloping legs. Jump supplies the j reminder.",
+    recall: "ㅈ",
+    atlas: 7,
+    path: "M65 65 H215 M140 65 L65 210 M140 65 L215 210",
+  },
+  {
+    title: "The champion · ㅊ",
+    action:
+      "Your jump makes you a champion. Add the champion’s short headband stroke above the jumper. Champion supplies ch.",
+    recall: "ㅊ",
+    atlas: 8,
+    path: "M120 40 H160 M65 85 H215 M140 85 L65 220 M140 85 L215 220",
+  },
+  {
+    title: "Back to the gun · ㅋ",
+    action:
+      "You return to face the snake. The video uses “kill” for the stronger k sound: a second stroke is added inside the gun corner. The toy gun fires water.",
+    recall: "ㅋ",
+    atlas: 9,
+    path: "M65 65 H210 V215 M65 140 H210",
+  },
+  {
+    title: "The door splits in two · ㅌ",
+    action:
+      "The shot misses and the door splits in two. Add a middle bar to the door shape. Two supplies the t reminder.",
+    recall: "ㅌ",
+    atlas: 2,
+    path: "M210 65 H65 V215 H210 M65 140 H210",
+  },
+  {
+    title: "The pillars · ㅍ",
+    action:
+      "You try to push the pillars apart. Two upright pillars stand between the top and bottom beams. Pillars supplies p.",
+    recall: "ㅍ",
+    atlas: 10,
+    path: "M60 65 H220 M90 65 V215 M190 65 V215 M60 215 H220",
+  },
+  {
+    title: "The mysterious hat · ㅎ",
+    action:
+      "Before you can push, a mysterious man in a hat appears. The hat’s band and brim sit above a round face. Hat supplies h.",
+    recall: "ㅎ",
+    atlas: 11,
+    path: "M115 45 H165 M70 90 H210 M140 125 C65 125 65 220 140 220 C215 220 215 125 140 125",
+  },
+];
+const scenes = [
+  {
+    person: "Jisoo · your neighbour",
+    line: "안녕하세요",
+    meaning: "Hello (polite)",
+    tip: "Listen to the whole greeting, then echo it in a comfortable breath. You decide when to move on.",
+    reply: "안녕하세요",
+  },
+  {
+    person: "Minho · at the café",
+    line: "뭐 드릴까요?",
+    meaning: "What can I get you?",
+    tip: "Ask for water: 물 주세요. 주세요 is a useful polite request ending: “please give me…”",
+    reply: "물 주세요",
+  },
+  {
+    person: "Jisoo · handing you your drink",
+    line: "여기요",
+    meaning: "Here you go.",
+    tip: "Thank them with 감사합니다. Practise slowly first, then match the rhythm of the example.",
+    reply: "감사합니다",
+  },
+];
+
+function TracePad({
+  paths,
+  recall = false,
+}: {
+  paths: string[];
+  recall?: boolean;
+}) {
+  const [strokes, setStrokes] = useState<string[]>([]),
+    [draft, setDraft] = useState(""),
+    [guide, setGuide] = useState(!recall);
+  const width = useRef(280),
+    current = useRef("");
+  const responder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: (e) => {
+      const { locationX: x, locationY: y } = e.nativeEvent;
+      current.current = `M${(x * 280) / width.current} ${(y * 280) / width.current}`;
+      setDraft(current.current);
+    },
+    onPanResponderMove: (e) => {
+      const { locationX: x, locationY: y } = e.nativeEvent;
+      current.current += ` L${Math.max(0, Math.min(280, (x * 280) / width.current))} ${Math.max(0, Math.min(280, (y * 280) / width.current))}`;
+      setDraft(current.current);
+    },
+    onPanResponderRelease: () => {
+      setStrokes((v) => [...v, current.current]);
+      setDraft("");
+    },
+    onPanResponderTerminationRequest: () => false,
+  });
+  return (
+    <View style={{ gap: 12 }}>
+      <View
+        {...responder.panHandlers}
+        onLayout={(e) => {
+          width.current = e.nativeEvent.layout.width;
+        }}
+        style={
+          {
+            width: "100%",
+            aspectRatio: 1,
+            backgroundColor: "#FFFDF5",
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: C.line,
+            touchAction: "none",
+          } as any
+        }
+        accessibilityLabel="Finger tracing canvas"
+      >
+        <Svg width="100%" height="100%" viewBox="0 0 280 280">
+          <Path
+            d="M0 140H280M140 0V280"
+            stroke={C.line}
+            strokeDasharray="5 5"
+          />
+          {guide &&
+            paths.map((d, i) => (
+              <React.Fragment key={d}>
+                <Path
+                  d={d}
+                  stroke="#C8CEB8"
+                  strokeWidth={14}
+                  fill="none"
+                  strokeLinecap="round"
+                />
+                <SvgText x={20} y={25 + i * 22} fill={C.muted}>
+                  Stroke {i + 1}
+                </SvgText>
+              </React.Fragment>
+            ))}
+          {[...strokes, draft].map((d, i) => (
+            <Path
+              key={i}
+              d={d}
+              stroke={C.green}
+              strokeWidth={7}
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          ))}
+        </Svg>
+      </View>
+      <Text style={s.small}>
+        {recall
+          ? "Draw from memory, then check your shape. This canvas does not automatically grade handwriting."
+          : "Follow the shown strokes in order. This canvas does not grade handwriting."}
+      </Text>
+      {!recall && (
+        <Button secondary onPress={() => setGuide(!guide)}>
+          {guide ? "Hide guide & draw from memory" : "Show tracing guide"}
+        </Button>
+      )}
+      <Button
+        secondary
+        onPress={() => {
+          setStrokes([]);
+          setDraft("");
+        }}
+      >
+        Clear drawing
+      </Button>
+    </View>
+  );
+}
+
+function Host({ index }: { index: number }) {
+ return <Image source={require('../../assets/korean-conversation-cafe.png')} resizeMode="contain" accessibilityLabel="Korean friends in hanbok greeting each other and offering water" style={{width:'100%',aspectRatio:1.5}} />;
+}
+
+function StoryBeatSketch({ index }: { index: number }) {
+  // Artwork has hand-composed gutters, not mathematically equal atlas cells.
+  const frames = [
+    [0, 0, 320, 306],
+    [326, 0, 302, 306],
+    [630, 0, 315, 306],
+    [949, 0, 298, 306],
+    [0, 308, 320, 299],
+    [326, 308, 302, 299],
+    [630, 308, 315, 299],
+    [949, 308, 298, 299],
+    [0, 610, 320, 300],
+    [326, 610, 302, 300],
+    [630, 610, 315, 300],
+    [949, 610, 298, 300],
+    [0, 913, 323, 348],
+    [325, 913, 306, 348],
+  ];
+  const [x, y, width, height] = frames[index];
+  return (
+    <View
+      accessibilityLabel={storyBeats[index].title + " illustrated memory scene"}
+      style={{ width: "100%", minWidth: 0, gap: 12 }}
+    >
+      {index === 7 ? (
+        <Image
+          source={require("../../assets/korean-summit-moon.png")}
+          resizeMode="contain"
+          style={{ width: "100%", height: 300 }}
+        />
+      ) : (
+        <View style={{ padding: 12, width: "100%", overflow: "hidden" }}>
+          <Svg
+            width="100%"
+            height={260}
+            viewBox={`${x} ${y} ${width} ${height}`}
+            preserveAspectRatio="xMidYMid meet"
+            style={{ overflow: "hidden" }}
+          >
+            <Defs>
+              <ClipPath id={`story-frame-${index}`}>
+                <Rect x={x} y={y} width={width} height={height} />
+              </ClipPath>
+            </Defs>
+            <SvgImage
+              href={require("../../assets/korean-webtoon-story.png")}
+              x={0}
+              y={0}
+              width={1247}
+              height={1261}
+              clipPath={`url(#story-frame-${index})`}
+            />
+          </Svg>
+        </View>
+      )}
+      <Svg width="100%" height={130} viewBox="0 0 280 280">
+        <Path
+          d={storyBeats[index].path}
+          stroke="#BA5143"
+          strokeWidth={12}
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </Svg>
+    </View>
+  );
+}
+
+export function KoreanCourse({
+  progress,
+  onAttempt,
+}: {
+  progress: Progress;
+  onAttempt: (a: Omit<Attempt, "at">) => void;
+}) {
+  const [mode, setMode] = useState<
+      "story" | "conversation" | "recall" | "reading" | "lab" | "sentences"
+    >("story"),
+    [index, setIndex] = useState(0);
+  const [readingDone, setReadingDone] = useState(false);
+  const scene = scenes[index % scenes.length];
+  return (
+    <View style={{ gap: 18 }}>
+      <View
+        style={{
+          borderTopWidth: 5,
+          borderTopColor: "#315D55",
+          borderBottomWidth: 1,
+          borderBottomColor: "#DDA4B5",
+          paddingVertical: 14,
+          gap: 5,
+        }}
+      >
+        <Text style={{ fontSize: 30, color: "#315D55" }}>우리 동네</Text>
+        <Text style={s.label}>OUR KOREAN NEIGHBOURHOOD</Text>
+      </View>
+      <Text style={s.title}>A sound becomes a story.</Text>
+      <Text style={s.body}>
+        Follow the picture story, hear each Korean sound, and trace its shape.
+        Then put the pictures away and draw what you remember.
+      </Text>
+      {mode === "sentences" ? (
+        <Button secondary color={C.peach} onPress={() => setMode("story")}>
+          Back to letters and pronunciation
+        </Button>
+      ) : (
+        <Button secondary onPress={() => setMode("sentences")}>
+          Sentence trail · from hello to a café order
+        </Button>
+      )}
+      {mode !== "lab" && mode !== "sentences" && (
+        <PressableScale
+          accessibilityRole="button"
+          accessibilityLabel="Open the Hangul Lab: vowels, syllable blocks, sound twins and real words"
+          onPress={() => setMode("lab")}
+          style={{
+            backgroundColor: C.green,
+            borderRadius: 24,
+            padding: 20,
+            gap: 8,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              width: 58,
+              height: 58,
+              borderRadius: 16,
+              backgroundColor: "rgba(242,203,108,0.18)",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 32, color: C.yellow }}>한</Text>
+          </View>
+          <View style={{ flex: 1, gap: 4, marginLeft: 12 }}>
+            <Text
+              style={{
+                color: "#E3EBCF",
+                fontSize: 11,
+                letterSpacing: 2,
+                fontWeight: "700",
+              }}
+            >
+              HANGUL LAB
+            </Text>
+            <Text style={[s.h3, { color: C.paper }]}>
+              Vowels, blocks, sound twins and real words
+            </Text>
+            <Text style={{ color: "#C8D3C0", fontSize: 13 }}>
+              Build any syllable and practise what you mix up.
+            </Text>
+          </View>
+        </PressableScale>
+      )}
+      <View
+        style={{
+          gap: 10,
+          display: mode === "lab" || mode === "sentences" ? "none" : "flex",
+        }}
+      >
+        <Button
+          secondary
+          onPress={() => {
+            setMode("story");
+            setIndex(0);
+          }}
+        >
+          Replay the picture story
+        </Button>
+        <Button
+          secondary
+          disabled={!readingDone}
+          onPress={() => {
+            setMode("conversation");
+            setIndex(0);
+          }}
+        >
+          {readingDone
+            ? "Practise a conversation"
+            : "Conversations unlock after reading practice"}
+        </Button>
+      </View>
+      {mode === "sentences" ? (
+        <KoreanSentences progress={progress} onAttempt={onAttempt} />
+      ) : mode === "lab" ? (
+        <HangulLab
+          progress={progress}
+          onAttempt={onAttempt}
+          onBack={() => setMode("story")}
+        />
+      ) : mode === "story" ? (
+        <Card
+          style={{
+            gap: 16,
+            backgroundColor: C.paper,
+            minWidth: 0,
+            padding: 18,
+          }}
+        >
+          <Tag>
+            PICTURE STORY · {index + 1} OF {storyBeats.length}
+          </Tag>
+          <StoryBeatSketch index={index} />
+          <Text style={[s.h2, { flexShrink: 1 }]}>
+            {storyBeats[index].title}
+          </Text>
+          <Text style={[s.body, { flexShrink: 1 }]}>
+            {storyBeats[index].action}
+          </Text>
+          <VoicePractice
+            key={`story-audio-${index}`}
+            phrase={
+              [
+                "가",
+                "나",
+                "다",
+                "라",
+                "마",
+                "바",
+                "사",
+                "아",
+                "자",
+                "차",
+                "카",
+                "타",
+                "파",
+                "하",
+              ][index]
+            }
+            listeningOnly
+          />
+          <TracePad
+            key={`story-trace-${index}`}
+            paths={[storyBeats[index].path]}
+          />
+          <Button
+            onPress={() => {
+              if (index === storyBeats.length - 1) {
+                setMode("recall");
+                setIndex(0);
+              } else setIndex(index + 1);
+            }}
+          >
+            {index === storyBeats.length - 1
+              ? "Draw the story from memory"
+              : "What happens next?"}
+          </Button>
+        </Card>
+      ) : mode === "conversation" ? (
+        <Card style={{ gap: 16 }}>
+          <Tag>SCENE {index + 1} OF 3</Tag>
+          <Host index={index} />
+          <Text style={s.h2}>{scene.person}</Text>
+          <Text style={s.h2}>{scene.line}</Text>
+          <Text style={s.body}>{scene.meaning}</Text>
+          <Text style={s.body}>{scene.tip}</Text><View style={{padding:16,borderRadius:16,backgroundColor:'#F4E6DF',gap:6}}><Text style={s.label}>REMEMBER THE EXCHANGE</Text><Text style={s.body}>{[
+'At the door, imagine your greeting making every cup bow. Say 안녕하세요 in three rhythm chunks: 안녕 / 하 / 세요. Then cover the reply and greet the host.',
+'A thirsty mule delivers a mountain of water: MUL is an approximate sound hook for 물, water. Add 주세요, please give me. Picture the glass as you say 물 주세요.',
+'The glass arrives and three thank-you parcels tumble out: 감 / 사 / 합니다. Say them together as 감사합니다. This is a rhythm cue, not the meaning of the individual parts.'
+][index]}</Text></View>
+          <Tag>YOUR TURN</Tag>
+          <Text style={s.h2}>{scene.reply}</Text>
+          <VoicePractice key={`scene-${index}`} phrase={scene.reply} />
+          <Button
+            onPress={() => {
+              if (index === 2) {
+                setMode("recall");
+              } else setIndex(index + 1);
+            }}
+          >
+            {index === 2
+              ? "Recall what you learned"
+              : "I’m ready for the next exchange"}
+          </Button>
+        </Card>
+      ) : mode === "reading" ? (
+        <ReadingSteps
+          onDone={() => {
+            setReadingDone(true);
+            setMode("conversation");
+            setIndex(0);
+          }}
+        />
+      ) : (
+        <DrawingRecall
+          onDone={() => {
+            setMode("reading");
+          }}
+        />
+      )}
+      <Button
+        secondary
+        onPress={() =>
+          Linking.openURL("https://www.iksi.or.kr/lms/main/about.do")
+        }
+      >
+        Continue with King Sejong Institute
+      </Button>
+    </View>
+  );
+}
+
+function DrawingRecall({ onDone }: { onDone: () => void }) {
+  const [step, setStep] = useState(0);
+  const [checked, setChecked] = useState(false);
+  const item = storyBeats[step];
+  return (
+    <Card style={{ gap: 16 }}>
+      <Tag>
+        DRAW FROM MEMORY · {step + 1} / {storyBeats.length}
+      </Tag>
+      <Text style={s.h2}>
+        Draw the letter for {item.title.split(" · ")[0].toLowerCase()}.
+      </Text>
+      <Text style={s.body}>
+        Remember its shape and sound. No picture or tracing guide this time.
+      </Text>
+      <TracePad key={step} paths={[]} recall />
+      {checked && (
+        <>
+          <Text style={{ fontSize: 64, textAlign: "center" }}>
+            {item.recall}
+          </Text>
+          <Text style={s.body}>
+            {item.action} Compare the shape with your drawing.
+          </Text>
+        </>
+      )}
+      <Button
+        onPress={() => {
+          if (!checked) setChecked(true);
+          else if (step === storyBeats.length - 1) onDone();
+          else {
+            setStep(step + 1);
+            setChecked(false);
+          }
+        }}
+      >
+        {!checked
+          ? "Check my drawing"
+          : step === storyBeats.length - 1
+            ? "Build words from these letters"
+            : "Next recall"}
+      </Button>
+    </Card>
+  );
+}
+function ReadingSteps({ onDone }: { onDone: () => void }) {
+  const [step, setStep] = useState(0),
+    [answer, setAnswer] = useState<number | null>(null),
+    [round, setRound] = useState(0);
+  const [hint, setHint] = useState(false);
+  const [readingHelp, setReadingHelp] = useState(false);
+  const q = readingPractice[step],
+    correct = answer === q.answer;
+  return (
+    <Card style={{ gap: 16, backgroundColor: C.sage }}>
+      <Pressable accessibilityRole="button" accessibilityState={{expanded:readingHelp}} onPress={()=>setReadingHelp(!readingHelp)} style={{paddingVertical:12}}><Text style={s.link}>{readingHelp ? 'Hide reading help' : 'Need a reading key?'}</Text></Pressable>
+      {readingHelp && <Text style={s.body}>
+        A quick reading key: ㅏ sounds like “ah”, ㅓ is eo, and ㅣ sounds like
+        “ee”. Put a consonant beside a vowel: ㄴ + ㅏ = 나. An initial ㅇ is
+        silent, so 아 starts with the vowel sound. Listen before choosing.
+      </Text>}
+      <Tag>
+        READING ROUND {round + 1} · QUESTION {step + 1} OF{" "}
+        {readingPractice.length}
+      </Tag>
+      <Text style={s.h2}>{q.prompt}</Text>
+      {!correct && !hint && ['아이','이마'].includes(q.hear) && <Button secondary onPress={()=>setHint(true)}>Learn the word’s memory story</Button>}
+      {(hint || correct) && <View style={{gap:12}}>{['아이','이마'].includes(q.hear) && <Image source={q.hear==='아이' ? require('../../assets/korean-word-child.png') : require('../../assets/korean-word-forehead.png')} resizeMode="contain" style={{width:'100%',height:230}} />}<Text style={s.body}>{q.explain}</Text></View>}
+      <VoicePractice key={q.hear} phrase={q.hear} listeningOnly />
+      <Text style={s.label}>
+        Listen, then choose the matching shape or word.
+      </Text>
+      {hint ? (
+        <Button onPress={() => setHint(false)}>Hide the hint & answer</Button>
+      ) : (
+        q.choices.map((choice, i) => (
+          <Button
+            key={choice}
+            secondary
+            disabled={correct}
+            onPress={() => setAnswer(i)}
+          >
+            {choice}
+          </Button>
+        ))
+      )}
+      {answer !== null && (
+        <Text accessibilityLiveRegion="polite" style={[s.body,{padding:18,borderRadius:16,backgroundColor:correct ? "#CEE5D6" : "#F9E5DC",fontWeight:"700",fontSize:20}]}>
+          {correct
+            ? "Correct · 잘했어요!"
+            : "Try again. Say the parts slowly and look at where the vowel arm points."}
+        </Text>
+      )}
+      {correct && (
+        <Button
+          onPress={() => {
+            if (step === readingPractice.length - 1) {
+              setRound(round + 1);
+              setStep(0);
+            } else setStep(step + 1);
+            setAnswer(null);
+            setHint(false);
+          }}
+        >
+          {step === readingPractice.length - 1
+            ? "Another reading round"
+            : "Next reading question"}
+        </Button>
+      )}
+      {correct && <Confetti key={step} blossom />}
+      {correct && step === readingPractice.length - 1 && (
+        <Button secondary onPress={onDone}>
+          I can read these words · try a conversation
+        </Button>
+      )}
+    </Card>
+  );
+}
