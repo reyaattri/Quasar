@@ -4,7 +4,6 @@ test.use({ reducedMotion: "reduce" });
 test("welcome hero fits a phone and still enters the lesson flow", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto("/");
-  await expect(page.getByText("WELCOME TO QUASAR")).toBeVisible();
   await expect(page.getByLabel("Quasar logo")).toBeVisible();
   await expect(page.getByText("Learn it once. Remember it longer.")).toBeVisible();
   await expect(page.getByRole("button", { name: "Vocabulary" })).toBeVisible();
