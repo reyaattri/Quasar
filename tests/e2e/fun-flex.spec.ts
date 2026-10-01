@@ -41,7 +41,7 @@ test("Fun and Flex card sequence stays fixed and scores exact order", async ({
     .getByRole("button", { name: "Start practice", exact: true })
     .click();
   await expect(
-    page.getByText("1 / 52 · LOOK → LINK → PLACE", { exact: true }),
+    page.getByText("1 / 52 · LOOK · LINK · PLACE", { exact: true }),
   ).toBeVisible();
 });
 test("Names recall only asks for names, without meeting positions", async ({

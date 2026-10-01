@@ -112,7 +112,7 @@ test("SAT requires five recalls before each contextual question and resumes save
         for (const [q, answer] of ["A", "D", "C", "C", "B"].entries()) {
           await expect(
             page.getByRole("button", {
-              name: `Read official question ${q + 1} ↗`,
+              name: `Read official question ${q + 1}`,
             }),
           ).toBeVisible();
           await page

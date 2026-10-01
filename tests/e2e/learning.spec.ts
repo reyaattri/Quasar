@@ -35,7 +35,7 @@ test("new learner completes course, recalls a scene, reflects, and persists mast
   await page.getByRole("button", { name: "Open settings" }).click();
   await page.getByRole("button", { name: "Explore Quasar Plus" }).click();
   await expect(
-    page.getByText("Purchases open once Plus is connected."),
+    page.getByText("Store pricing lands with the app release."),
   ).toBeVisible();
   // Web purchases use RevenueCat Billing, where signing in restores; the button is phone-only.
   await expect(page.getByRole("button", { name: "Restore purchases" })).toHaveCount(0);

@@ -5,7 +5,6 @@ test.use({ reducedMotion: "reduce" });
 test("toolkit conversations teach, hide cues, and allow a supported retry", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto("/");
-  await expect(page.getByText("WELCOME TO QUASAR")).toBeVisible();
   await expect(page.getByLabel("Quasar logo")).toBeVisible();
   await page.waitForFunction(() => Array.from(document.images).every((i) => i.complete));
   await page.screenshot({ path: "docs/welcome-refreshed-mobile.png" });

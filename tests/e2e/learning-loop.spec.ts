@@ -7,7 +7,7 @@ test("a repeated biology mistake flows from Today into Teach-Back, repair and Re
   await page.goto("/");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.getByText("WELCOME TO QUASAR").waitFor();
+  await page.getByLabel("Quasar logo").waitFor();
   await page.evaluate((key) => {
     const p = JSON.parse(localStorage.getItem(key)!);
     p.onboarded = true;
@@ -67,7 +67,7 @@ test("Case Lab records a new case, and a long break opens a gentle recovery plan
   await page.goto("/");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.getByText("WELCOME TO QUASAR").waitFor();
+  await page.getByLabel("Quasar logo").waitFor();
   await page.evaluate((key) => {
     const p = JSON.parse(localStorage.getItem(key)!);
     p.onboarded = true;
@@ -82,7 +82,7 @@ test("Case Lab records a new case, and a long break opens a gentle recovery plan
   await expect(page.getByText(/It's been 10 days, and nothing is lost\./)).toBeVisible();
 
   await page.getByRole("button", { name: "Explore", exact: true }).click();
-  await page.getByRole("button", { name: /^Case Lab/ }).click();
+  await page.getByRole("button", { name: /Case Lab/ }).click();
   await page.getByRole("button", { name: /^The mutation that changed nothing, New/ }).click();
   await page.getByRole("button", { name: "It stays the same, because the genetic code is redundant" }).click();
   await expect(page.getByText("You connected the biological clues.")).toBeVisible();
@@ -94,7 +94,7 @@ test("pasted notes open to read and flashcards first, then a quiz whose answers 
   await page.goto("/");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.getByText("WELCOME TO QUASAR").waitFor();
+  await page.getByLabel("Quasar logo").waitFor();
   await page.evaluate((key) => {
     const p = JSON.parse(localStorage.getItem(key)!);
     p.onboarded = true;
@@ -102,7 +102,7 @@ test("pasted notes open to read and flashcards first, then a quiz whose answers 
   }, KEY);
   await page.reload();
   await page.getByRole("button", { name: "Explore", exact: true }).click();
-  await page.getByRole("button", { name: /^Notes → Quiz/ }).click();
+  await page.getByRole("button", { name: /Notes to Quiz/ }).click();
   await page.getByLabel("Deck title").fill("Cells");
   await page.getByLabel("Your notes").fill(
     "Mitochondria: transfer energy from sugar into ATP\nRibosome: builds proteins by reading mRNA\nChloroplast: captures light energy to make sugar\nNucleus: stores DNA behind a double membrane",
@@ -115,7 +115,7 @@ test("pasted notes open to read and flashcards first, then a quiz whose answers 
   await expect(page.getByText("ANSWER", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Not sure yet" }).click();
   await expect(page.getByText("CARD 2 / 4")).toBeVisible();
-  await page.getByRole("button", { name: "Skip to the quiz →" }).click();
+  await page.getByRole("button", { name: "Skip to the quiz" }).click();
   await expect(page.getByText("1 / 4", { exact: true })).toBeVisible();
   for (let i = 0; i < 4; i++) {
     await page.locator('[role="button"]').filter({ hasText: /^(Mitochondria|Ribosome|Chloroplast|Nucleus|transfer|builds|captures|stores)/ }).first().click();
@@ -136,7 +136,7 @@ test("the Hangul Lab builds syllables and remembers sound-twin answers", async (
   await page.goto("/");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.getByText("WELCOME TO QUASAR").waitFor();
+  await page.getByLabel("Quasar logo").waitFor();
   await page.evaluate((key) => {
     const p = JSON.parse(localStorage.getItem(key)!);
     p.onboarded = true;
@@ -166,7 +166,7 @@ test("Cell City: an episode runs from the real biology to rebuilt memory and sch
   await page.goto("/");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.getByText("WELCOME TO QUASAR").waitFor();
+  await page.getByLabel("Quasar logo").waitFor();
   await page.evaluate((key) => {
     const p = JSON.parse(localStorage.getItem(key)!);
     p.onboarded = true;
@@ -175,7 +175,7 @@ test("Cell City: an episode runs from the real biology to rebuilt memory and sch
   await page.reload();
   await page.getByRole("button", { name: "Explore", exact: true }).click();
   await page.getByRole("button", { name: "Enter Cell City" }).click();
-  await expect(page.getByText("0 of 6 districts lit")).toBeVisible();
+  await expect(page.getByText("0 / 6 restored")).toBeVisible();
   await expect(page.getByRole("button", { name: /^Episode 2: The Missing Energy, locked$/ })).toBeDisabled();
   await page.getByRole("button", { name: /^Episode 1: Welcome to Cell City$/ }).click();
   await expect(page.getByText("FIRST, WHAT'S REALLY HAPPENING")).toBeVisible();
@@ -211,6 +211,6 @@ test("Cell City: an episode runs from the real biology to rebuilt memory and sch
   }, KEY);
   expect(saved).toEqual({ done: [1], cards: ["city-e1-q1", "city-e1-q2", "city-e1-q3"] });
   await page.getByRole("button", { name: "Back to the city" }).last().click();
-  await expect(page.getByText("1 of 6 districts lit")).toBeVisible();
+  await expect(page.getByText("1 / 6 restored")).toBeVisible();
   await expect(page.getByRole("button", { name: /^Episode 2: The Missing Energy$/ })).toBeEnabled();
 });
