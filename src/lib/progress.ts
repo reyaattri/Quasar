@@ -63,7 +63,7 @@ export const initialProgress = (): Progress => ({
   onboarded: false,
   profile: {
     name: "",
-    subjects: ["SAT vocabulary"],
+    subjects: ["Vocabulary"],
     interests: "",
     hometown: "",
     favoriteStory: "",

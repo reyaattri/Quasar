@@ -1972,63 +1972,70 @@ function Quasar() {
                       </Text>
                     </Reveal>
                     <Reveal delay={650}>
-                      <View
-                        style={[
-                          s.row,
-                          {
-                            flexWrap: "wrap",
-                            gap: 10,
-                            justifyContent: "center",
-                          },
-                        ]}
-                      >
+                      <View style={{ gap: 10 }}>
                         {(
                           [
-                            ["SAT vocabulary", "book"],
-                            ["Memory skills", "key"],
-                            ["Biology foundations", "leaf"],
+                            [
+                              ["Vocabulary", "book"],
+                              ["Memory skills", "key"],
+                            ],
+                            [
+                              ["Biology foundations", "leaf"],
+                              ["Language", "mic"],
+                            ],
                           ] as const
-                        ).map(([sub, icon]) => {
-                          const active = p.profile.subjects.includes(sub);
-                          return (
-                            <PressableScale
-                              accessibilityRole="button"
-                              accessibilityState={{ selected: active }}
-                              key={sub}
-                              onPress={() =>
-                                updateProfile(
-                                  "subjects",
-                                  active
-                                    ? p.profile.subjects.filter(
-                                        (x) => x !== sub,
-                                      )
-                                    : [...p.profile.subjects, sub],
-                                )
-                              }
-                              style={[
-                                a.landingChip,
-                                active && {
-                                  backgroundColor: VIOLET,
-                                  borderColor: VIOLET,
-                                },
-                              ]}
-                            >
-                              <Icon
-                                name={active ? "check" : icon}
-                                size={16}
-                                color={active ? C.white : VIOLET}
-                              />
-                              <Text
-                                style={[
-                                  s.label,
-                                  { color: active ? C.white : C.ink },
-                                ]}
-                              >
-                                {sub}
-                              </Text>
-                            </PressableScale>
-                          );
-                        })}
+                        ).map((pair, i) => (
+                          <View
+                            key={i}
+                            style={[
+                              s.row,
+                              { gap: 10, justifyContent: "center" },
+                            ]}
+                          >
+                            {pair.map(([sub, icon]) => {
+                              const active = p.profile.subjects.includes(sub);
+                              return (
+                                <PressableScale
+                                  accessibilityRole="button"
+                                  accessibilityState={{ selected: active }}
+                                  key={sub}
+                                  onPress={() =>
+                                    updateProfile(
+                                      "subjects",
+                                      active
+                                        ? p.profile.subjects.filter(
+                                            (x) => x !== sub,
+                                          )
+                                        : [...p.profile.subjects, sub],
+                                    )
+                                  }
+                                  style={[
+                                    a.landingChip,
+                                    { justifyContent: "center" },
+                                    active && {
+                                      backgroundColor: VIOLET,
+                                      borderColor: VIOLET,
+                                    },
+                                  ]}
+                                >
+                                  <Icon
+                                    name={active ? "check" : icon}
+                                    size={16}
+                                    color={active ? C.white : VIOLET}
+                                  />
+                                  <Text
+                                    style={[
+                                      s.label,
+                                      { color: active ? C.white : C.ink },
+                                    ]}
+                                  >
+                                    {sub}
+                                  </Text>
+                                </PressableScale>
+                              );
+                            })}
+                          </View>
+                        ))}
                       </View>
                     </Reveal>
                     <Reveal delay={750}>
